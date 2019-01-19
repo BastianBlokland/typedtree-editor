@@ -1,3 +1,7 @@
 ﻿# Npm modules
 node_modules/
 package-lock.json
+
+# Build output
+build/
+temp/

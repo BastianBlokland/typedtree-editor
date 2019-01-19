@@ -1,0 +1,17 @@
+﻿{
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "alwaysStrict": true,
+
+    "target": "es5",
+    "module": "es2015",
+    "moduleResolution": "node",
+    "outDir": "./build",
+
+    "declaration": true,
+    "declarationDir": "./build"
+  },
+  "include": [ "src/**/*.ts" ],
+  "exclude": [ "node_modules" ]
+}
