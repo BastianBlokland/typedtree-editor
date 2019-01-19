@@ -1,5 +1,22 @@
-﻿import * as d3 from 'd3';
+﻿import * as Tree from "./tree";
 
-d3.select('body');
+let rootNode = Tree.createNode("Conditions.If", b => {
+    b.pushNodeField("evaluator", Tree.createNode("Evaluators.CanExecute"));
+    b.pushNodeField("node", Tree.createNode("Conditions.First", b => {
+        b.pushNodeArrayField("children", [
+            Tree.createNode("Utilities.EvaluatorNodePair", b => {
+                b.pushNodeField("evaluator", Tree.createNode("Evaluators.IsAbilityCharged"))
+            }),
+            Tree.createNode("Utilities.EvaluatorNodePair", b => {
+                b.pushNodeField("evaluator", Tree.createNode("Evaluators.IsAbilityCharged"))
+            }),
+            Tree.createNode("Utilities.EvaluatorNodePair", b => {
+                b.pushNodeField("evaluator", Tree.createNode("Evaluators.IsAbilityCharged"))
+            })
+        ]);
+    }));
+});
+
+Tree.printNode(rootNode);
 
 console.log('hello, world');
