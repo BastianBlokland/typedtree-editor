@@ -3,17 +3,19 @@
   "version": "0.0.1",
   "author": "Bastian Blokland",
   "license": "MIT",
-  "bugs": { "url": "https://github.com/BastianBlokland/typedtree-editor/issues" },
+  "bugs": {
+    "url": "https://github.com/BastianBlokland/typedtree-editor/issues"
+  },
   "homepage": "https://github.com/BastianBlokland/typedtree-editor#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/BastianBlokland/typedtree-editor.git"
   },
-
   "main": "build/bundle.js",
   "types": "build/app.d.ts",
-  "files": [ "build" ],
-
+  "files": [
+    "build"
+  ],
   "dependencies": {
     "d3": "^5.7.0"
   },
@@ -23,6 +25,7 @@
     "rollup": "^1.1.0",
     "rollup-plugin-node-resolve": "^4.0.0",
     "tsc-watch": "^1.0.31",
-    "typescript": "^3.2.4"
+    "typescript": "^3.2.4",
+    "typescript-tslint-plugin": "^0.2.1"
   }
 }
