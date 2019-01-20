@@ -13,7 +13,9 @@
   // File format settings
   "files.exclude": {
     "node_modules": true,
-    "package-lock.json": true
+    "package-lock.json": true,
+    "build": true,
+    "tsout": true
   },
   "files.insertFinalNewline": true,
   "files.encoding": "utf8bom",
