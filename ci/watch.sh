@@ -27,14 +27,8 @@ autoCopyAssets ()
     done
 }
 
+
+# Setup a trap to stop the subshells when main command is terminated
+trap 'kill %1; kill %2' SIGINT
 # Start functions in subshells
-autoCompileTypeScript & runDevelopmentWebServer & autoCopyAssets &
-
-# Stop on any user input
-read
-
-# Kill the subshells
-kill $(jobs -p)
-wait 2>/dev/null
-
-echo "INFO: Stopped watching"
+autoCompileTypeScript & runDevelopmentWebServer & autoCopyAssets
