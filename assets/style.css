@@ -2,8 +2,32 @@
     width: 100%;
     height: 100%;
     margin: 0;
+    background-color: #444
 }
 
-.notsupported {
+.error {
     color: #FFF;
+}
+
+.nodeBackground {
+    fill: #999;
+    rx: 8;
+    ry: 8;
+    stroke: #000;
+    stroke-width: 4;
+}
+
+.nodeTypeText {
+    text-anchor: middle;
+    font-weight: bold;
+}
+
+.nodeTypeSeparator {
+    stroke: #000;
+    stroke-width: 4;
+}
+
+#svg-display {
+    width: 100%;
+    height: 100%;
 }

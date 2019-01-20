@@ -1,27 +1,25 @@
 ﻿export type NodeType = string
 
-export type FieldType = FieldNode | FieldNodeArray
-
-export type BuildCallback = (builder: NodeBuilder) => void
-
 export interface Node {
-    readonly type: NodeType,
+    readonly type: NodeType
     readonly fields: ReadonlyArray<Field>
 }
 
 export interface Field {
-    readonly name: string,
+    readonly name: string
     readonly value: FieldType
 }
 
+export type FieldType = FieldNode | FieldNodeArray
+
 export interface FieldNode {
-    kind: "node"
-    node: Node
+    readonly kind: "node"
+    readonly node: Node
 }
 
 export interface FieldNodeArray {
-    kind: "nodeArray"
-    array: ReadonlyArray<Node>
+    readonly kind: "nodeArray"
+    readonly array: ReadonlyArray<Node>
 }
 
 export interface NodeBuilder {
@@ -29,12 +27,25 @@ export interface NodeBuilder {
     pushNodeArrayField(name: string, value: ReadonlyArray<Node>): void
 }
 
+export type BuildCallback = (builder: NodeBuilder) => void
+
 export function createNode(type: NodeType, callback: BuildCallback | undefined = undefined): Node {
     if (callback === undefined)
         return new TreeNode(type, []);
     let builder = new TreeNodeBuilder(type);
     callback(builder);
     return builder.build();
+}
+
+export function getDirectChildren(node: Node): Node[] {
+    let result: Node[] = [];
+    node.fields.forEach(field => {
+        switch (field.value.kind) {
+            case "node": result.push(field.value.node); break;
+            case "nodeArray": result.push.apply(field.value.array); break;
+        }
+    });
+    return result;
 }
 
 export function printNode(node: Node, indent: number = 0): void {
@@ -61,10 +72,6 @@ export function printNode(node: Node, indent: number = 0): void {
 
     function printText(text: string, indent: number) {
         console.log(`${" ".repeat(indent * 4)}${text}`);
-    }
-
-    function assertNever(x: never): never {
-        throw new Error("Unexpected object: " + x);
     }
 }
 
@@ -118,4 +125,8 @@ class TreeNodeBuilder implements NodeBuilder {
             throw new Error("New fields cannot be pushed after building the node");
         this._fields.push(field);
     }
+}
+
+function assertNever(x: never): never {
+    throw new Error(`Unexpected object: ${x}`);
 }
