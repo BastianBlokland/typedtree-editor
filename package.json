@@ -17,13 +17,11 @@
     "build"
   ],
   "dependencies": {
-    "d3": "^5.7.0"
+    "svg.js": "^2.7.1"
   },
   "devDependencies": {
-    "@types/d3": "^5.7.0",
     "live-server": "^1.2.1",
     "rollup": "^1.1.0",
-    "rollup-plugin-node-resolve": "^4.0.0",
     "tsc-watch": "^1.0.31",
     "typescript": "^3.2.4",
     "typescript-tslint-plugin": "^0.2.1"
