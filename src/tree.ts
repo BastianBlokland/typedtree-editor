@@ -2,7 +2,7 @@
 
 export type FieldType = FieldNode | FieldNodeArray
 
-export type BuildCallback = (builder: NodeBuilder) => void;
+export type BuildCallback = (builder: NodeBuilder) => void
 
 export interface Node {
     readonly type: NodeType,
@@ -25,8 +25,8 @@ export interface FieldNodeArray {
 }
 
 export interface NodeBuilder {
-    pushNodeField(name: string, value: Node): void;
-    pushNodeArrayField(name: string, value: ReadonlyArray<Node>): void;
+    pushNodeField(name: string, value: Node): void
+    pushNodeArrayField(name: string, value: ReadonlyArray<Node>): void
 }
 
 export function createNode(type: NodeType, callback: BuildCallback | undefined = undefined): Node {
