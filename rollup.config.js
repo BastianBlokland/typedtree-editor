@@ -1,7 +1,7 @@
 ﻿import pkg from './package.json'
 
 export default {
-    input: 'build/app.js',
+    input: './tsout/main.js',
     output: {
         file: pkg.main,
         format: 'umd'

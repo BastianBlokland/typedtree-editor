@@ -3,4 +3,4 @@ node_modules/
 
 # Build output
 build/
-temp/
+tsout/

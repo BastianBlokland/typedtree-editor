@@ -11,10 +11,9 @@
     "type": "git",
     "url": "git+https://github.com/BastianBlokland/typedtree-editor.git"
   },
-  "main": "build/bundle.js",
-  "types": "build/app.d.ts",
+  "main": "./build/bundle.js",
   "files": [
-    "build"
+    "./build"
   ],
   "dependencies": {
     "svg.js": "^2.7.1"
