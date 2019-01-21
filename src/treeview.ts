@@ -1,6 +1,5 @@
 ﻿import * as Tree from "./tree";
 import * as Utils from "./utils";
-import * as Math from "./math";
 import * as Vec from "./vector";
 import * as Display from "./display";
 
@@ -14,29 +13,51 @@ export function setTree(root: Tree.Node): void {
     viewTree.nodes.forEach(n => createDisplay(n, viewTree));
 }
 
-function createDisplay(node: Tree.Node, viewTree: ViewTree) {
+function createDisplay(node: Tree.Node, viewTree: ViewTree): void {
     let pos = viewTree.getPosition(node);
     let size = viewTree.getSize(node);
 
     let nodeElement = Display.createElement("node", pos);
     nodeElement.addRect("nodeBackground", size, Vec.zeroVector);
-    nodeElement.addText("nodeTypeText", node.type, { x: Math.half(size.x), y: 0 });
+    nodeElement.addText("nodeTypeText", node.type, { x: Utils.half(size.x), y: Utils.half(nodeHeaderHeight) });
     nodeElement.addLine("nodeTypeSeparator", { x: 0, y: nodeHeaderHeight }, { x: size.x, y: nodeHeaderHeight });
 
-    let yOffset = nodeHeaderHeight;
+    let yOffset = nodeHeaderHeight + Utils.half(nodeFieldHeight) + Utils.half(nodePadding);
     node.fields.forEach(field => {
-        let fieldElement = nodeElement.addElement("nodeField", { x: 0, y: yOffset });
-        fieldElement.addText("nodeFieldName", field.name, { x: Math.half(nodePadding), y: 0 });
+        nodeElement.addText("nodeFieldName", field.name, { x: Utils.half(nodePadding), y: yOffset });
+        switch (field.value.kind) {
+            case "node":
+                addConnection(nodeElement, { x: size.x - 10, y: yOffset }, getRelativeVector(node, field.value.node, viewTree));
+                break;
+            case "nodeArray":
+                field.value.array.forEach((arrayNode, index) => {
+                    let y = yOffset + index * nodeFieldHeight;
+                    addConnection(nodeElement, { x: size.x - 10, y: y }, getRelativeVector(node, arrayNode, viewTree));
+                });
+                break;
+            default: Utils.assertNever(field.value);
+        }
+
         yOffset += getFieldHeight(field);
     });
 }
 
-const nodeHeaderHeight = 20;
+function addConnection(element: Display.Element, from: Vec.Position, to: Vec.Position): void {
+    element.addCircle("nodeOutput", 10, from);
+    element.addLine("nodeConnection", from, Vec.add(to, nodeInputSlotOffset));
+}
+
+function getRelativeVector(from: Tree.Node, to: Tree.Node, viewTree: ViewTree): Vec.Vector2 {
+    return Vec.subtract(viewTree.getPosition(to), viewTree.getPosition(from));
+}
+
+const nodeHeaderHeight = 25;
 const nodePadding = 10;
 const nodeWidth = 250;
-const nodeHorizontalSpacing = 50;
+const nodeHorizontalSpacing = 75;
 const nodeVerticalSpacing = 25;
 const nodeFieldHeight = 25;
+const nodeInputSlotOffset: Vec.Vector2 = { x: 0, y: 12.5 };
 
 class ViewTree {
     private readonly _root: Tree.Node;
@@ -123,7 +144,7 @@ class ViewTree {
     private addPositions(node: Tree.Node, referencePos: Vec.Position): void {
         let size = this.getSize(node);
         let area = this.getArea(node);
-        let position = { x: referencePos.x, y: referencePos.y + Math.half(area.y) - Math.half(size.y) };
+        let position = { x: referencePos.x, y: referencePos.y + Utils.half(area.y) - Utils.half(size.y) };
         this._positions.set(node, position);
 
         let childX = referencePos.x + size.x + nodeHorizontalSpacing;
@@ -136,7 +157,7 @@ class ViewTree {
 }
 
 function getNodeHeight(node: Tree.Node): number {
-    return nodeHeaderHeight + nodePadding + node.fields.map(getFieldHeight).reduce(Math.add, 0);
+    return nodeHeaderHeight + nodePadding + node.fields.map(getFieldHeight).reduce(Utils.add, 0);
 }
 
 function getFieldHeight(field: Tree.Field): number {

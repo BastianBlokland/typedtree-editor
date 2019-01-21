@@ -1,4 +1,4 @@
-﻿import * as Math from "./math";
+﻿import * as Utils from "./utils";
 
 export type Position = Vector2;
 
@@ -38,7 +38,7 @@ export function subtract(vector: Vector2, amount: number | Vector2): Vector2 {
 }
 
 export function lerp(vectorA: Vector2, vectorB: Vector2, frac: number): Vector2 {
-    return createVector(Math.lerp(vectorA.x, vectorB.x, frac), Math.lerp(vectorA.y, vectorB.y, frac));
+    return createVector(Utils.lerp(vectorA.x, vectorB.x, frac), Utils.lerp(vectorA.y, vectorB.y, frac));
 }
 
 export function createVector(x: number, y: number): Vector2 {

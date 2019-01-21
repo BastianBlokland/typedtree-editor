@@ -17,9 +17,19 @@
     stroke-width: 4;
 }
 
+.nodeConnection {
+    stroke: #000;
+    stroke-width: 4;
+}
+
 .nodeTypeText {
     text-anchor: middle;
     font-weight: bold;
+    dominant-baseline: middle;
+}
+
+.nodeFieldName {
+    dominant-baseline: middle;
 }
 
 .nodeTypeSeparator {

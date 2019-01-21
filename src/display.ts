@@ -1,4 +1,5 @@
-﻿import * as Vec from "./vector";
+﻿import * as Utils from "./utils";
+import * as Vec from "./vector";
 import * as svgjs from "svg.js";
 
 declare const SVG: typeof svgjs;
@@ -76,10 +77,11 @@ class GroupElement implements Element {
     }
 
     addText(className: ClassName, text: string, position: Vec.Position): void {
-        this._svgGroup.text(text).
-            addClass(className).
+        this._svgGroup.group().
             x(position.x).
-            y(position.y);
+            y(position.y).
+            plain(text).
+            addClass(className);
     }
 
     addLine(className: ClassName, from: Vec.Position, to: Vec.Position): void {
@@ -87,11 +89,11 @@ class GroupElement implements Element {
             addClass(className);
     }
 
-    addCircle(className: ClassName, radius: number, position: Vec.Position): void {
+    addCircle(className: ClassName, radius: number, center: Vec.Position): void {
         this._svgGroup.circle(radius).
             addClass(className).
-            x(position.x).
-            y(position.y);
+            x(center.x - Utils.half(radius)).
+            y(center.y - Utils.half(radius));
     }
 }
 
