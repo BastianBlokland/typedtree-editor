@@ -1,4 +1,6 @@
 ﻿import * as Tree from "./tree";
+import * as Utils from "./utils";
+import * as Math from "./math";
 import * as Vec from "./vector";
 import * as Display from "./display";
 
@@ -6,90 +8,145 @@ export function initialize(): void {
     Display.initialize();
 }
 
-export function setTree(treeRoot: Tree.Node): void {
+export function setTree(root: Tree.Node): void {
     Display.clear();
-    displayNode(treeRoot, { x: 200, y: 100 });
+    let viewTree = new ViewTree(root);
+    viewTree.nodes.forEach(n => createDisplay(n, viewTree));
+}
+
+function createDisplay(node: Tree.Node, viewTree: ViewTree) {
+    let pos = viewTree.getPosition(node);
+    let size = viewTree.getSize(node);
+
+    let nodeElement = Display.createElement("node", pos);
+    nodeElement.addRect("nodeBackground", size, Vec.zeroVector);
+    nodeElement.addText("nodeTypeText", node.type, { x: Math.half(size.x), y: 0 });
+    nodeElement.addLine("nodeTypeSeparator", { x: 0, y: nodeHeaderHeight }, { x: size.x, y: nodeHeaderHeight });
+
+    let yOffset = nodeHeaderHeight;
+    node.fields.forEach(field => {
+        let fieldElement = nodeElement.addElement("nodeField", { x: 0, y: yOffset });
+        fieldElement.addText("nodeFieldName", field.name, { x: Math.half(nodePadding), y: 0 });
+        yOffset += getFieldHeight(field);
+    });
 }
 
 const nodeHeaderHeight = 20;
 const nodePadding = 10;
-const nodeWidth = 200;
-const nodeHorizontalSpacing = 100;
+const nodeWidth = 250;
+const nodeHorizontalSpacing = 50;
 const nodeVerticalSpacing = 25;
-const nodeAttachPointRadius = 10;
-const nodeAttachPointOffset = 15;
-const fieldElementHeight = 25;
+const nodeFieldHeight = 25;
 
-function displayNode(node: Tree.Node, center: Vec.Position): void {
-    let nodeHeight = getNodeHeight(node);
-    let nodeSize: Vec.Size = { x: nodeWidth, y: nodeHeight };
+class ViewTree {
+    private readonly _root: Tree.Node;
+    private readonly _totalArea: Vec.Size;
+    private readonly _nodes: Tree.Node[] = []
+    private readonly _sizes: Map<Tree.Node, Vec.Size> = new Map();
+    private readonly _areas: Map<Tree.Node, Vec.Size> = new Map();
+    private readonly _positions: Map<Tree.Node, Vec.Position> = new Map();
 
-    let nodeElement = Display.createElement("node", Vec.subtract(center, Vec.half(nodeSize)));
-    nodeElement.addRect("nodeBackground", nodeSize, Vec.zeroVector);
-    nodeElement.addText("nodeTypeText", node.type, { x: nodeSize.x * .5, y: 0 });
-    nodeElement.addLine("nodeTypeSeparator", { x: 0, y: nodeHeaderHeight }, { x: nodeSize.x, y: nodeHeaderHeight });
+    constructor(root: Tree.Node) {
+        this._root = root;
+        this.addNodes(root)
+        this.addSizes(root);
+        this._totalArea = this.addAreas(root);
+        this.addPositions(root, { x: 0, y: 0 });
+    }
 
-    let yOffset = nodeHeaderHeight + (nodePadding * .5);
-    node.fields.forEach(field => {
+    get root(): Tree.Node {
+        return this._root;
+    }
 
-        let fieldElement = nodeElement.addElement("nodeField", { x: 0, y: yOffset });
-        fieldElement.addText("nodeFieldName", field.name, { x: nodePadding * .5, y: 0 });
+    get nodes(): ReadonlyArray<Tree.Node> {
+        return this._nodes;
+    }
 
-        switch (field.value.kind) {
-            case "node":
-                fieldElement.addCircle(
-                    "nodeAttachPoint",
-                    nodeAttachPointRadius,
-                    { x: nodeSize.x - nodeAttachPointOffset, y: 5 });
-                break;
-            case "nodeArray":
-                let elementOffset = 0;
-                field.value.array.forEach(arrayNode => {
-                    fieldElement.addCircle(
-                        "nodeAttachPoint",
-                        nodeAttachPointRadius,
-                        { x: nodeSize.x - nodeAttachPointOffset, y: elementOffset + 5 });
+    get totalArea(): Vec.Size {
+        return this._totalArea;
+    }
 
-                    elementOffset += fieldElementHeight;
-                });
-                yOffset += elementOffset;
-                break;
+    getSize(node: Tree.Node): Vec.Size {
+        let lookup = this._sizes.get(node);
+        if (lookup == undefined)
+            throw new Error("Node is not known to this view-tree");
+        return lookup;
+    }
+
+    getArea(node: Tree.Node): Vec.Size {
+        let lookup = this._areas.get(node);
+        if (lookup == undefined)
+            throw new Error("Node is not known to this view-tree");
+        return lookup;
+    }
+
+    getPosition(node: Tree.Node): Vec.Position {
+        let lookup = this._positions.get(node);
+        if (lookup == undefined)
+            throw new Error("Node is not known to this view-tree");
+        return lookup;
+    }
+
+    private addNodes(node: Tree.Node): void {
+        this._nodes.push(node);
+        Tree.forEachDirectChild(node, child => this.addNodes(child));
+    }
+
+    private addSizes(node: Tree.Node): void {
+        let size = { x: nodeWidth, y: getNodeHeight(node) };
+        this._sizes.set(node, size);
+        Tree.forEachDirectChild(node, child => this.addSizes(child));
+    }
+
+    private addAreas(node: Tree.Node): Vec.Size {
+        let size = this.getSize(node);
+
+        let directChildren = Tree.getDirectChildren(node);
+        if (directChildren.length == 0) {
+            this._areas.set(node, size);
+            return size;
         }
-        yOffset += fieldElementHeight;
-    });
-}
 
-function getHeightOfNodeAndChildren(node: Tree.Node): number {
-    // return either our own height or our children's height whichever is higher.
-    return max(
-        getNodeHeight(node),
-        Tree.getDirectChildren(node).map(getHeightOfNodeAndChildren).reduce(add));
+        let childTotalHeight = (directChildren.length - 1) * nodeVerticalSpacing;
+        let childMaxWidth = nodeHorizontalSpacing;
+        directChildren.forEach(child => {
+            let childSize = this.addAreas(child);
+            childTotalHeight += childSize.y;
+            childMaxWidth = Math.max(childMaxWidth, childSize.x);
+        });
+
+        let area = { x: size.x + childMaxWidth, y: Math.max(size.y, childTotalHeight) };
+        this._areas.set(node, area);
+        return area;
+    }
+
+    private addPositions(node: Tree.Node, referencePos: Vec.Position): void {
+        let size = this.getSize(node);
+        let area = this.getArea(node);
+        let position = { x: referencePos.x, y: referencePos.y + Math.half(area.y) - Math.half(size.y) };
+        this._positions.set(node, position);
+
+        let childX = referencePos.x + size.x + nodeHorizontalSpacing;
+        let childY = referencePos.y;
+        Tree.forEachDirectChild(node, child => {
+            this.addPositions(child, { x: childX, y: childY });
+            childY += this.getArea(child).y + nodeVerticalSpacing;
+        });
+    }
 }
 
 function getNodeHeight(node: Tree.Node): number {
-    return nodeHeaderHeight + nodePadding + node.fields.map(getFieldHeight).reduce(add);
+    return nodeHeaderHeight + nodePadding + node.fields.map(getFieldHeight).reduce(Math.add, 0);
 }
 
 function getFieldHeight(field: Tree.Field): number {
     switch (field.value.kind) {
         case "node":
-            return fieldElementHeight;
+            return nodeFieldHeight;
         case "nodeArray":
-            return fieldElementHeight * field.value.array.length;
+            return nodeFieldHeight * field.value.array.length;
         default:
-            assertNever(field.value);
+            Utils.assertNever(field.value);
             return 0;
     }
-}
-
-function max(a: number, b: number) {
-    return a > b ? a : b;
-}
-
-function add(a: number, b: number) {
-    return a + b;
-}
-
-function assertNever(x: never): never {
-    throw new Error(`Unexpected object: ${x}`);
 }

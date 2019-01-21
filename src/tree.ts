@@ -1,4 +1,6 @@
-﻿export type NodeType = string
+﻿import * as Utils from "./utils";
+
+export type NodeType = string
 
 export interface Node {
     readonly type: NodeType
@@ -27,6 +29,8 @@ export interface NodeBuilder {
     pushNodeArrayField(name: string, value: ReadonlyArray<Node>): void
 }
 
+export type NodeCallback = (node: Node) => void
+
 export type BuildCallback = (builder: NodeBuilder) => void
 
 export function createNode(type: NodeType, callback: BuildCallback | undefined = undefined): Node {
@@ -37,14 +41,18 @@ export function createNode(type: NodeType, callback: BuildCallback | undefined =
     return builder.build();
 }
 
-export function getDirectChildren(node: Node): Node[] {
-    let result: Node[] = [];
+export function forEachDirectChild(node: Node, callback: NodeCallback): void {
     node.fields.forEach(field => {
         switch (field.value.kind) {
-            case "node": result.push(field.value.node); break;
-            case "nodeArray": result.push.apply(field.value.array); break;
+            case "node": callback(field.value.node); break;
+            case "nodeArray": field.value.array.forEach(callback); break;
         }
     });
+}
+
+export function getDirectChildren(node: Node): Node[] {
+    let result: Node[] = [];
+    forEachDirectChild(node, child => result.push(child));
     return result;
 }
 
@@ -66,7 +74,7 @@ export function printNode(node: Node, indent: number = 0): void {
                     console.log(""); // Newline between array entries
                 });
                 break;
-            default: assertNever(field.value);
+            default: Utils.assertNever(field.value);
         }
     });
 
@@ -125,8 +133,4 @@ class TreeNodeBuilder implements NodeBuilder {
             throw new Error("New fields cannot be pushed after building the node");
         this._fields.push(field);
     }
-}
-
-function assertNever(x: never): never {
-    throw new Error(`Unexpected object: ${x}`);
 }
