@@ -34,10 +34,22 @@ export function initialize(): void {
 
     // Setup listeners
     window.onkeydown = event => {
-        if (event.key == "f")
-            focusContent();
+        switch (event.key) {
+            case "f": focusContent(); break;
+        }
     };
-    window.onmousewheel = event => {
+    window.onmousedown = event => {
+        dragOffset = Vec.subtract(viewOffset, { x: event.clientX, y: event.clientY });
+        dragging = true;
+    };
+    window.onmouseup = () => {
+        dragging = false;
+    };
+    window.onmousemove = event => {
+        if (dragging)
+            setOffset(Vec.add(dragOffset, { x: event.clientX, y: event.clientY }));
+    };
+    window.onwheel = event => {
         // Get data from the event
         let scrollDelta = -(<WheelEvent>event).deltaY * scrollScaleSpeed;
         let pointerPos: Vec.Position = { x: (<WheelEvent>event).pageX, y: (<WheelEvent>event).pageY };
@@ -50,7 +62,7 @@ export function initialize(): void {
 
         // Apply new scale and offset
         setScale(newScale);
-        setOffset(Vec.add(viewOffset, offsetDelta));
+        setOffsetDelta(offsetDelta);
     };
 }
 
@@ -75,6 +87,10 @@ export function setScale(newScale: number): void {
     assertInitialized();
     scale = Utils.clamp(newScale, minScale, maxScale);
     svgRoot!.scale(scale, scale, 0, 0);
+}
+
+export function setOffsetDelta(offsetDelta: Vec.Vector2): void {
+    setOffset(Vec.add(viewOffset, offsetDelta));
 }
 
 export function setOffset(newOffset: Vec.Vector2): void {
@@ -105,15 +121,17 @@ export function clear(): void {
 }
 
 const rootSvgDomElement = "svg-display";
+const minScale: number = 0.1;
+const maxScale: number = 3;
+const scrollScaleSpeed: number = 0.005;
+const displayMargin: Vec.Vector2 = { x: 75, y: 75 };
 
 let svgDocument: svgjs.Doc | undefined;
 let svgRoot: svgjs.G | undefined;
-let viewOffset: Vec.Vector2 = Vec.zeroVector;
-let scale: number = 1;
-let minScale: number = 0.1;
-let maxScale: number = 3;
-let scrollScaleSpeed: number = 0.005;
-let displayMargin: Vec.Vector2 = { x: 75, y: 75 };
+let viewOffset = Vec.zeroVector;
+let scale = 1;
+let dragging = false;
+let dragOffset = Vec.zeroVector;
 
 class GroupElement implements Element {
     private readonly _svgGroup: svgjs.G;
