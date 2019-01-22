@@ -13,7 +13,9 @@ fi
 # Update npm if tooling is missing
 checkNpmTooling ()
 {
-    if [ -f "./node_modules/.bin/tsc" ] && [ -f "./node_modules/.bin/rollup" ]
+    if  [ -f "./node_modules/.bin/tsc" ] &&
+        [ -f "./node_modules/.bin/rollup" ] &&
+        [ -f "./node_modules/.bin/jest" ]
     then
         return 1
     fi

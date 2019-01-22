@@ -41,6 +41,14 @@ export function createNode(type: NodeType, callback: BuildCallback | undefined =
     return builder.build();
 }
 
+export function getNodeCount(node: Node): number {
+    let count = 1;
+    forEachDirectChild(node, child => {
+        count += getNodeCount(child);
+    });
+    return count;
+}
+
 export function forEachDirectChild(node: Node, callback: NodeCallback): void {
     node.fields.forEach(field => {
         switch (field.value.kind) {
