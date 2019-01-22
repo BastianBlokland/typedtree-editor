@@ -2,6 +2,10 @@
     return a + (b - a) * t;
 }
 
+export function clamp(num: number, min: number, max: number): number {
+    return num < min ? min : (num > max ? max : num);
+}
+
 export function half(num: number): number {
     return num * .5;
 }

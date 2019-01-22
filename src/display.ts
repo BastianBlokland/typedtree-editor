@@ -28,13 +28,61 @@ export function initialize(): void {
     if (!SVG.supported)
         throw new Error("Svg not supported");
 
+    // Create document
     svgDocument = SVG(rootSvgDomElement);
     svgRoot = svgDocument.group();
+
+    // Setup listeners
+    window.onmousewheel = event => {
+        // Get data from the event
+        let scrollDelta = -(<WheelEvent>event).deltaY * scrollScaleSpeed;
+        let pointerPos: Vec.Position = { x: (<WheelEvent>event).pageX, y: (<WheelEvent>event).pageY };
+
+        // Calculate new-scale and offset to zoom-in to where the user was pointing
+        let newScale = Utils.clamp(scale + scrollDelta, minScale, maxScale);
+        let zoomFactor = (newScale - scale) / scale;
+        let offsetToPointer = Vec.subtract(pointerPos, viewOffset);
+        let offsetDelta = Vec.multiply(offsetToPointer, -zoomFactor);
+
+        // Apply new scale and offset
+        setScale(newScale);
+        setOffset(Vec.add(viewOffset, offsetDelta));
+    };
 }
 
 export function createElement(className: ClassName, rectangle: Vec.Position): Element {
     assertInitialized();
     return new GroupElement(svgRoot!, className, rectangle);
+}
+
+export function getDisplaySize(): Vec.Vector2 {
+    assertInitialized();
+    let bounds = svgDocument!.rbox();
+    return { x: bounds.width, y: bounds.height };
+}
+
+export function getContentSize(): Vec.Vector2 {
+    assertInitialized();
+    let contentSize = svgDocument!.bbox();
+    return { x: contentSize.width, y: contentSize.height };
+}
+
+export function setScale(newScale: number): void {
+    assertInitialized();
+    scale = Utils.clamp(newScale, minScale, maxScale);
+    svgRoot!.scale(scale, scale, 0, 0);
+}
+
+export function setOffset(newOffset: Vec.Vector2): void {
+    assertInitialized();
+    viewOffset = newOffset;
+    svgRoot!.translate(newOffset.x, newOffset.y);
+}
+
+export function centerContent(): void {
+    assertInitialized();
+    let sizeDiff = Vec.subtract(getDisplaySize(), getContentSize());
+    setOffset(Vec.half(sizeDiff));
 }
 
 export function clear(): void {
@@ -46,6 +94,11 @@ const rootSvgDomElement = "svg-display";
 
 let svgDocument: svgjs.Doc | undefined;
 let svgRoot: svgjs.G | undefined;
+let viewOffset: Vec.Vector2 = Vec.zeroVector;
+let scale: number = 1;
+let minScale: number = 0.1;
+let maxScale: number = 3;
+let scrollScaleSpeed: number = 0.005;
 
 class GroupElement implements Element {
     private readonly _svgGroup: svgjs.G;

@@ -11,6 +11,7 @@ export function setTree(root: Tree.Node): void {
     Display.clear();
     let viewTree = new ViewTree(root);
     viewTree.nodes.forEach(n => createDisplay(n, viewTree));
+    Display.centerContent();
 }
 
 function createDisplay(node: Tree.Node, viewTree: ViewTree): void {
@@ -30,12 +31,12 @@ function createDisplay(node: Tree.Node, viewTree: ViewTree): void {
 
         switch (field.value.kind) {
             case "node":
-                addConnection(nodeElement, { x: size.x - 10, y: centeredYOffset }, getRelativeVector(node, field.value.node, viewTree));
+                addConnection(nodeElement, { x: size.x - 12, y: centeredYOffset }, getRelativeVector(node, field.value.node, viewTree));
                 break;
             case "nodeArray":
                 field.value.array.forEach((arrayNode, index) => {
                     let y = centeredYOffset + index * nodeFieldHeight;
-                    addConnection(nodeElement, { x: size.x - 10, y: y }, getRelativeVector(node, arrayNode, viewTree));
+                    addConnection(nodeElement, { x: size.x - 12, y: y }, getRelativeVector(node, arrayNode, viewTree));
                 });
                 break;
             default: Utils.assertNever(field.value);

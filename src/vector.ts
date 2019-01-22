@@ -23,6 +23,13 @@ export function multiply(vector: Vector2, amount: number | Vector2): Vector2 {
     return createVector(vector.x * amount.x, vector.y * amount.y);
 }
 
+export function divide(vector: Vector2, amount: number | Vector2): Vector2 {
+    if (typeof amount == "number")
+        return createVector(vector.x / amount, vector.y / amount);
+
+    return createVector(vector.x / amount.x, vector.y / amount.y);
+}
+
 export function add(vector: Vector2, amount: number | Vector2): Vector2 {
     if (typeof amount == "number")
         return createVector(vector.x + amount, vector.y + amount);
@@ -35,6 +42,10 @@ export function subtract(vector: Vector2, amount: number | Vector2): Vector2 {
         return createVector(vector.x - amount, vector.y - amount);
 
     return createVector(vector.x - amount.x, vector.y - amount.y);
+}
+
+export function invert(vector: Vector2): Vector2 {
+    return createVector(-vector.x, -vector.y);
 }
 
 export function lerp(vectorA: Vector2, vectorB: Vector2, frac: number): Vector2 {
