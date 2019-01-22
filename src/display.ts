@@ -11,9 +11,10 @@ export interface Element {
     readonly position: Vec.Position
 
     addElement(className: ClassName, position: Vec.Position): Element
-    addRect(className: ClassName, position: Vec.Position, size: Vec.Size): void
+    addRect(className: ClassName, size: Vec.Size, position: Vec.Position): void
     addText(className: ClassName, text: string, position: Vec.Position): void
     addLine(className: ClassName, from: Vec.Position, to: Vec.Position): void
+    addBezier(className: ClassName, from: Vec.Position, c1: Vec.Position, c2: Vec.Position, to: Vec.Position): void
     addCircle(className: ClassName, radius: number, position: Vec.Position): void
 }
 
@@ -86,6 +87,11 @@ class GroupElement implements Element {
 
     addLine(className: ClassName, from: Vec.Position, to: Vec.Position): void {
         this._svgGroup.line(from.x, from.y, to.x, to.y).
+            addClass(className);
+    }
+
+    addBezier(className: ClassName, from: Vec.Position, c1: Vec.Position, c2: Vec.Position, to: Vec.Position): void {
+        this._svgGroup.path(`M${from.x},${from.y} C${c1.x},${c1.y} ${c2.x},${c2.y} ${to.x},${to.y}`).
             addClass(className);
     }
 
