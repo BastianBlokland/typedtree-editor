@@ -33,6 +33,10 @@ export function initialize(): void {
     svgRoot = svgDocument.group();
 
     // Setup listeners
+    window.onkeydown = event => {
+        if (event.key == "f")
+            focusContent();
+    };
     window.onmousewheel = event => {
         // Get data from the event
         let scrollDelta = -(<WheelEvent>event).deltaY * scrollScaleSpeed;
@@ -63,7 +67,7 @@ export function getDisplaySize(): Vec.Vector2 {
 
 export function getContentSize(): Vec.Vector2 {
     assertInitialized();
-    let contentSize = svgDocument!.bbox();
+    let contentSize = svgRoot!.bbox();
     return { x: contentSize.width, y: contentSize.height };
 }
 
@@ -79,10 +83,20 @@ export function setOffset(newOffset: Vec.Vector2): void {
     svgRoot!.translate(newOffset.x, newOffset.y);
 }
 
-export function centerContent(): void {
+export function focusContent(): void {
     assertInitialized();
-    let sizeDiff = Vec.subtract(getDisplaySize(), getContentSize());
-    setOffset(Vec.half(sizeDiff));
+    let displaySize = Vec.subtract(getDisplaySize(), displayMargin);
+    let contentSize = getContentSize();
+    let horFitScale = displaySize.x / contentSize.x;
+    let verFitScale = displaySize.y / contentSize.y;
+
+    setScale(Math.min(horFitScale, verFitScale));
+    if (horFitScale < verFitScale) {
+        setOffset(Vec.add(Vec.half(displayMargin), { x: 0, y: (verFitScale - horFitScale) * displaySize.y }));
+    }
+    else {
+        setOffset(Vec.add(Vec.half(displayMargin), { x: (horFitScale - verFitScale) * displaySize.y, y: 0 }));
+    }
 }
 
 export function clear(): void {
@@ -99,6 +113,7 @@ let scale: number = 1;
 let minScale: number = 0.1;
 let maxScale: number = 3;
 let scrollScaleSpeed: number = 0.005;
+let displayMargin: Vec.Vector2 = { x: 75, y: 75 };
 
 class GroupElement implements Element {
     private readonly _svgGroup: svgjs.G;

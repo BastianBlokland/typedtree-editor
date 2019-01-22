@@ -11,6 +11,8 @@ export interface Vector2 {
 
 export const zeroVector: Vector2 = { x: 0, y: 0 }
 export const oneVector: Vector2 = { x: 1, y: 1 }
+export const upVector: Vector2 = { x: 0, y: 1 }
+export const rightVector: Vector2 = { x: 1, y: 0 }
 
 export function half(vector: Vector2): Vector2 {
     return multiply(vector, .5);

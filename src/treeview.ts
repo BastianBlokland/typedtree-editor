@@ -11,7 +11,7 @@ export function setTree(root: Tree.Node): void {
     Display.clear();
     let viewTree = new ViewTree(root);
     viewTree.nodes.forEach(n => createDisplay(n, viewTree));
-    Display.centerContent();
+    Display.focusContent();
 }
 
 function createDisplay(node: Tree.Node, viewTree: ViewTree): void {
