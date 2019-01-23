@@ -11,6 +11,8 @@ steps:
 - script: ./ci/deploy.sh
   displayName: 'Deploy'
   condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+  env:
+    AZURE_STORAGE_CONNECTION_STRING: ${storagestatic-connection}
 
 - task: PublishTestResults@2
   displayName: 'Publish test results'
