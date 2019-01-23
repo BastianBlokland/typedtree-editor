@@ -5,8 +5,9 @@
   "cSpell.words": [
     "jsnext",
     "onwarn",
+    "treedisplay",
     "typedtree"
-  ],
+],
   // Search settings
   "search.useIgnoreFiles": false,
   "search.exclude": {},

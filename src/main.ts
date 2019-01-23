@@ -1,5 +1,5 @@
 ﻿import * as Tree from "./tree";
-import * as TreeView from "./treeview";
+import * as TreeDisplay from "./treedisplay";
 
 let rootNode = Tree.createNode("Conditions.If", b => {
     b.pushNodeField("evaluator", Tree.createNode("Evaluators.CanExecute"));
@@ -60,6 +60,6 @@ let rootNode = Tree.createNode("Conditions.If", b => {
 
 Tree.printNode(rootNode);
 
-TreeView.initialize();
-TreeView.setTree(rootNode);
+TreeDisplay.initialize();
+TreeDisplay.setTree(rootNode);
 

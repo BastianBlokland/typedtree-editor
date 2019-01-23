@@ -35,8 +35,8 @@ export type BuildCallback = (builder: NodeBuilder) => void
 
 export function createNode(type: NodeType, callback: BuildCallback | undefined = undefined): Node {
     if (callback === undefined)
-        return new TreeNode(type, []);
-    let builder = new TreeNodeBuilder(type);
+        return new NodeImpl(type, []);
+    let builder = new NodeBuilderImpl(type);
     callback(builder);
     return builder.build();
 }
@@ -62,6 +62,17 @@ export function getDirectChildren(node: Node): Node[] {
     let result: Node[] = [];
     forEachDirectChild(node, child => result.push(child));
     return result;
+}
+
+export function getAllChildren(node: Node): Node[] {
+    let result: Node[] = [];
+    forEachDirectChild(node, child => addAllChildren(child, result));
+    return result;
+
+    function addAllChildren(node: Node, result: Node[]) {
+        result.push(node);
+        forEachDirectChild(node, child => addAllChildren(child, result));
+    }
 }
 
 export function printNode(node: Node, indent: number = 0): void {
@@ -91,7 +102,7 @@ export function printNode(node: Node, indent: number = 0): void {
     }
 }
 
-class TreeNode implements Node {
+class NodeImpl implements Node {
     private readonly _type: NodeType;
     private readonly _fields: ReadonlyArray<Field>;
 
@@ -111,7 +122,7 @@ class TreeNode implements Node {
     }
 }
 
-class TreeNodeBuilder implements NodeBuilder {
+class NodeBuilderImpl implements NodeBuilder {
     private readonly _type: NodeType;
     private _fields: Field[];
     private _build: boolean;
@@ -133,7 +144,7 @@ class TreeNodeBuilder implements NodeBuilder {
 
     build(): Node {
         this._build = true;
-        return new TreeNode(this._type, this._fields);
+        return new NodeImpl(this._type, this._fields);
     }
 
     private pushField(field: Field): void {

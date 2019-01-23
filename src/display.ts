@@ -1,8 +1,8 @@
 ﻿import * as Utils from "./utils";
 import * as Vec from "./vector";
-import * as svgjs from "svg.js";
+import * as SvgJs from "svg.js";
 
-declare const SVG: typeof svgjs;
+declare const SVG: typeof SvgJs;
 
 export type ClassName = string;
 
@@ -126,19 +126,19 @@ const maxScale: number = 3;
 const scrollScaleSpeed: number = 0.005;
 const displayMargin: Vec.Vector2 = { x: 75, y: 75 };
 
-let svgDocument: svgjs.Doc | undefined;
-let svgRoot: svgjs.G | undefined;
+let svgDocument: SvgJs.Doc | undefined;
+let svgRoot: SvgJs.G | undefined;
 let viewOffset = Vec.zeroVector;
 let scale = 1;
 let dragging = false;
 let dragOffset = Vec.zeroVector;
 
 class GroupElement implements Element {
-    private readonly _svgGroup: svgjs.G;
+    private readonly _svgGroup: SvgJs.G;
     private readonly _className: ClassName;
     private readonly _position: Vec.Position;
 
-    constructor(svgContainer: svgjs.Container, className: ClassName, position: Vec.Position) {
+    constructor(svgContainer: SvgJs.Container, className: ClassName, position: Vec.Position) {
         this._svgGroup = svgContainer.group().x(position.x).y(position.y);
         this._className = className;
         this._position = position;
