@@ -1,4 +1,4 @@
-﻿.PHONY: clean build test watch
+﻿.PHONY: clean build deploy test watch
 default: build
 
 clean:
@@ -6,6 +6,9 @@ clean:
 
 build: clean
 	./ci/build.sh
+
+deploy: clean
+	./ci/deploy.sh
 
 test:
 	./ci/test.sh
