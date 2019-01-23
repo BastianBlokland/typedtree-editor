@@ -1,0 +1,25 @@
+﻿# CI pipeline for azure builds
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/languages/javascript
+
+pool:
+  vmImage: 'Ubuntu 16.04'
+
+steps:
+- script: ./ci/test.sh
+  displayName: 'Test'
+
+- task: PublishTestResults@2
+  displayName: 'Publish test results'
+  inputs:
+    testResultsFormat: JUnit
+    testResultsFiles: '$(System.DefaultWorkingDirectory)/junit.xml'
+  condition: always()
+
+- task: PublishCodeCoverageResults@1
+  displayName: 'Publish test coverage results'
+  inputs:
+    codeCoverageTool: Cobertura
+    summaryFileLocation: '$(System.DefaultWorkingDirectory)/coverage/cobertura-coverage.xml'
+    reportDirectory: '$(System.DefaultWorkingDirectory)/coverage/lcov-report'
+    failIfCoverageEmpty: true
+  condition: always()
