@@ -8,7 +8,6 @@ steps:
 - script: ./ci/test.sh
   displayName: 'Test'
 
-steps:
 - script: ./ci/deploy.sh
   displayName: 'Deploy'
   condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
