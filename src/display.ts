@@ -55,7 +55,7 @@ export function initialize(): void {
         let pointerPos: Vec.Position = { x: (<WheelEvent>event).pageX, y: (<WheelEvent>event).pageY };
 
         // Calculate new-scale and offset to zoom-in to where the user was pointing
-        let newScale = Utils.clamp(scale + scrollDelta, minScale, maxScale);
+        let newScale = clampScale(scale + scrollDelta);
         let zoomFactor = (newScale - scale) / scale;
         let offsetToPointer = Vec.subtract(pointerPos, viewOffset);
         let offsetDelta = Vec.multiply(offsetToPointer, -zoomFactor);
@@ -85,7 +85,7 @@ export function getContentSize(): Vec.Vector2 {
 
 export function setScale(newScale: number): void {
     assertInitialized();
-    scale = Utils.clamp(newScale, minScale, maxScale);
+    scale = clampScale(newScale);
     svgRoot!.scale(scale, scale, 0, 0);
 }
 
@@ -103,16 +103,13 @@ export function focusContent(): void {
     assertInitialized();
     let displaySize = Vec.subtract(getDisplaySize(), displayMargin);
     let contentSize = getContentSize();
-    let horFitScale = displaySize.x / contentSize.x;
-    let verFitScale = displaySize.y / contentSize.y;
 
-    setScale(Math.min(horFitScale, verFitScale));
-    if (horFitScale < verFitScale) {
-        setOffset(Vec.add(Vec.half(displayMargin), { x: 0, y: (verFitScale - horFitScale) * displaySize.y }));
-    }
-    else {
-        setOffset(Vec.add(Vec.half(displayMargin), { x: (horFitScale - verFitScale) * displaySize.y, y: 0 }));
-    }
+    // Calculate new scale
+    setScale(Math.min(displaySize.x / contentSize.x, displaySize.y / contentSize.y));
+
+    // Calculate offset to center the content
+    let actualContentSize = Vec.multiply(contentSize, scale);
+    setOffset(Vec.add(halfDisplayMargin, Vec.half(Vec.subtract(displaySize, actualContentSize))));
 }
 
 export function clear(): void {
@@ -121,10 +118,11 @@ export function clear(): void {
 }
 
 const rootSvgDomElement = "svg-display";
-const minScale: number = 0.1;
-const maxScale: number = 3;
-const scrollScaleSpeed: number = 0.005;
+const minScale = 0.1;
+const maxScale = 3;
+const scrollScaleSpeed = 0.005;
 const displayMargin: Vec.Vector2 = { x: 75, y: 75 };
+const halfDisplayMargin = Vec.half(displayMargin);
 
 let svgDocument: SvgJs.Doc | undefined;
 let svgRoot: SvgJs.G | undefined;
@@ -187,6 +185,10 @@ class GroupElement implements Element {
             x(center.x - Utils.half(radius)).
             y(center.y - Utils.half(radius));
     }
+}
+
+function clampScale(newScale: number): number {
+    return Utils.clamp(newScale, minScale, maxScale);
 }
 
 function assertInitialized(): void {
