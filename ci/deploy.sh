@@ -17,7 +17,7 @@ fi
 if [ ! -z "$1" ]
 then
     echo "INFO: Using connection string from argument"
-    AZURE_STORAGE_CONNECTION_STRING=$1
+    AZURE_STORAGE_CONNECTION_STRING="$1"
 fi
 if [ -z "$AZURE_STORAGE_CONNECTION_STRING" ]
 then
