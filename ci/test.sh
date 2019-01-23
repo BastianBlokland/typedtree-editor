@@ -5,7 +5,12 @@ set -e
 ./ci/verify-tooling.sh
 
 echo "INFO: Starting tests"
-./node_modules/.bin/jest --coverage --reporters=jest-junit
+./node_modules/.bin/jest \
+    --reporters=jest-junit \
+    --coverage \
+    --coverageReporters=text \
+    --coverageReporters=cobertura \
+    --coverageReporters=lcov
 
 echo "INFO: Finished tests"
 exit 0
