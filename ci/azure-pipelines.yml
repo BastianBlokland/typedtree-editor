@@ -4,6 +4,9 @@
 pool:
   vmImage: 'Ubuntu 16.04'
 
+variables:
+- group: ci-keys
+
 steps:
 - script: ./ci/test.sh
   displayName: 'Test'
