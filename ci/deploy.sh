@@ -14,9 +14,14 @@ then
     echo "ERROR: Azure cli 'az' is not installed"
     exit 1
 fi
+if [ ! -z "$1" ]
+then
+    echo "INFO: Using connection string from argument"
+    AZURE_STORAGE_CONNECTION_STRING=$1
+fi
 if [ -z "$AZURE_STORAGE_CONNECTION_STRING" ]
 then
-    echo "ERROR: No connection string provided. Set 'AZURE_STORAGE_CONNECTION_STRING' environment variable"
+    echo "ERROR: No connection string provided. Provide as arg or set 'AZURE_STORAGE_CONNECTION_STRING' environment variable"
     exit 1
 fi
 
