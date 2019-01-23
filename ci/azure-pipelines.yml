@@ -11,7 +11,7 @@ steps:
 - script: ./ci/test.sh
   displayName: 'Test'
 
-- script: ./ci/deploy.sh
+- script: ./ci/deploy.sh ${storagestatic-connection}
   displayName: 'Deploy'
   condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
 
