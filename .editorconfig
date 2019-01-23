@@ -16,6 +16,10 @@ indent_style = tab
 [*.json]
 indent_size = 2
 
+# YAML files
+[*.{yml,yaml}]
+indent_size = 2
+
 # Code files
 [*.{ts,js}]
 indent_size = 4
