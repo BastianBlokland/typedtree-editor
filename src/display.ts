@@ -120,7 +120,7 @@ export function clear(): void {
 const rootSvgDomElement = "svg-display";
 const minScale = 0.1;
 const maxScale = 3;
-const scrollScaleSpeed = 0.005;
+const scrollScaleSpeed = 0.001;
 const displayMargin: Vec.Vector2 = { x: 75, y: 75 };
 const halfDisplayMargin = Vec.half(displayMargin);
 
