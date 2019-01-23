@@ -10,7 +10,7 @@ echo "INFO: Starting tests"
     --coverage \
     --coverageReporters=text \
     --coverageReporters=cobertura \
-    --coverageReporters=lcov
+    --coverageReporters=html
 
 echo "INFO: Finished tests"
 exit 0
