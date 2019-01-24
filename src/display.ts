@@ -32,7 +32,7 @@ export function initialize(): void {
     svgDocument = SVG(rootSvgDomElement);
     svgRoot = svgDocument.group();
 
-    // Setup listeners
+    // Setup global listeners
     window.onkeydown = event => {
         switch (event.key) {
             case "f": focusContent(); break;
@@ -64,6 +64,11 @@ export function initialize(): void {
         setScale(newScale);
         setOffsetDelta(offsetDelta);
     };
+
+    // Setup button listeners
+    var focusButton = document.getElementById("focus-button");
+    if (focusButton != null)
+        focusButton.onclick = _ => { focusContent(); };
 }
 
 export function createElement(className: ClassName, rectangle: Vec.Position): Element {

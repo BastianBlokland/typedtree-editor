@@ -42,6 +42,20 @@
     dominant-baseline: middle;
 }
 
+.toolbox {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    width: 75px;
+    border-radius: 8px;
+    border: 4px solid #000;
+    background-color: #999;
+}
+
+.toolbox-button {
+    width: 100%;
+}
+
 #svg-display {
     width: 100%;
     height: 100%;
