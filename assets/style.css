@@ -1,45 +1,11 @@
-﻿html, body {
+﻿@import url("nodestyle.css");
+
+html, body {
     width: 100%;
     height: 100%;
     margin: 0;
     overflow: hidden;
     background-color: #444;
-}
-
-.error {
-    color: #FFF;
-}
-
-.nodeBackground {
-    fill: #999;
-    rx: 10;
-    ry: 10;
-    stroke: #000;
-    stroke-width: 4;
-}
-
-.nodeFieldBackground {
-    fill: #595;
-    rx: 10;
-    ry: 10;
-    stroke: #000;
-    stroke-width: 2;
-}
-
-.nodeConnection {
-    stroke: #000;
-    stroke-width: 4;
-    fill: none;
-}
-
-.nodeTypeText {
-    text-anchor: middle;
-    font-weight: bold;
-    dominant-baseline: middle;
-}
-
-.nodeFieldName {
-    dominant-baseline: middle;
 }
 
 .toolbox {
@@ -54,6 +20,10 @@
 
 .toolbox-button {
     width: 100%;
+}
+
+.error {
+    color: #FFF;
 }
 
 #svg-display {

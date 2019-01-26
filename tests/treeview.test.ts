@@ -53,22 +53,28 @@ test("singleNodeHasExpectedArea", () => {
 });
 
 function createTestTree(): Tree.Node {
-    return Tree.createNode("Root", b => {
-        b.pushNodeArrayField("fieldA", [
-            Tree.createNode("thing1", b => {
-                b.pushNodeField("anotherField", Tree.createNode("anotherThing"))
+    return Tree.createNode("node1", b => {
+        b.pushNodeArrayField("field1", [
+            Tree.createNode("node2", b => {
+                b.pushNodeField("field2", Tree.createNode("node3"))
             }),
         ]);
-        b.pushNodeField("fieldB", Tree.createNode("thing2", b => {
-            b.pushNodeArrayField("children", [
-                Tree.createNode("child1", b => {
-                    b.pushNodeField("anotherField", Tree.createNode("anotherThing"))
+        b.pushNodeField("field3", Tree.createNode("node4", b => {
+            b.pushNodeArrayField("field3", [
+                Tree.createNode("node5", b => {
+                    b.pushNodeField("field4", Tree.createNode("node6"))
+                    b.pushStringField("field5", "string");
+                    b.pushNumberField("field6", 1337);
+                    b.pushBooleanField("field7", true);
                 }),
-                Tree.createNode("child2", b => {
-                    b.pushNodeField("anotherField", Tree.createNode("anotherThing"))
+                Tree.createNode("node7", b => {
+                    b.pushNodeField("field8", Tree.createNode("node8"))
+                    b.pushStringArrayField("field9", ["string", "string2"]);
+                    b.pushNumberArrayField("field10", [1337, 1338]);
+                    b.pushBooleanArrayField("field11", [true, false]);
                 }),
-                Tree.createNode("child3", b => {
-                    b.pushNodeField("anotherField", Tree.createNode("anotherThing"))
+                Tree.createNode("node9", b => {
+                    b.pushNodeField("anotherField", Tree.createNode("node10"))
                 })
             ]);
         }));

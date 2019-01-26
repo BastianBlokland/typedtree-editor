@@ -3,7 +3,7 @@ import * as Utils from "./utils";
 import * as Vec from "./vector";
 
 export const nodeHeaderHeight = 25;
-export const nodeWidth = 250;
+export const nodeWidth = 300;
 export const nodeHorizontalSpacing = 75;
 export const nodeVerticalSpacing = 25;
 export const nodeFieldHeight = 25;
@@ -28,8 +28,14 @@ export function getNodeHeight(node: Tree.Node): number {
 
 export function getFieldHeight(field: Tree.Field): number {
     switch (field.value.kind) {
+        case "string":
+        case "number":
+        case "boolean":
         case "node":
             return nodeFieldHeight;
+        case "stringArray":
+        case "numberArray":
+        case "booleanArray":
         case "nodeArray":
             return nodeFieldHeight * field.value.array.length;
         default:

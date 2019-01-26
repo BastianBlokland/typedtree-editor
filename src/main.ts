@@ -29,8 +29,8 @@ let rootNode = Tree.createNode("Conditions.If2", b => {
             })
         ]);
     }));
-    b.pushNodeField("evaluator", Tree.createNode("Evaluators.CanExecute"));
-    b.pushNodeField("node", Tree.createNode("Conditions.First", b => {
+    b.pushNodeField("evaluator2", Tree.createNode("Evaluators.CanExecute"));
+    b.pushNodeField("node2", Tree.createNode("Conditions.First", b => {
         b.pushNodeArrayField("children", [
             Tree.createNode("Utilities.EvaluatorNodePair", b => {
                 b.pushNodeField("evaluator", Tree.createNode("Evaluators.IsAbilityCharged"));
