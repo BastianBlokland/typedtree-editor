@@ -1,5 +1,14 @@
 ﻿import * as Utils from "../src/utils";
 
+test("hasDuplicates", () => {
+    expect(Utils.hasDuplicates([1, 2, 3])).toBeFalsy();
+    expect(Utils.hasDuplicates([1, 2, 3, 2, 3])).toBeTruthy();
+    expect(Utils.hasDuplicates(["foo", "bar", "foo", "foo"])).toBeTruthy();
+    expect(Utils.hasDuplicates(["foo", "bar"])).toBeFalsy();
+    expect(Utils.hasDuplicates([true, false, false])).toBeTruthy();
+    expect(Utils.hasDuplicates([true, false])).toBeFalsy();
+});
+
 test("findDuplicates", () => {
     expect(Utils.findDuplicates([1, 2, 3])).toEqual([]);
     expect(Utils.findDuplicates([1, 2, 3, 2, 3])).toEqual([2, 3]);
