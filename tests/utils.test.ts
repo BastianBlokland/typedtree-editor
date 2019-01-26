@@ -1,5 +1,12 @@
 ﻿import * as Utils from "../src/utils";
 
+test("findDuplicates", () => {
+    expect(Utils.findDuplicates([1, 2, 3])).toEqual([]);
+    expect(Utils.findDuplicates([1, 2, 3, 2, 3])).toEqual([2, 3]);
+    expect(Utils.findDuplicates(["foo", "bar", "foo", "foo"])).toEqual(["foo"]);
+    expect(Utils.findDuplicates([true, false, false])).toEqual([false]);
+});
+
 test("lerp", () => {
     expect(Utils.lerp(-5, 5, 0)).toBe(-5);
     expect(Utils.lerp(-5, 5, 0.5)).toBe(0);
