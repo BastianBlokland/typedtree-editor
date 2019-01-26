@@ -27,7 +27,7 @@ export function getNodeHeight(node: Tree.Node): number {
 }
 
 export function getFieldHeight(field: Tree.Field): number {
-    switch (field.value.kind) {
+    switch (field.kind) {
         case "string":
         case "number":
         case "boolean":
@@ -37,9 +37,9 @@ export function getFieldHeight(field: Tree.Field): number {
         case "numberArray":
         case "booleanArray":
         case "nodeArray":
-            return nodeFieldHeight * field.value.array.length;
+            return nodeFieldHeight * field.value.length;
         default:
-            Utils.assertNever(field.value);
+            Utils.assertNever(field);
             return 0;
     }
 }
