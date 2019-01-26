@@ -14,14 +14,14 @@ then
     echo "ERROR: Azure cli 'az' is not installed"
     exit 1
 fi
-if [ ! -z "$1" ]
+if [ -z "$1" ]
 then
-    echo "INFO: Using connection string from argument"
-    AZURE_STORAGE_CONNECTION_STRING="$1"
+    echo "ERROR: No identifier provided. Provide as arg1"
+    exit 1
 fi
-if [ -z "$AZURE_STORAGE_CONNECTION_STRING" ]
+if [ -z "$2" ]
 then
-    echo "ERROR: No connection string provided. Provide as arg or set 'AZURE_STORAGE_CONNECTION_STRING' environment variable"
+    echo "ERROR: No connection string provided. Provide as arg2"
     exit 1
 fi
 
@@ -29,9 +29,9 @@ fi
 az storage blob upload-batch \
     --source ./build \
     --destination \$web \
-    --destination-path typedtree-editor \
+    --destination-path "typedtree-editor/$1" \
     --content-cache-control "max-age=60" \
-    --connection-string "$AZURE_STORAGE_CONNECTION_STRING"
+    --connection-string "$2"
 
 echo "INFO: Finished deployment"
 exit 0
