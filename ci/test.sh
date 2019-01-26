@@ -6,6 +6,7 @@ set -e
 
 echo "INFO: Starting tests"
 ./node_modules/.bin/jest \
+    --reporters=default \
     --reporters=jest-junit \
     --coverage \
     --coverageReporters=text \

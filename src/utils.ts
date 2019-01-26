@@ -1,4 +1,20 @@
-﻿export function lerp(a: number, b: number, t: number): number {
+﻿export function hasDuplicates<T>(input: ReadonlyArray<T>): boolean {
+    let hasDuplicates = false;
+    input.forEach((value, index) => {
+        hasDuplicates = hasDuplicates || input.indexOf(value) != index;
+    });
+    return hasDuplicates;
+}
+
+export function findDuplicates<T>(input: ReadonlyArray<T>): T[] {
+    return input.reduce((previousValue, currentValue, currentIndex) => {
+        if (input.indexOf(currentValue) != currentIndex && previousValue.indexOf(currentValue) < 0)
+            previousValue.push(currentValue);
+        return previousValue;
+    }, new Array<T>());
+}
+
+export function lerp(a: number, b: number, t: number): number {
     return a + (b - a) * t;
 }
 

@@ -23,44 +23,87 @@ const nodeConnectionSlotRadius = 15;
 const nodeConnectionCurviness = .7;
 
 function createDisplay(node: Tree.Node, positionTree: TreeView.PositionTree): void {
-    let pos = positionTree.getPosition(node);
-    let size = positionTree.getSize(node);
 
-    let nodeElement = Display.createElement("node", pos);
+    let size = positionTree.getSize(node);
+    let nodeElement = Display.createElement("node", positionTree.getPosition(node));
+
     nodeElement.addRect("nodeBackground", size, Vec.zeroVector);
     nodeElement.addText("nodeTypeText", node.type, { x: Utils.half(size.x), y: halfNodeHeightHeight });
 
     let yOffset = nodeHeaderHeight;
-    node.fields.forEach(field => {
-        let fieldHeight = TreeView.getFieldHeight(field);
-        let centeredYOffset = yOffset + Utils.half(nodeFieldHeight);
-        nodeElement.addRect("nodeFieldBackground", { x: size.x, y: fieldHeight }, { x: 0, y: yOffset });
-        nodeElement.addText("nodeFieldName", field.name, { x: 10, y: centeredYOffset });
-
-        switch (field.value.kind) {
-            case "node":
-                addConnection(nodeElement, { x: size.x - 12, y: centeredYOffset }, getRelativeVector(node, field.value.node, positionTree));
-                break;
-            case "nodeArray":
-                field.value.array.forEach((arrayNode, index) => {
-                    let y = centeredYOffset + index * nodeFieldHeight;
-                    addConnection(nodeElement, { x: size.x - 12, y: y }, getRelativeVector(node, arrayNode, positionTree));
-                });
-                break;
-            default: Utils.assertNever(field.value);
-        }
-
-        yOffset += fieldHeight;
+    node.fieldNames.forEach(fieldName => {
+        yOffset += createField(node, fieldName, nodeElement, positionTree, yOffset);
     });
 }
 
-function addConnection(element: Display.Element, from: Vec.Position, to: Vec.Position): void {
-    element.addCircle("nodeOutput", nodeConnectionSlotRadius, from);
+function createField(
+    node: Tree.Node,
+    fieldName: string,
+    parent: Display.Element,
+    positionTree: TreeView.PositionTree,
+    yOffset: number): number {
+
+    let field = node.getField(fieldName);
+    if (field == undefined)
+        return 0;
+
+    let fieldSize = { x: positionTree.getSize(node).x, y: TreeView.getFieldHeight(field) };
+    let centeredYOffset = yOffset + Utils.half(nodeFieldHeight);
+    let centerX = Utils.half(fieldSize.x);
+
+    parent.addRect(`${field.value.kind}ValueBackground`, fieldSize, { x: 0, y: yOffset });
+    parent.addText("nodeFieldName", `${field.name}:`, { x: 10, y: centeredYOffset });
+
+    // Value
+    switch (field.value.kind) {
+        case "string": createStringValue("", field.value.primitive, centeredYOffset); break;
+        case "number": createNumberValue("", field.value.primitive, centeredYOffset); break;
+        case "boolean": createBooleanValue("", field.value.primitive, centeredYOffset); break;
+        case "node": createNodeValue("", field.value.node, centeredYOffset); break;
+        case "stringArray":
+            field.value.array.forEach((value, index) => {
+                createStringValue(`[${index}] `, value, centeredYOffset + index * nodeFieldHeight);
+            }); break;
+        case "numberArray":
+            field.value.array.forEach((value, index) => {
+                createNumberValue(`[${index}] `, value, centeredYOffset + index * nodeFieldHeight);
+            }); break;
+        case "booleanArray":
+            field.value.array.forEach((value, index) => {
+                createBooleanValue(`[${index}] `, value, centeredYOffset + index * nodeFieldHeight);
+            }); break;
+        case "nodeArray":
+            field.value.array.forEach((value, index) => {
+                createNodeValue(`[${index}] `, value, centeredYOffset + index * nodeFieldHeight);
+            }); break;
+        default: Utils.assertNever(field.value);
+    }
+    return fieldSize.y;
+
+    function createStringValue(prefix: string, value: string, fieldY: number) {
+        parent.addText("stringFieldValue", `${prefix}"${value}"`, { x: centerX, y: fieldY });
+    }
+
+    function createNumberValue(prefix: string, value: number, fieldY: number) {
+        parent.addText("numberFieldValue", `${prefix}${value}`, { x: centerX, y: fieldY });
+    }
+
+    function createBooleanValue(prefix: string, value: boolean, fieldY: number) {
+        parent.addText("booleanFieldValue", `${prefix}${value ? "true" : "false"}`, { x: centerX, y: fieldY });
+    }
+
+    function createNodeValue(prefix: string, value: Tree.Node, fieldY: number) {
+        addConnection(parent, { x: fieldSize.x - 12, y: fieldY }, getRelativeVector(node, value, positionTree));
+    }
+}
+
+function addConnection(parent: Display.Element, from: Vec.Position, to: Vec.Position): void {
+    parent.addCircle("nodeOutput", nodeConnectionSlotRadius, from);
 
     let target = Vec.add(to, nodeInputSlotOffset);
     let c1 = { x: Utils.lerp(from.x, target.x, nodeConnectionCurviness), y: from.y };
     let c2 = { x: Utils.lerp(target.x, from.x, nodeConnectionCurviness), y: target.y };
-    element.addBezier("nodeConnection", from, c1, c2, target);
+    parent.addBezier("nodeConnection", from, c1, c2, target);
 }
 
 function getRelativeVector(from: Tree.Node, to: Tree.Node, positionTree: TreeView.PositionTree): Vec.Vector2 {
