@@ -69,14 +69,15 @@ export interface NodeArrayField {
 }
 
 export interface NodeBuilder {
-    pushStringField(name: string, value: string): void
-    pushNumberField(name: string, value: number): void
-    pushBooleanField(name: string, value: boolean): void
-    pushNodeField(name: string, value: Node): void
-    pushStringArrayField(name: string, value: ReadonlyArray<string>): void
-    pushNumberArrayField(name: string, value: ReadonlyArray<number>): void
-    pushBooleanArrayField(name: string, value: ReadonlyArray<boolean>): void
-    pushNodeArrayField(name: string, value: ReadonlyArray<Node>): void
+    pushStringField(name: string, value: string): boolean
+    pushNumberField(name: string, value: number): boolean
+    pushBooleanField(name: string, value: boolean): boolean
+    pushNodeField(name: string, value: Node): boolean
+    pushStringArrayField(name: string, value: ReadonlyArray<string>): boolean
+    pushNumberArrayField(name: string, value: ReadonlyArray<number>): boolean
+    pushBooleanArrayField(name: string, value: ReadonlyArray<boolean>): boolean
+    pushNodeArrayField(name: string, value: ReadonlyArray<Node>): boolean
+    pushField(field: Field): boolean
 }
 
 export type NodeCallback = (node: Node) => void
@@ -248,12 +249,7 @@ class NodeBuilderImpl implements NodeBuilder {
         return this.pushField(field);
     }
 
-    build(): Node {
-        this._build = true;
-        return new NodeImpl(this._type, this._fields);
-    }
-
-    private pushField(field: Field): boolean {
+    pushField(field: Field): boolean {
         // New fields cannot be pushed after building the node
         if (this._build)
             return false;
@@ -264,5 +260,10 @@ class NodeBuilderImpl implements NodeBuilder {
 
         this._fields.push(field);
         return true;
+    }
+
+    build(): Node {
+        this._build = true;
+        return new NodeImpl(this._type, this._fields);
     }
 }

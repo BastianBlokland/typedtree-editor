@@ -1,4 +1,13 @@
-﻿export function hasDuplicates<T>(input: ReadonlyArray<T>): boolean {
+﻿export function isArray(obj: any): boolean {
+    // Wrapper to get a 'boolean' typed result.
+    return Array.isArray(obj);
+}
+
+export function sleep(milliseconds: number): Promise<{}> {
+    return new Promise((resolve: Function) => setTimeout(resolve, milliseconds));
+}
+
+export function hasDuplicates<T>(input: ReadonlyArray<T>): boolean {
     let hasDuplicates = false;
     input.forEach((value, index) => {
         hasDuplicates = hasDuplicates || input.indexOf(value) != index;
