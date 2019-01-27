@@ -66,9 +66,7 @@ export function initialize(): void {
     };
 
     // Setup button listeners
-    let focusButton = document.getElementById("focus-button");
-    if (focusButton != null)
-        focusButton.onclick = _ => { focusContent(); };
+    Utils.subscribeToClick("focus-button", focusContent);
 }
 
 export function createElement(className: ClassName, rectangle: Vec.Position): Element {
