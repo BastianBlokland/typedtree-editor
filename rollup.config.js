@@ -6,7 +6,7 @@ export default {
         file: pkg.main,
         format: 'umd'
     },
-    external: ['svg.js'],
+    external: ['svg.js', 'file-saver'],
     onwarn(warning, warn) {
         if (warning.code === 'THIS_IS_UNDEFINED')
             return;

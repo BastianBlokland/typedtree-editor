@@ -1,23 +1,16 @@
 ﻿import * as Tree from "./tree";
 import * as Utils from "./utils";
+import * as ParserUtils from "./parserutils";
+import { ParseResult, createError, createSuccess } from "./parserutils";
 
-export type ParseResult<T> = ParseSuccess<T> | ParseError
+export async function load(source: File | string): Promise<ParseResult<Tree.Node>> {
+    let loadTextResult = await (typeof source == "string" ?
+        ParserUtils.loadTextFromUrl(source) :
+        ParserUtils.loadTextFromFile(source));
 
-export interface ParseSuccess<T> {
-    readonly kind: "success"
-    readonly value: T;
-}
-export interface ParseError {
-    readonly kind: "error"
-    readonly errorMessage: string
-}
-
-export async function download(url: string): Promise<ParseResult<Tree.Node>> {
-    var fetchResult = await fetch(url);
-    if (!fetchResult.ok)
-        return createError(`Unable to fetch from: ${url}`);
-    var text = await fetchResult.text();
-    return parseJson(text);
+    if (loadTextResult.kind == "error")
+        return loadTextResult;
+    return parseJson(loadTextResult.value);
 }
 
 export function parseJson(jsonString: string): ParseResult<Tree.Node> {
@@ -87,17 +80,9 @@ function getArrayType(array: any[]): string {
     if (array.length == 0)
         throw new Error("Unable to determine type of empty array");
     let type = typeof array[0];
-    for (var i: number = 1; i < array.length; i++) {
+    for (let i: number = 1; i < array.length; i++) {
         if (typeof array[i] != type)
             throw new Error("Array consists of mixed types");
     }
     return type;
-}
-
-function createSuccess<T>(value: T): ParseSuccess<T> {
-    return { kind: "success", value: value };
-}
-
-function createError(message: string): ParseError {
-    return { kind: "error", errorMessage: message };
 }

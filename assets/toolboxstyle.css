@@ -1,0 +1,28 @@
+﻿.toolbox {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    width: 150px;
+    border-radius: 8px;
+    border: 4px solid #000;
+    background-color: #999;
+}
+
+.toolbox-element {
+    margin: 2.5%;
+    width: 95%;
+    background-color: #EEE;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+#opentree-container {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    font-size: 10pt;
+}
+
+#opentree-header, #opentree-file {
+    width: 50%;
+}

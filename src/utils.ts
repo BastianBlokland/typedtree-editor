@@ -7,6 +7,11 @@ export function sleep(milliseconds: number): Promise<{}> {
     return new Promise((resolve: Function) => setTimeout(resolve, milliseconds));
 }
 
+export function formatJson(json: string): string {
+    let parsedJson = JSON.parse(json);
+    return JSON.stringify(parsedJson, undefined, 2);
+}
+
 export function hasDuplicates<T>(input: ReadonlyArray<T>): boolean {
     let hasDuplicates = false;
     input.forEach((value, index) => {
