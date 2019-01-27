@@ -12,11 +12,12 @@
     "rbox",
     "treedisplay",
     "treeparser",
+    "treeserializer",
     "treeview",
     "truthy",
     "tsout",
     "typedtree"
-  ],
+],
   // Search settings
   "search.useIgnoreFiles": false,
   "search.exclude": {},
