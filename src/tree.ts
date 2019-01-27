@@ -144,15 +144,15 @@ export function printNode(node: Node, indent: number = 0): void {
                 break;
             case "stringArray":
                 printText(`${field.name}:`, indent);
-                field.value.forEach(element => { printText(element, indent); });
+                field.value.forEach(element => { printText(element, indent + 1); });
                 break;
             case "numberArray":
                 printText(`${field.name}:`, indent);
-                field.value.forEach(element => { printText(element.toString(), indent); });
+                field.value.forEach(element => { printText(element.toString(), indent + 1); });
                 break;
             case "booleanArray":
                 printText(`${field.name}:`, indent);
-                field.value.forEach(element => { printText(element.toString(), indent); });
+                field.value.forEach(element => { printText(element.toString(), indent + 1); });
                 break;
             case "nodeArray":
                 printText(`${field.name}:`, indent);
@@ -163,7 +163,7 @@ export function printNode(node: Node, indent: number = 0): void {
     });
 
     function printText(text: string, indent: number) {
-        console.log(`${" ".repeat(indent * 4)}${text}`);
+        console.log(`${" ".repeat(indent * 2)}${text}`);
     }
 }
 

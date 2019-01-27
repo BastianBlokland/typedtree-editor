@@ -1,12 +1,8 @@
-﻿import * as TreeDisplay from "./treedisplay";
-import * as TreeParser from "./treeparser";
+﻿import * as Display from "./display";
+import * as App from "./app";
 
-TreeDisplay.initialize();
+// Initialize dom elements
+Display.initialize();
 
-TreeParser.download("example.tree.json").then(result => {
-    if (result.kind == "error") {
-        alert(`Failed to load data. Error: ${result.errorMessage}`);
-        return;
-    }
-    TreeDisplay.setTree(result.value);
-});
+// Starting running the app
+App.run();

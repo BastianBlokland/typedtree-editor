@@ -4,10 +4,6 @@ import * as Utils from "./utils";
 import * as Vec from "./vector";
 import * as Display from "./display";
 
-export function initialize(): void {
-    Display.initialize();
-}
-
 export function setTree(root: Tree.Node): void {
     Display.clear();
     let positionTree = TreeView.createPositionTree(root);
