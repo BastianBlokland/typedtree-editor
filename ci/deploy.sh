@@ -6,7 +6,7 @@ echo "INFO: Starting build"
 # Run build
 ./ci/build.sh
 
-echo "INFO: Starting upload"
+echo "INFO: Starting deployment"
 
 # Sanity check existance of the azure cli tooling and the connection string
 if [ ! -x "$(command -v az)" ]
@@ -25,11 +25,19 @@ then
     exit 1
 fi
 
-# Upload to azure cdn
+DEST_PATH="typedtree-editor/$1";
+
+echo "INFO: Clearing destination"
+az storage blob delete-batch \
+    --source \$web \
+    --pattern "$DEST_PATH/*" \
+    --connection-string "$2"
+
+echo "INFO: Upload to destination"
 az storage blob upload-batch \
     --source ./build \
     --destination \$web \
-    --destination-path "typedtree-editor/$1" \
+    --destination-path "$DEST_PATH" \
     --content-cache-control "max-age=60" \
     --connection-string "$2"
 
