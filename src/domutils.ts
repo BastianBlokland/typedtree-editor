@@ -1,4 +1,11 @@
-﻿export function subscribeToClick(elementId: string, callback: () => void): void {
+﻿import "file-saver";
+
+export function saveJsonText(json: string, fileName: string): void {
+    var blob = new Blob([json], { type: "application/json;charset=utf-8" });
+    saveAs(blob, fileName);
+}
+
+export function subscribeToClick(elementId: string, callback: () => void): void {
     let element = document.getElementById(elementId);
     if (element == null)
         throw new Error(`Element with id: ${elementId} not found`);

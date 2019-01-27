@@ -2,6 +2,7 @@
 import * as Sequencer from "./sequencer";
 import * as Tree from "./tree";
 import * as TreeParser from "./treeparser";
+import * as TreeSerializer from "./treeserializer";
 import * as TreeDisplay from "./treedisplay";
 
 export async function run(): Promise<void> {
@@ -9,6 +10,7 @@ export async function run(): Promise<void> {
 
     DomUtils.subscribeToFileInput("opentree-file", enqueueLoadTree);
     DomUtils.subscribeToClick("openexample-button", () => enqueueLoadTree("example.tree.json"));
+    DomUtils.subscribeToClick("savetree-button", enqueueSaveTree);
 
     console.log("Started running");
 
@@ -34,6 +36,14 @@ function enqueueLoadTree(source: string | File): void {
             setCurrentTree(result.value, name);
         }
     });
+}
+
+function enqueueSaveTree(): void {
+    if (currentTree == undefined)
+        return;
+
+    let treeJson = TreeSerializer.composeJson(currentTree);
+    DomUtils.saveJsonText(treeJson, currentTitle!);
 }
 
 function setCurrentTree(node: Tree.Node, name: string): void {
