@@ -3,15 +3,11 @@ import * as Utils from "./utils";
 import * as ParserUtils from "./parserutils";
 import { ParseResult, createError, createSuccess } from "./parserutils";
 
-export async function loadFromUrl(url: string): Promise<ParseResult<Tree.Node>> {
-    let loadTextResult = await ParserUtils.loadTextFromUrl(url);
-    if (loadTextResult.kind == "error")
-        return loadTextResult;
-    return parseJson(loadTextResult.value);
-}
+export async function load(source: File | string): Promise<ParseResult<Tree.Node>> {
+    let loadTextResult = await (typeof source == "string" ?
+        ParserUtils.loadTextFromUrl(source) :
+        ParserUtils.loadTextFromFile(source));
 
-export async function loadFromFile(file: File): Promise<ParseResult<Tree.Node>> {
-    let loadTextResult = await ParserUtils.loadTextFromFile(file);
     if (loadTextResult.kind == "error")
         return loadTextResult;
     return parseJson(loadTextResult.value);
