@@ -1,4 +1,5 @@
 ﻿@import url("nodestyle.css");
+@import url("toolboxstyle.css");
 
 html, body {
     width: 100%;
@@ -6,20 +7,6 @@ html, body {
     margin: 0;
     overflow: hidden;
     background-color: #444;
-}
-
-.toolbox {
-    position: absolute;
-    right: 10px;
-    bottom: 10px;
-    width: 75px;
-    border-radius: 8px;
-    border: 4px solid #000;
-    background-color: #999;
-}
-
-.toolbox-button {
-    width: 100%;
 }
 
 .error {

@@ -66,7 +66,7 @@ export function initialize(): void {
     };
 
     // Setup button listeners
-    var focusButton = document.getElementById("focus-button");
+    let focusButton = document.getElementById("focus-button");
     if (focusButton != null)
         focusButton.onclick = _ => { focusContent(); };
 }

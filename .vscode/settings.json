@@ -9,6 +9,8 @@
     "junit",
     "nodestyle",
     "onwarn",
+    "opentree",
+    "parserutils",
     "rbox",
     "treedisplay",
     "treeparser",
@@ -17,7 +19,7 @@
     "truthy",
     "tsout",
     "typedtree"
-],
+  ],
   // Search settings
   "search.useIgnoreFiles": false,
   "search.exclude": {},
