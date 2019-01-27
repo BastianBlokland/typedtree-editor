@@ -51,32 +51,32 @@ function createField(
     let centeredYOffset = yOffset + Utils.half(nodeFieldHeight);
     let centerX = Utils.half(fieldSize.x);
 
-    parent.addRect(`${field.value.kind}ValueBackground`, fieldSize, { x: 0, y: yOffset });
+    parent.addRect(`${field.kind}ValueBackground`, fieldSize, { x: 0, y: yOffset });
     parent.addText("nodeFieldName", `${field.name}:`, { x: 10, y: centeredYOffset });
 
     // Value
-    switch (field.value.kind) {
-        case "string": createStringValue("", field.value.primitive, centeredYOffset); break;
-        case "number": createNumberValue("", field.value.primitive, centeredYOffset); break;
-        case "boolean": createBooleanValue("", field.value.primitive, centeredYOffset); break;
-        case "node": createNodeValue("", field.value.node, centeredYOffset); break;
+    switch (field.kind) {
+        case "string": createStringValue("", field.value, centeredYOffset); break;
+        case "number": createNumberValue("", field.value, centeredYOffset); break;
+        case "boolean": createBooleanValue("", field.value, centeredYOffset); break;
+        case "node": createNodeValue("", field.value, centeredYOffset); break;
         case "stringArray":
-            field.value.array.forEach((value, index) => {
-                createStringValue(`[${index}] `, value, centeredYOffset + index * nodeFieldHeight);
+            field.value.forEach((element, index) => {
+                createStringValue(`[${index}] `, element, centeredYOffset + index * nodeFieldHeight);
             }); break;
         case "numberArray":
-            field.value.array.forEach((value, index) => {
-                createNumberValue(`[${index}] `, value, centeredYOffset + index * nodeFieldHeight);
+            field.value.forEach((element, index) => {
+                createNumberValue(`[${index}] `, element, centeredYOffset + index * nodeFieldHeight);
             }); break;
         case "booleanArray":
-            field.value.array.forEach((value, index) => {
-                createBooleanValue(`[${index}] `, value, centeredYOffset + index * nodeFieldHeight);
+            field.value.forEach((element, index) => {
+                createBooleanValue(`[${index}] `, element, centeredYOffset + index * nodeFieldHeight);
             }); break;
         case "nodeArray":
-            field.value.array.forEach((value, index) => {
-                createNodeValue(`[${index}] `, value, centeredYOffset + index * nodeFieldHeight);
+            field.value.forEach((element, index) => {
+                createNodeValue(`[${index}] `, element, centeredYOffset + index * nodeFieldHeight);
             }); break;
-        default: Utils.assertNever(field.value);
+        default: Utils.assertNever(field);
     }
     return fieldSize.y;
 

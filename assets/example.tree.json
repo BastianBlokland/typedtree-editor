@@ -1,0 +1,183 @@
+﻿{
+  "$type": "Conditions.Best",
+  "children": [
+    {
+      "$type": "EvaluatorNodePair",
+      "evaluator": {
+        "$type": "Evaluators.Combined",
+        "operation": "Multiply",
+        "evaluatorA": {
+          "$type": "Evaluators.HasMoveOnBoard",
+          "affinity": "Earth"
+        },
+        "evaluatorB": {
+          "$type": "Evaluators.Combined",
+          "operation": "Add",
+          "evaluatorA": {
+            "$type": "Evaluators.MoveDamage",
+            "affinity": "Earth",
+            "owner": "Player"
+          },
+          "evaluatorB": {
+            "$type": "Evaluators.MoveDamage",
+            "affinity": "Earth",
+            "owner": "Opponent"
+          }
+        }
+      },
+      "node": {
+        "$type": "Outputs.Move",
+        "affinity": "Earth"
+      }
+    },
+    {
+      "$type": "EvaluatorNodePair",
+      "evaluator": {
+        "$type": "Evaluators.Combined",
+        "operation": "Multiply",
+        "evaluatorA": {
+          "$type": "Evaluators.HasMoveOnBoard",
+          "affinity": "Water"
+        },
+        "evaluatorB": {
+          "$type": "Evaluators.Combined",
+          "operation": "Add",
+          "evaluatorA": {
+            "$type": "Evaluators.MoveDamage",
+            "affinity": "Water",
+            "owner": "Player"
+          },
+          "evaluatorB": {
+            "$type": "Evaluators.MoveDamage",
+            "affinity": "Water",
+            "owner": "Opponent"
+          }
+        }
+      },
+      "node": {
+        "$type": "Outputs.Move",
+        "affinity": "Water"
+      }
+    },
+    {
+      "$type": "EvaluatorNodePair",
+      "evaluator": {
+        "$type": "Evaluators.Combined",
+        "operation": "Multiply",
+        "evaluatorA": {
+          "$type": "Evaluators.HasMoveOnBoard",
+          "affinity": "Fire"
+        },
+        "evaluatorB": {
+          "$type": "Evaluators.Combined",
+          "operation": "Add",
+          "evaluatorA": {
+            "$type": "Evaluators.MoveDamage",
+            "affinity": "Fire",
+            "owner": "Player"
+          },
+          "evaluatorB": {
+            "$type": "Evaluators.MoveDamage",
+            "affinity": "Fire",
+            "owner": "Opponent"
+          }
+        }
+      },
+      "node": {
+        "$type": "Outputs.Move",
+        "affinity": "Fire"
+      }
+    },
+    {
+      "$type": "EvaluatorNodePair",
+      "evaluator": {
+        "$type": "Evaluators.Combined",
+        "operation": "Multiply",
+        "evaluatorA": {
+          "$type": "Evaluators.HasMoveOnBoard",
+          "affinity": "Light"
+        },
+        "evaluatorB": {
+          "$type": "Evaluators.Combined",
+          "operation": "Add",
+          "evaluatorA": {
+            "$type": "Evaluators.MoveDamage",
+            "affinity": "Light",
+            "owner": "Player"
+          },
+          "evaluatorB": {
+            "$type": "Evaluators.MoveDamage",
+            "affinity": "Light",
+            "owner": "Opponent"
+          }
+        }
+      },
+      "node": {
+        "$type": "Outputs.Move",
+        "affinity": "Light"
+      }
+    },
+    {
+      "$type": "EvaluatorNodePair",
+      "evaluator": {
+        "$type": "Evaluators.Combined",
+        "operation": "Multiply",
+        "evaluatorA": {
+          "$type": "Evaluators.HasMoveOnBoard",
+          "affinity": "Dark"
+        },
+        "evaluatorB": {
+          "$type": "Evaluators.Combined",
+          "operation": "Add",
+          "evaluatorA": {
+            "$type": "Evaluators.MoveDamage",
+            "affinity": "Dark",
+            "owner": "Player"
+          },
+          "evaluatorB": {
+            "$type": "Evaluators.MoveDamage",
+            "affinity": "Dark",
+            "owner": "Opponent"
+          }
+        }
+      },
+      "node": {
+        "$type": "Outputs.Move",
+        "affinity": "Dark"
+      }
+    },
+    {
+      "$type": "EvaluatorNodePair",
+      "evaluator": {
+        "$type": "Evaluators.Combined",
+        "operation": "Multiply",
+        "evaluatorA": {
+          "$type": "Evaluators.HasMoveOnBoard",
+          "affinity": "Heart"
+        },
+        "evaluatorB": {
+          "$type": "Evaluators.MoveHeal"
+        }
+      },
+      "node": {
+        "$type": "Outputs.Move",
+        "affinity": "Heart"
+      }
+    }
+  ],
+  "strings": [
+    "String1",
+    "String2",
+    "String3"
+  ],
+  "booleans": [
+    true,
+    false
+  ],
+  "numbers": [
+    1,
+    13,
+    133,
+    1337
+  ]
+}

@@ -10,70 +10,74 @@ export interface Node {
     getField(name: string): Field | undefined
 }
 
-export interface Field {
-    readonly name: string
-    readonly value: FieldType
-}
+export type Field =
+    StringField |
+    NumberField |
+    BooleanField |
+    NodeField |
+    StringArrayField |
+    NumberArrayField |
+    BooleanArrayField |
+    NodeArrayField
 
-export type FieldType =
-    FieldString |
-    FieldNumber |
-    FieldBoolean |
-    FieldNode |
-    FieldStringArray |
-    FieldNumberArray |
-    FieldBooleanArray |
-    FieldNodeArray
-
-export interface FieldString {
+export interface StringField {
     readonly kind: "string"
-    readonly primitive: string
+    readonly name: string
+    readonly value: string
 }
 
-export interface FieldNumber {
+export interface NumberField {
     readonly kind: "number"
-    readonly primitive: number
+    readonly name: string
+    readonly value: number
 }
 
-export interface FieldBoolean {
+export interface BooleanField {
     readonly kind: "boolean"
-    readonly primitive: boolean
+    readonly name: string
+    readonly value: boolean
 }
 
-export interface FieldNode {
+export interface NodeField {
     readonly kind: "node"
-    readonly node: Node
+    readonly name: string
+    readonly value: Node
 }
 
-export interface FieldStringArray {
+export interface StringArrayField {
     readonly kind: "stringArray"
-    readonly array: ReadonlyArray<string>
+    readonly name: string
+    readonly value: ReadonlyArray<string>
 }
 
-export interface FieldNumberArray {
+export interface NumberArrayField {
     readonly kind: "numberArray"
-    readonly array: ReadonlyArray<number>
+    readonly name: string
+    readonly value: ReadonlyArray<number>
 }
 
-export interface FieldBooleanArray {
+export interface BooleanArrayField {
     readonly kind: "booleanArray"
-    readonly array: ReadonlyArray<boolean>
+    readonly name: string
+    readonly value: ReadonlyArray<boolean>
 }
 
-export interface FieldNodeArray {
+export interface NodeArrayField {
     readonly kind: "nodeArray"
-    readonly array: ReadonlyArray<Node>
+    readonly name: string
+    readonly value: ReadonlyArray<Node>
 }
 
 export interface NodeBuilder {
-    pushStringField(name: string, value: string): void
-    pushNumberField(name: string, value: number): void
-    pushBooleanField(name: string, value: boolean): void
-    pushNodeField(name: string, value: Node): void
-    pushStringArrayField(name: string, value: ReadonlyArray<string>): void
-    pushNumberArrayField(name: string, value: ReadonlyArray<number>): void
-    pushBooleanArrayField(name: string, value: ReadonlyArray<boolean>): void
-    pushNodeArrayField(name: string, value: ReadonlyArray<Node>): void
+    pushStringField(name: string, value: string): boolean
+    pushNumberField(name: string, value: number): boolean
+    pushBooleanField(name: string, value: boolean): boolean
+    pushNodeField(name: string, value: Node): boolean
+    pushStringArrayField(name: string, value: ReadonlyArray<string>): boolean
+    pushNumberArrayField(name: string, value: ReadonlyArray<number>): boolean
+    pushBooleanArrayField(name: string, value: ReadonlyArray<boolean>): boolean
+    pushNodeArrayField(name: string, value: ReadonlyArray<Node>): boolean
+    pushField(field: Field): boolean
 }
 
 export type NodeCallback = (node: Node) => void
@@ -98,9 +102,9 @@ export function getNodeCount(node: Node): number {
 
 export function forEachDirectChild(node: Node, callback: NodeCallback): void {
     node.fields.forEach(field => {
-        switch (field.value.kind) {
-            case "node": callback(field.value.node); break;
-            case "nodeArray": field.value.array.forEach(callback); break;
+        switch (field.kind) {
+            case "node": callback(field.value); break;
+            case "nodeArray": field.value.forEach(callback); break;
         }
     });
 }
@@ -130,31 +134,31 @@ export function printNode(node: Node, indent: number = 0): void {
 
     // Print fields
     node.fields.forEach(field => {
-        switch (field.value.kind) {
-            case "string": printText(`${field.name}: ${field.value.primitive}`, indent); break;
-            case "number": printText(`${field.name}: ${field.value.primitive}`, indent); break;
-            case "boolean": printText(`${field.name}: ${field.value.primitive}`, indent); break;
+        switch (field.kind) {
+            case "string": printText(`${field.name}: ${field.value}`, indent); break;
+            case "number": printText(`${field.name}: ${field.value}`, indent); break;
+            case "boolean": printText(`${field.name}: ${field.value}`, indent); break;
             case "node":
                 printText(`${field.name}:`, indent);
-                printNode(field.value.node, indent + 1);
+                printNode(field.value, indent + 1);
                 break;
             case "stringArray":
                 printText(`${field.name}:`, indent);
-                field.value.array.forEach(arrayString => { printText(arrayString, indent); });
+                field.value.forEach(element => { printText(element, indent); });
                 break;
             case "numberArray":
                 printText(`${field.name}:`, indent);
-                field.value.array.forEach(arrayNumber => { printText(arrayNumber.toString(), indent); });
+                field.value.forEach(element => { printText(element.toString(), indent); });
                 break;
             case "booleanArray":
                 printText(`${field.name}:`, indent);
-                field.value.array.forEach(arrayBoolean => { printText(arrayBoolean.toString(), indent); });
+                field.value.forEach(element => { printText(element.toString(), indent); });
                 break;
             case "nodeArray":
                 printText(`${field.name}:`, indent);
-                field.value.array.forEach(arrayNode => { printNode(arrayNode, indent + 1); });
+                field.value.forEach(element => { printNode(element, indent + 1); });
                 break;
-            default: Utils.assertNever(field.value);
+            default: Utils.assertNever(field);
         }
     });
 
@@ -206,51 +210,46 @@ class NodeBuilderImpl implements NodeBuilder {
     }
 
     pushStringField(name: string, value: string): boolean {
-        const field: Field = { name: name, value: { kind: "string", primitive: value } };
+        const field: Field = { kind: "string", name: name, value: value };
         return this.pushField(field);
     }
 
     pushNumberField(name: string, value: number): boolean {
-        const field: Field = { name: name, value: { kind: "number", primitive: value } };
+        const field: Field = { kind: "number", name: name, value: value };
         return this.pushField(field);
     }
 
     pushBooleanField(name: string, value: boolean): boolean {
-        const field: Field = { name: name, value: { kind: "boolean", primitive: value } };
+        const field: Field = { kind: "boolean", name: name, value: value };
         return this.pushField(field);
     }
 
     pushNodeField(name: string, value: Node): boolean {
-        const field: Field = { name: name, value: { kind: "node", node: value } };
+        const field: Field = { kind: "node", name: name, value: value };
         return this.pushField(field);
     }
 
     pushStringArrayField(name: string, value: ReadonlyArray<string>): boolean {
-        const field: Field = { name: name, value: { kind: "stringArray", array: value } };
+        const field: Field = { kind: "stringArray", name: name, value: value };
         return this.pushField(field);
     }
 
     pushNumberArrayField(name: string, value: ReadonlyArray<number>): boolean {
-        const field: Field = { name: name, value: { kind: "numberArray", array: value } };
+        const field: Field = { kind: "numberArray", name: name, value: value };
         return this.pushField(field);
     }
 
     pushBooleanArrayField(name: string, value: ReadonlyArray<boolean>): boolean {
-        const field: Field = { name: name, value: { kind: "booleanArray", array: value } };
+        const field: Field = { kind: "booleanArray", name: name, value: value };
         return this.pushField(field);
     }
 
     pushNodeArrayField(name: string, value: ReadonlyArray<Node>): boolean {
-        const field: Field = { name: name, value: { kind: "nodeArray", array: value } };
+        const field: Field = { kind: "nodeArray", name: name, value: value };
         return this.pushField(field);
     }
 
-    build(): Node {
-        this._build = true;
-        return new NodeImpl(this._type, this._fields);
-    }
-
-    private pushField(field: Field): boolean {
+    pushField(field: Field): boolean {
         // New fields cannot be pushed after building the node
         if (this._build)
             return false;
@@ -261,5 +260,10 @@ class NodeBuilderImpl implements NodeBuilder {
 
         this._fields.push(field);
         return true;
+    }
+
+    build(): Node {
+        this._build = true;
+        return new NodeImpl(this._type, this._fields);
     }
 }

@@ -3,11 +3,18 @@
   "typescript.tsc.autoDetect": "off",
   // Common plugins
   "cSpell.words": [
-    "Truthy",
+    "bbox",
+    "crossorigin",
     "jsnext",
+    "junit",
     "nodestyle",
     "onwarn",
+    "rbox",
     "treedisplay",
+    "treeparser",
+    "treeview",
+    "truthy",
+    "tsout",
     "typedtree"
   ],
   // Search settings
