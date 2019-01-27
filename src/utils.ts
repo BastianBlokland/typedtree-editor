@@ -7,25 +7,6 @@ export function sleep(milliseconds: number): Promise<{}> {
     return new Promise((resolve: Function) => setTimeout(resolve, milliseconds));
 }
 
-export function subscribeToClick(buttonId: string, callback: () => void): void {
-    let element = document.getElementById(buttonId);
-    if (element == null)
-        throw new Error(`Element with id: ${buttonId} not found`);
-    element.onclick = callback;
-}
-
-export function subscribeToFileInput(inputId: string, callback: (file: File) => void): void {
-    let element = document.getElementById(inputId);
-    if (element == null)
-        throw new Error(`Element with id: ${inputId} not found`);
-    let inputElement = <HTMLInputElement>element;
-    element.onchange = _ => {
-        if (inputElement.files != null && inputElement.files.length > 0)
-            callback(inputElement.files[0]);
-        inputElement.value = "";
-    };
-}
-
 export function formatJson(json: string): string {
     let parsedJson = JSON.parse(json);
     return JSON.stringify(parsedJson, undefined, 2);

@@ -1,4 +1,5 @@
 ﻿import * as Utils from "./utils";
+import * as DomUtils from "./domutils";
 import * as Vec from "./vector";
 import * as SvgJs from "svg.js";
 
@@ -66,7 +67,7 @@ export function initialize(): void {
     };
 
     // Setup button listeners
-    Utils.subscribeToClick("focus-button", focusContent);
+    DomUtils.subscribeToClick("focus-button", focusContent);
 }
 
 export function createElement(className: ClassName, rectangle: Vec.Position): Element {

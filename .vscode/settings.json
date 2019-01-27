@@ -5,6 +5,7 @@
   "cSpell.words": [
     "bbox",
     "crossorigin",
+    "domutils",
     "jsnext",
     "junit",
     "nodestyle",
@@ -20,7 +21,7 @@
     "truthy",
     "tsout",
     "typedtree"
-],
+  ],
   // Search settings
   "search.useIgnoreFiles": false,
   "search.exclude": {},

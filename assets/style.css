@@ -13,6 +13,16 @@ html, body {
     color: #FFF;
 }
 
+#tree-title {
+    position: absolute;
+    width: 100%;
+    top: 10px;
+    font-size: 15pt;
+    font-weight: bold;
+    text-align: center;
+    color: #FFF;
+}
+
 #svg-display {
     width: 100%;
     height: 100%;
