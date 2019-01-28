@@ -6,6 +6,9 @@ echo "INFO: Starting build"
 # Run build
 ./ci/build.sh
 
+echo "INFO: Starting minification"
+./node_modules/.bin/uglifyjs --output ./build/bundle.js --compress --mangle -- ./build/bundle.js
+
 echo "INFO: Starting deployment"
 
 # Sanity check existance of the azure cli tooling and the connection string
