@@ -16,12 +16,10 @@
     "./build"
   ],
   "dependencies": {
-    "bluebird": "^3.5.3",
     "file-saver": "^2.0.0",
     "svg.js": "^2.7.1"
   },
   "devDependencies": {
-    "@types/bluebird": "^3.5.25",
     "@types/file-saver": "^2.0.0",
     "@types/jest": "^23.3.13",
     "jest": "^23.6.0",
