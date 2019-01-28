@@ -1,7 +1,7 @@
 ﻿import * as Utils from "../src/utils";
 
 test("formatJson", () => {
-    let json = `{ "a": 5, "b": [ 1, 13, 133, 1337 ] }`;
+    const json = `{ "a": 5, "b": [ 1, 13, 133, 1337 ] }`;
     expect(Utils.formatJson(json)).toBe(`{\n  "a": 5,\n  "b": [\n    1,\n    13,\n    133,\n    1337\n  ]\n}`);
 });
 

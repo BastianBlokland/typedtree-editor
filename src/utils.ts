@@ -8,7 +8,7 @@ export function sleep(milliseconds: number): Promise<{}> {
 }
 
 export function formatJson(json: string): string {
-    let parsedJson = JSON.parse(json);
+    const parsedJson = JSON.parse(json);
     return JSON.stringify(parsedJson, undefined, 2);
 }
 

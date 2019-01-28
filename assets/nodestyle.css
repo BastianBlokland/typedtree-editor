@@ -9,7 +9,6 @@
 .nodeTypeText {
     text-anchor: middle;
     font-weight: bold;
-    dominant-baseline: middle;
 }
 
 /* Field backgrounds */
@@ -46,13 +45,7 @@
 }
 
 .nodeFieldName {
-    dominant-baseline: middle;
     font-weight: bold;
-}
-
-/* Field values */
-.stringFieldValue, .numberFieldValue, .booleanFieldValue {
-    dominant-baseline: middle;
 }
 
 .nodeConnection {

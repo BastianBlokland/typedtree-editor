@@ -34,6 +34,7 @@ export function initialize(): void {
     svgRoot = svgDocument.group();
 
     // Setup global listeners
+    window.ondragstart = _ => false; // Disable native dragging as it interferes with ours.
     window.onkeydown = event => {
         switch (event.key) {
             case "f": focusContent(); break;
@@ -52,14 +53,14 @@ export function initialize(): void {
     };
     window.onwheel = event => {
         // Get data from the event
-        let scrollDelta = -(<WheelEvent>event).deltaY * scrollScaleSpeed;
-        let pointerPos: Vec.Position = { x: (<WheelEvent>event).pageX, y: (<WheelEvent>event).pageY };
+        const scrollDelta = -(<WheelEvent>event).deltaY * scrollScaleSpeed;
+        const pointerPos: Vec.Position = { x: (<WheelEvent>event).pageX, y: (<WheelEvent>event).pageY };
 
         // Calculate new-scale and offset to zoom-in to where the user was pointing
-        let newScale = clampScale(scale + scrollDelta);
-        let zoomFactor = (newScale - scale) / scale;
-        let offsetToPointer = Vec.subtract(pointerPos, viewOffset);
-        let offsetDelta = Vec.multiply(offsetToPointer, -zoomFactor);
+        const newScale = clampScale(scale + scrollDelta);
+        const zoomFactor = (newScale - scale) / scale;
+        const offsetToPointer = Vec.subtract(pointerPos, viewOffset);
+        const offsetDelta = Vec.multiply(offsetToPointer, -zoomFactor);
 
         // Apply new scale and offset
         setScale(newScale);
@@ -77,13 +78,13 @@ export function createElement(className: ClassName, rectangle: Vec.Position): El
 
 export function getDisplaySize(): Vec.Vector2 {
     assertInitialized();
-    let bounds = svgDocument!.rbox();
+    const bounds = svgDocument!.rbox();
     return { x: bounds.width, y: bounds.height };
 }
 
 export function getContentSize(): Vec.Vector2 {
     assertInitialized();
-    let contentSize = svgRoot!.bbox();
+    const contentSize = svgRoot!.bbox();
     return { x: contentSize.width, y: contentSize.height };
 }
 
@@ -105,14 +106,14 @@ export function setOffset(newOffset: Vec.Vector2): void {
 
 export function focusContent(): void {
     assertInitialized();
-    let displaySize = Vec.subtract(getDisplaySize(), displayMargin);
-    let contentSize = getContentSize();
+    const displaySize = Vec.subtract(getDisplaySize(), displayMargin);
+    const contentSize = getContentSize();
 
     // Calculate new scale
     setScale(Math.min(displaySize.x / contentSize.x, displaySize.y / contentSize.y));
 
     // Calculate offset to center the content
-    let actualContentSize = Vec.multiply(contentSize, scale);
+    const actualContentSize = Vec.multiply(contentSize, scale);
     setOffset(Vec.add(halfDisplayMargin, Vec.half(Vec.subtract(displaySize, actualContentSize))));
 }
 
@@ -169,7 +170,12 @@ class GroupElement implements Element {
         this._svgGroup.group().
             x(position.x).
             y(position.y).
-            plain(text).
+            text(b => {
+                /* NOTE: Using dy offset here to center vertically, reason why we not just use:
+                'dominant-baseline' is that its not supported on edge */
+
+                b.tspan(text).dy("0.6ex");
+            }).
             addClass(className);
     }
 

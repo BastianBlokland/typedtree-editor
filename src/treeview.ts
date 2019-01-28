@@ -75,36 +75,36 @@ class PositionTreeImpl implements PositionTree {
     }
 
     getSize(node: Tree.Node): Vec.Size {
-        let lookup = this._sizes.get(node);
+        const lookup = this._sizes.get(node);
         if (lookup == undefined)
             throw new Error("Node is not known to this view-tree");
         return lookup;
     }
 
     getArea(node: Tree.Node): Vec.Size {
-        let lookup = this._areas.get(node);
+        const lookup = this._areas.get(node);
         if (lookup == undefined)
             throw new Error("Node is not known to this view-tree");
         return lookup;
     }
 
     getPosition(node: Tree.Node): Vec.Position {
-        let lookup = this._positions.get(node);
+        const lookup = this._positions.get(node);
         if (lookup == undefined)
             throw new Error("Node is not known to this view-tree");
         return lookup;
     }
 
     private addSizes(node: Tree.Node): void {
-        let size = { x: nodeWidth, y: getNodeHeight(node) };
+        const size = { x: nodeWidth, y: getNodeHeight(node) };
         this._sizes.set(node, size);
         Tree.forEachDirectChild(node, child => this.addSizes(child));
     }
 
     private addAreas(node: Tree.Node): Vec.Size {
-        let size = this.getSize(node);
+        const size = this.getSize(node);
 
-        let directChildren = Tree.getDirectChildren(node);
+        const directChildren = Tree.getDirectChildren(node);
         if (directChildren.length == 0) {
             this._areas.set(node, size);
             return size;
@@ -113,23 +113,23 @@ class PositionTreeImpl implements PositionTree {
         let childTotalHeight = (directChildren.length - 1) * nodeVerticalSpacing;
         let childMaxWidth = nodeHorizontalSpacing;
         directChildren.forEach(child => {
-            let childSize = this.addAreas(child);
+            const childSize = this.addAreas(child);
             childTotalHeight += childSize.y;
             childMaxWidth = Math.max(childMaxWidth, childSize.x);
         });
 
-        let area = { x: size.x + childMaxWidth, y: Math.max(size.y, childTotalHeight) };
+        const area = { x: size.x + childMaxWidth, y: Math.max(size.y, childTotalHeight) };
         this._areas.set(node, area);
         return area;
     }
 
     private addPositions(node: Tree.Node, referencePos: Vec.Position): void {
-        let size = this.getSize(node);
-        let area = this.getArea(node);
-        let position = { x: referencePos.x, y: referencePos.y + Utils.half(area.y) - Utils.half(size.y) };
+        const size = this.getSize(node);
+        const area = this.getArea(node);
+        const position = { x: referencePos.x, y: referencePos.y + Utils.half(area.y) - Utils.half(size.y) };
         this._positions.set(node, position);
 
-        let childX = referencePos.x + size.x + nodeHorizontalSpacing;
+        const childX = referencePos.x + size.x + nodeHorizontalSpacing;
         let childY = referencePos.y;
         Tree.forEachDirectChild(node, child => {
             this.addPositions(child, { x: childX, y: childY });

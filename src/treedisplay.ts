@@ -6,7 +6,7 @@ import * as Display from "./display";
 
 export function setTree(root: Tree.Node): void {
     Display.clear();
-    let positionTree = TreeView.createPositionTree(root);
+    const positionTree = TreeView.createPositionTree(root);
     positionTree.nodes.forEach(n => createDisplay(n, positionTree));
     Display.focusContent();
 }
@@ -19,9 +19,8 @@ const nodeConnectionSlotRadius = 15;
 const nodeConnectionCurviness = .7;
 
 function createDisplay(node: Tree.Node, positionTree: TreeView.PositionTree): void {
-
-    let size = positionTree.getSize(node);
-    let nodeElement = Display.createElement("node", positionTree.getPosition(node));
+    const size = positionTree.getSize(node);
+    const nodeElement = Display.createElement("node", positionTree.getPosition(node));
 
     nodeElement.addRect("nodeBackground", size, Vec.zeroVector);
     nodeElement.addText("nodeTypeText", node.type, { x: Utils.half(size.x), y: halfNodeHeightHeight });
@@ -39,13 +38,13 @@ function createField(
     positionTree: TreeView.PositionTree,
     yOffset: number): number {
 
-    let field = node.getField(fieldName);
+    const field = node.getField(fieldName);
     if (field == undefined)
         return 0;
 
-    let fieldSize = { x: positionTree.getSize(node).x, y: TreeView.getFieldHeight(field) };
-    let centeredYOffset = yOffset + Utils.half(nodeFieldHeight);
-    let centerX = Utils.half(fieldSize.x);
+    const fieldSize = { x: positionTree.getSize(node).x, y: TreeView.getFieldHeight(field) };
+    const centeredYOffset = yOffset + Utils.half(nodeFieldHeight);
+    const centerX = Utils.half(fieldSize.x);
 
     parent.addRect(`${field.kind}ValueBackground`, fieldSize, { x: 0, y: yOffset });
     parent.addText("nodeFieldName", `${field.name}:`, { x: 10, y: centeredYOffset });
@@ -96,9 +95,9 @@ function createField(
 function addConnection(parent: Display.Element, from: Vec.Position, to: Vec.Position): void {
     parent.addCircle("nodeOutput", nodeConnectionSlotRadius, from);
 
-    let target = Vec.add(to, nodeInputSlotOffset);
-    let c1 = { x: Utils.lerp(from.x, target.x, nodeConnectionCurviness), y: from.y };
-    let c2 = { x: Utils.lerp(target.x, from.x, nodeConnectionCurviness), y: target.y };
+    const target = Vec.add(to, nodeInputSlotOffset);
+    const c1 = { x: Utils.lerp(from.x, target.x, nodeConnectionCurviness), y: from.y };
+    const c2 = { x: Utils.lerp(target.x, from.x, nodeConnectionCurviness), y: target.y };
     parent.addBezier("nodeConnection", from, c1, c2, target);
 }
 

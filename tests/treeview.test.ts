@@ -3,52 +3,52 @@ import * as Tree from "../src/tree";
 import * as TreeView from "../src/treeview";
 
 test("allChildNodeExists", () => {
-    let testTree = createTestTree();
-    let positionTree = TreeView.createPositionTree(testTree);
+    const testTree = createTestTree();
+    const positionTree = TreeView.createPositionTree(testTree);
     Tree.getAllChildren(testTree).forEach(child => {
         expect(positionTree.nodes).toContain(child);
     });
 });
 
 test("allNodesHaveSizes", () => {
-    let testTree = createTestTree();
-    let positionTree = TreeView.createPositionTree(testTree);
+    const testTree = createTestTree();
+    const positionTree = TreeView.createPositionTree(testTree);
     Tree.getAllChildren(testTree).forEach(child => {
         expect(positionTree.getSize(testTree)).not.toBe(Vec.zeroVector);
     })
 });
 
 test("allNodesHaveAreas", () => {
-    let testTree = createTestTree();
-    let positionTree = TreeView.createPositionTree(testTree);
+    const testTree = createTestTree();
+    const positionTree = TreeView.createPositionTree(testTree);
     Tree.getAllChildren(testTree).forEach(child => {
         expect(positionTree.getArea(testTree)).not.toBe(Vec.zeroVector);
     })
 });
 
 test("allNodesHavePositions", () => {
-    let testTree = createTestTree();
-    let positionTree = TreeView.createPositionTree(testTree);
+    const testTree = createTestTree();
+    const positionTree = TreeView.createPositionTree(testTree);
     Tree.getAllChildren(testTree).forEach(child => {
         expect(positionTree.getPosition(testTree)).not.toBe(Vec.zeroVector);
     })
 });
 
 test("singleNodeHasExpectedPosition", () => {
-    let testTree = Tree.createNode("root");
-    let positionTree = TreeView.createPositionTree(testTree);
+    const testTree = Tree.createNode("root");
+    const positionTree = TreeView.createPositionTree(testTree);
     expect(positionTree.getPosition(testTree)).toEqual(Vec.zeroVector);
 });
 
 test("singleNodeHasExpectedSize", () => {
-    let testTree = Tree.createNode("root");
-    let positionTree = TreeView.createPositionTree(testTree);
+    const testTree = Tree.createNode("root");
+    const positionTree = TreeView.createPositionTree(testTree);
     expect(positionTree.getSize(testTree)).toEqual({ x: TreeView.nodeWidth, y: TreeView.getNodeHeight(testTree) });
 });
 
 test("singleNodeHasExpectedArea", () => {
-    let testTree = Tree.createNode("root");
-    let positionTree = TreeView.createPositionTree(testTree);
+    const testTree = Tree.createNode("root");
+    const positionTree = TreeView.createPositionTree(testTree);
     expect(positionTree.getArea(testTree)).toEqual(positionTree.getSize(testTree));
 });
 
