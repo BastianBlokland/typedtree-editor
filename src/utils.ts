@@ -3,6 +3,15 @@
     return Array.isArray(obj);
 }
 
+export function find<T>(array: ReadonlyArray<T>, predicate: (elem: T) => boolean): T | undefined {
+    /* Can be used instead of the library Array.find as that doesn't work on ie11 */
+    for (let index = 0; index < array.length; index++) {
+        if (predicate(array[index]))
+            return array[index];
+    }
+    return undefined;
+}
+
 export function sleep(milliseconds: number): Promise<{}> {
     return new Promise((resolve: Function) => setTimeout(resolve, milliseconds));
 }
