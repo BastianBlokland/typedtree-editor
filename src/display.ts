@@ -169,7 +169,12 @@ class GroupElement implements Element {
         this._svgGroup.group().
             x(position.x).
             y(position.y).
-            plain(text).
+            text(b => {
+                /* NOTE: Using dy offset here to center vertically, reason why we not just use:
+                'dominant-baseline' is that its not supported on edge */
+
+                b.tspan(text).dy("0.6ex");
+            }).
             addClass(className);
     }
 
