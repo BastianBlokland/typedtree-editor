@@ -1,5 +1,12 @@
 ﻿import * as Utils from "../src/utils";
 
+test("find", () => {
+    const array = [{ name: "foo", id: 1 }, { name: "bar", id: 2 }, { name: "baz", id: 3 }];
+    expect(Utils.find(array, elem => elem.id == 1)).toEqual(array[0]);
+    expect(Utils.find(array, elem => elem.id == 2)).toEqual(array[1]);
+    expect(Utils.find(array, elem => elem.id == 3)).toEqual(array[2]);
+});
+
 test("formatJson", () => {
     const json = `{ "a": 5, "b": [ 1, 13, 133, 1337 ] }`;
     expect(Utils.formatJson(json)).toBe(`{\n  "a": 5,\n  "b": [\n    1,\n    13,\n    133,\n    1337\n  ]\n}`);
