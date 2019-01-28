@@ -13,6 +13,7 @@
     "openexample",
     "opentree",
     "parserutils",
+    "polyfill",
     "rbox",
     "savetree",
     "treedisplay",
@@ -22,7 +23,7 @@
     "truthy",
     "tsout",
     "typedtree"
-  ],
+],
   // Search settings
   "search.useIgnoreFiles": false,
   "search.exclude": {},

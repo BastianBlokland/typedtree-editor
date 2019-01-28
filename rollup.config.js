@@ -4,7 +4,10 @@ export default {
     input: './tsout/main.js',
     output: {
         file: pkg.main,
-        format: 'umd'
+        format: 'umd',
+        globals: {
+            'es6-promise': 'ES6Promise'
+        },
     },
     external: ['svg.js', 'file-saver', 'es6-promise'],
     onwarn(warning, warn) {
