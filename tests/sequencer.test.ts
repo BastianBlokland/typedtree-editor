@@ -2,7 +2,7 @@
 import { sleep } from "../src/utils";
 
 test("stopEndsTheUntilEndPromise", () => {
-    let sequencer = Sequencer.createRunner();
+    const sequencer = Sequencer.createRunner();
     expect(sequencer.running).toBe(true);
     expect(sequencer.idle).toBe(true);
 
@@ -13,7 +13,7 @@ test("stopEndsTheUntilEndPromise", () => {
 });
 
 test("allItemsGetExecuted", () => {
-    let sequencer = Sequencer.createRunner();
+    const sequencer = Sequencer.createRunner();
     let counter = 0;
 
     sequencer.enqueue(async () => { counter++ });
@@ -26,7 +26,7 @@ test("allItemsGetExecuted", () => {
 });
 
 test("idlePromiseIsResolved", () => {
-    let sequencer = Sequencer.createRunner();
+    const sequencer = Sequencer.createRunner();
 
     let executed = false;
     sequencer.enqueue(async () => { await sleep(5); executed = true; });

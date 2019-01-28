@@ -87,7 +87,7 @@ export type BuildCallback = (builder: NodeBuilder) => void
 export function createNode(type: NodeType, callback: BuildCallback | undefined = undefined): Node {
     if (callback === undefined)
         return new NodeImpl(type, []);
-    let builder = new NodeBuilderImpl(type);
+    const builder = new NodeBuilderImpl(type);
     callback(builder);
     return builder.build();
 }
@@ -110,13 +110,13 @@ export function forEachDirectChild(node: Node, callback: NodeCallback): void {
 }
 
 export function getDirectChildren(node: Node): Node[] {
-    let result: Node[] = [];
+    const result: Node[] = [];
     forEachDirectChild(node, child => result.push(child));
     return result;
 }
 
 export function getAllChildren(node: Node): Node[] {
-    let result: Node[] = [];
+    const result: Node[] = [];
     forEachDirectChild(node, child => addAllChildren(child, result));
     return result;
 
@@ -194,7 +194,7 @@ class NodeImpl implements Node {
     }
 
     getField(name: string): Field | undefined {
-        let index = this._fields.findIndex(field => field.name == name);
+        const index = this._fields.findIndex(field => field.name == name);
         return index >= 0 ? this._fields[index] : undefined;
     }
 }

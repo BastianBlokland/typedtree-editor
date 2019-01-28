@@ -10,16 +10,16 @@ export interface ParseError {
 }
 
 export async function loadTextFromUrl(url: string): Promise<ParseResult<string>> {
-    let fetchResult = await fetch(url);
+    const fetchResult = await fetch(url);
     if (!fetchResult.ok)
         return createError(`Unable to fetch from: ${url}`);
     // NOTE: Not sure if '.text()' can throw anything, need to check docs
-    let text = await fetchResult.text();
+    const text = await fetchResult.text();
     return createSuccess(text);
 }
 
 export function loadTextFromFile(file: File): Promise<ParseResult<string>> {
-    let fileReader = new FileReader();
+    const fileReader = new FileReader();
     return new Promise((resolve, reject) => {
         fileReader.onload = () => {
             if (fileReader.result != null && typeof fileReader.result == "string")

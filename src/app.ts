@@ -25,9 +25,9 @@ let currentTitle: string | undefined = undefined;
 let sequencer: Sequencer.SequenceRunner | undefined = undefined;
 
 function enqueueLoadTree(source: string | File): void {
-    let name = typeof source == "string" ? source : source.name;
+    const name = typeof source == "string" ? source : source.name;
     sequencer!.enqueue(async () => {
-        let result = await TreeParser.load(source);
+        const result = await TreeParser.load(source);
         if (result.kind == "error")
             alert(`Failed to load. Error: ${result.errorMessage}`);
         else {
@@ -42,7 +42,7 @@ function enqueueSaveTree(): void {
     if (currentTree == undefined)
         return;
 
-    let treeJson = TreeSerializer.composeJson(currentTree);
+    const treeJson = TreeSerializer.composeJson(currentTree);
     DomUtils.saveJsonText(treeJson, currentTitle!);
 }
 

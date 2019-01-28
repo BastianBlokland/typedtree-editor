@@ -1,13 +1,13 @@
 ﻿import * as Tree from "../src/tree";
 
 test("cannotPushDuplicateField", () => {
-    let result = Tree.createNode("root", b => {
+    const result = Tree.createNode("root", b => {
         expect(b.pushBooleanField("testField", true)).toBeTruthy();
         expect(b.pushBooleanField("testField", false)).toBeFalsy();
     });
     expect(result.fields.length).toBe(1);
 
-    let field = result.getField("testField");
+    const field = result.getField("testField");
     if (field != undefined && field.kind == "boolean")
         expect(field.value).toBeTruthy();
     else
@@ -15,28 +15,28 @@ test("cannotPushDuplicateField", () => {
 });
 
 test("getNodeCount", () => {
-    let testTree = createTestTree();
+    const testTree = createTestTree();
     expect(Tree.getNodeCount(testTree)).toBe(10);
 });
 
 test("forEachDirectChild", () => {
-    let testTree = createTestTree();
-    let directChildTypes: string[] = [];
+    const testTree = createTestTree();
+    const directChildTypes: string[] = [];
     Tree.forEachDirectChild(testTree, child => directChildTypes.push(child.type));
 
     expect(directChildTypes).toEqual(["node2", "node4"]);
 });
 
 test("getDirectChildren", () => {
-    let testTree = createTestTree();
-    let directChildTypes = Tree.getDirectChildren(testTree).map(child => child.type);
+    const testTree = createTestTree();
+    const directChildTypes = Tree.getDirectChildren(testTree).map(child => child.type);
 
     expect(directChildTypes).toEqual(["node2", "node4"]);
 });
 
 test("getAllChildren", () => {
-    let testTree = createTestTree();
-    let allChildTypes = Tree.getAllChildren(testTree).map(child => child.type);
+    const testTree = createTestTree();
+    const allChildTypes = Tree.getAllChildren(testTree).map(child => child.type);
 
     expect(allChildTypes).toEqual([
         "node2",
@@ -51,14 +51,14 @@ test("getAllChildren", () => {
 });
 
 test("fieldNames", () => {
-    let testTree = createTestTree();
+    const testTree = createTestTree();
 
     expect(testTree.fieldNames).toEqual(["field1", "field3"]);
 });
 
 test("fieldTypes", () => {
-    let testTree = createTestTree();
-    let fieldValues = testTree.fields.map(field => field.kind);
+    const testTree = createTestTree();
+    const fieldValues = testTree.fields.map(field => field.kind);
 
     expect(fieldValues).toEqual(["nodeArray", "node"]);
 });

@@ -3,7 +3,7 @@ import * as TreeSerializer from "../src/treeserializer";
 import * as Tree̦Parser from "../src/treeparser";
 
 test("savedJsonIsIdenticalToReadJson", () => {
-    let json = Utils.formatJson(`{
+    const json = Utils.formatJson(`{
         "$type": "root",
         "str": "string",
         "num": 42,
@@ -21,10 +21,10 @@ test("savedJsonIsIdenticalToReadJson", () => {
             ]
         }
     }`);
-    let nodeParseResult = Tree̦Parser.parseJson(json);
+    const nodeParseResult = Tree̦Parser.parseJson(json);
     expect(nodeParseResult.kind).toBe("success");
     if (nodeParseResult.kind == "success") {
-        let composedJson = TreeSerializer.composeJson(nodeParseResult.value);
+        const composedJson = TreeSerializer.composeJson(nodeParseResult.value);
         expect(composedJson).toEqual(json);
     }
 });

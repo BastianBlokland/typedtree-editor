@@ -2,12 +2,12 @@
 import * as Utils from "./utils";
 
 export function composeJson(node: Tree.Node): string {
-    let obj = createObject(node);
+    const obj = createObject(node);
     return JSON.stringify(obj, undefined, 2);
 }
 
 function createObject(node: Tree.Node): Object {
-    let obj: any = {};
+    const obj: any = {};
     obj.$type = node.type;
     node.fields.forEach(field => {
         switch (field.kind) {
