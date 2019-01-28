@@ -5,8 +5,13 @@
     "strictNullChecks": true,
     "alwaysStrict": true,
     "forceConsistentCasingInFileNames": true,
-    "target": "es6",
+    "target": "es5",
     "module": "es2015",
+    "lib": [
+      "dom",
+      "es2015",
+      "es2015.promise"
+    ],
     "moduleResolution": "node",
     "outDir": "./tsout",
     "plugins": [

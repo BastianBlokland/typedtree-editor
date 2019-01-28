@@ -16,6 +16,7 @@
     "./build"
   ],
   "dependencies": {
+    "es6-promise": "^4.2.5",
     "file-saver": "^2.0.0",
     "svg.js": "^2.7.1"
   },
