@@ -15,7 +15,8 @@ checkNpmTooling ()
 {
     if  [ -f "./node_modules/.bin/tsc" ] &&
         [ -f "./node_modules/.bin/rollup" ] &&
-        [ -f "./node_modules/.bin/jest" ]
+        [ -f "./node_modules/.bin/jest" ] &&
+        [ -f "./node_modules/.bin/uglifyjs" ]
     then
         return 1
     fi
