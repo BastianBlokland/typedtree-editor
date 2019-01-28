@@ -34,6 +34,7 @@ export function initialize(): void {
     svgRoot = svgDocument.group();
 
     // Setup global listeners
+    window.ondragstart = _ => false; // Disable native dragging as it interferes with ours.
     window.onkeydown = event => {
         switch (event.key) {
             case "f": focusContent(); break;

@@ -194,8 +194,7 @@ class NodeImpl implements Node {
     }
 
     getField(name: string): Field | undefined {
-        const index = this._fields.findIndex(field => field.name == name);
-        return index >= 0 ? this._fields[index] : undefined;
+        return this._fields.find(field => field.name == name);
     }
 }
 

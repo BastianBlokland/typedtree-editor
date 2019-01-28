@@ -4,12 +4,9 @@ export default {
     input: './tsout/main.js',
     output: {
         file: pkg.main,
-        format: 'umd',
-        globals: {
-            'es6-promise': 'ES6Promise'
-        },
+        format: 'umd'
     },
-    external: ['svg.js', 'file-saver', 'es6-promise'],
+    external: ['svg.js', 'file-saver', 'bluebird'],
     onwarn(warning, warn) {
         if (warning.code === 'THIS_IS_UNDEFINED')
             return;
