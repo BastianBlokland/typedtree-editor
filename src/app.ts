@@ -5,6 +5,7 @@ import * as TreeParser from "./treeparser";
 import * as TreeSerializer from "./treeserializer";
 import * as TreeDisplay from "./treedisplay";
 
+/** Function to run the main app logic in. */
 export async function run(): Promise<void> {
     sequencer = Sequencer.createRunner();
 

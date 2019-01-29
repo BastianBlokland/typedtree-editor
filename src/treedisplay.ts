@@ -4,6 +4,10 @@ import * as Utils from "./utils";
 import * as Vec from "./vector";
 import * as Display from "./display";
 
+/**
+ * Draw the given tree.
+ * @param root Root node for the tree to draw.
+ */
 export function setTree(root: Tree.Node): void {
     Display.clear();
     const positionTree = TreeView.createPositionTree(root);
