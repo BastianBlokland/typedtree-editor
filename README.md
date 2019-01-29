@@ -6,9 +6,12 @@ Web app to edit typed tree structures (For example a behaviour or decision tree)
 [![Build Status](https://dev.azure.com/bastian-blokland/TypedTree-Editor/_apis/build/status/BastianBlokland.typedtree-editor?branchName=master)](https://dev.azure.com/bastian-blokland/TypedTree-Editor/_build/latest?definitionId=3?branchName=master)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-## Testing
+## Demo
 * [Demo site](https://bastian.tech/tree/)
+
+## Ci
 * [Azure ci](https://dev.azure.com/bastian-blokland/TypedTree-Editor/_build)
+* Builds are pushed to: https://bastian.tech/typedtree-editor/refs/heads/[BRANCH_NAME]/
 
 ## Technologies
 * [svg.js](https://github.com/svgdotjs/svg.js)
@@ -18,3 +21,8 @@ Web app to edit typed tree structures (For example a behaviour or decision tree)
 * [FileSaver](https://github.com/eligrey/FileSaver.js)
 * [uglify-js](https://github.com/mishoo/UglifyJS2)
 * [Npm](https://github.com/npm/cli)
+* [live-server](https://github.com/tapio/live-server)
+
+## Polyfills
+* [bluebird](https://github.com/petkaantonov/bluebird)
+* [fetch-ie8](https://github.com/camsong/fetch-ie8)
