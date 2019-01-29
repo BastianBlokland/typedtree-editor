@@ -5,20 +5,39 @@ import * as SvgJs from "svg.js";
 
 declare const SVG: typeof SvgJs;
 
+/** Html class identifier */
 export type ClassName = string;
 
+/** Display element that content can be added to. */
 export interface Element {
+    /** Html class identifier for this element */
     readonly className: string
+    /** Position of this element.
+     * Note: This does NOT need to match screen pixels as the canvas can be zoomed. */
     readonly position: Vec.Position
 
+    /** Add a child element */
     addElement(className: ClassName, position: Vec.Position): Element
+
+    /** Add a rectangle graphic to this element. */
     addRect(className: ClassName, size: Vec.Size, position: Vec.Position): void
+
+    /** Add a text graphic to this element.
+     * Note: Position is vertically centered. */
     addText(className: ClassName, text: string, position: Vec.Position): void
+
+    /** Add a line graphic to this element. */
     addLine(className: ClassName, from: Vec.Position, to: Vec.Position): void
+
+    /** Add a bezier graphic to this element. */
     addBezier(className: ClassName, from: Vec.Position, c1: Vec.Position, c2: Vec.Position, to: Vec.Position): void
+
+    /** Add a circle graphic to this element.
+     * Note: Position represents the center of the circle. */
     addCircle(className: ClassName, radius: number, position: Vec.Position): void
 }
 
+/** Initialize the display, needs to be done once. */
 export function initialize(): void {
     if (svgDocument != null || svgRoot != null)
         throw new Error("Already initialized");
@@ -71,39 +90,60 @@ export function initialize(): void {
     DomUtils.subscribeToClick("focus-button", focusContent);
 }
 
-export function createElement(className: ClassName, rectangle: Vec.Position): Element {
+/**
+ * Create a new root display element.
+ * @param className Html class identifier for this element.
+ * @param  position Position to place the element at.
+ * @returns Element
+ */
+export function createElement(className: ClassName, position: Vec.Position): Element {
     assertInitialized();
-    return new GroupElement(svgRoot!, className, rectangle);
+    return new GroupElement(svgRoot!, className, position);
 }
 
+/** Get the size of the current window */
 export function getDisplaySize(): Vec.Vector2 {
     assertInitialized();
     const bounds = svgDocument!.rbox();
     return { x: bounds.width, y: bounds.height };
 }
 
+/** Get the total size of the current content */
 export function getContentSize(): Vec.Vector2 {
     assertInitialized();
     const contentSize = svgRoot!.bbox();
     return { x: contentSize.width, y: contentSize.height };
 }
 
+/**
+ * Set the global content scale (Can be used for zooming).
+ * @param newScale New global content scale.
+ */
 export function setScale(newScale: number): void {
     assertInitialized();
     scale = clampScale(newScale);
     svgRoot!.scale(scale, scale, 0, 0);
 }
 
+/**
+ * Offset the current content by the given delta.
+ * @param offsetDelta Delta to move the content by.
+ */
 export function setOffsetDelta(offsetDelta: Vec.Vector2): void {
     setOffset(Vec.add(viewOffset, offsetDelta));
 }
 
+/**
+ * Set the new global offset (Can be used to pan the content).
+ * @param newOffset New global offset.
+ */
 export function setOffset(newOffset: Vec.Vector2): void {
     assertInitialized();
     viewOffset = newOffset;
     svgRoot!.translate(newOffset.x, newOffset.y);
 }
 
+/** Focus on the current content (Will be centered and scaled to fit). */
 export function focusContent(): void {
     assertInitialized();
     const displaySize = Vec.subtract(getDisplaySize(), displayMargin);
@@ -117,6 +157,7 @@ export function focusContent(): void {
     setOffset(Vec.add(halfDisplayMargin, Vec.half(Vec.subtract(displaySize, actualContentSize))));
 }
 
+/** Clear all content from this display. */
 export function clear(): void {
     assertInitialized();
     svgRoot!.clear();

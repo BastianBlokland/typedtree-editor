@@ -2,30 +2,75 @@
 import * as Utils from "./utils";
 import * as Vec from "./vector";
 
+/** Height for the header (the part that contains the type) of a node. */
 export const nodeHeaderHeight = 25;
+
+/** Width of a node. */
 export const nodeWidth = 300;
+
+/** Horizontal spaces between nodes. */
 export const nodeHorizontalSpacing = 100;
+
+/** Vertical spacing between nodes. */
 export const nodeVerticalSpacing = 25;
+
+/** Height of a single field element on a node. (Arrays multiply this by the array length) */
 export const nodeFieldHeight = 25;
 
+/** Immutable object that can be used to find where nodes should be positioned. */
 export interface PositionTree {
+    /** Root node for this tree. */
     readonly root: Tree.Node
+    /** All the nodes in the tree. */
     readonly nodes: ReadonlyArray<Tree.Node>
+    /** Total area taken up by this tree. */
     readonly totalArea: Vec.Size
 
+    /**
+     * Get the size of the given node.
+     * @param node Node to get the size for.
+     * @returns Vector representing the size of given node.
+     */
     getSize(node: Tree.Node): Vec.Size
+
+    /**
+     * Get the area taken up by the given node and its children.
+     * @param node Node to get the area for.
+     * @returns Vector representing the area taken up by the node and its children.
+     */
     getArea(node: Tree.Node): Vec.Size
+
+    /**
+     * Get the position of the given node.
+     * @param node To get the position for.
+     * @returns Vector representing the position of the given node.
+     */
     getPosition(node: Tree.Node): Vec.Position
 }
 
+/**
+ * Create a position-tree object for the given node (and its children).
+ * @param root Root node for the tree to make a position-tree for.
+ * @returns Position-tree object for the given root.
+ */
 export function createPositionTree(root: Tree.Node): PositionTree {
     return new PositionTreeImpl(root);
 }
 
+/**
+ * Get the height of the given node.
+ * @param node Node to get the height for.
+ * @returns Number representing the height of the given node.
+ */
 export function getNodeHeight(node: Tree.Node): number {
     return nodeHeaderHeight + node.fields.map(getFieldHeight).reduce(Utils.add, 0);
 }
 
+/**
+ * Get the height of the given field.
+ * @param field Field to get the height for.
+ * @returns Number representing the height of the given field.
+ */
 export function getFieldHeight(field: Tree.Field): number {
     switch (field.kind) {
         case "string":

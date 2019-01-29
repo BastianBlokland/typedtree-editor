@@ -2,6 +2,7 @@
 
 export type NodeType = string
 
+/** Immutable structure representing a single node in the tree */
 export interface Node {
     readonly type: NodeType
     readonly fields: ReadonlyArray<Field>
@@ -68,6 +69,7 @@ export interface NodeArrayField {
     readonly value: ReadonlyArray<Node>
 }
 
+/** Object that can be used to construct new nodes */
 export interface NodeBuilder {
     pushStringField(name: string, value: string): boolean
     pushNumberField(name: string, value: number): boolean
@@ -80,10 +82,14 @@ export interface NodeBuilder {
     pushField(field: Field): boolean
 }
 
-export type NodeCallback = (node: Node) => void
-
 export type BuildCallback = (builder: NodeBuilder) => void
 
+/**
+ * Construct a new node
+ * @param type Type of the node to construct
+ * @param callback Callback that can be used to add additional data to this node.
+ * @returns Newly constructed node
+ */
 export function createNode(type: NodeType, callback: BuildCallback | undefined = undefined): Node {
     if (callback === undefined)
         return new NodeImpl(type, []);
@@ -92,6 +98,11 @@ export function createNode(type: NodeType, callback: BuildCallback | undefined =
     return builder.build();
 }
 
+/**
+ * Get how many nodes are are in the tree represented by the given node.
+ * @param node Root to start counting from.
+ * @returns Number of nodes in this tree.
+ */
 export function getNodeCount(node: Node): number {
     let count = 1;
     forEachDirectChild(node, child => {
@@ -100,7 +111,12 @@ export function getNodeCount(node: Node): number {
     return count;
 }
 
-export function forEachDirectChild(node: Node, callback: NodeCallback): void {
+/**
+ * Execute a callback for each direct child of the given node (no grand-children included).
+ * @param node Node to execute callback on.
+ * @param callback Callback to execute for each direct child.
+ */
+export function forEachDirectChild(node: Node, callback: (node: Node) => void): void {
     node.fields.forEach(field => {
         switch (field.kind) {
             case "node": callback(field.value); break;
@@ -109,12 +125,22 @@ export function forEachDirectChild(node: Node, callback: NodeCallback): void {
     });
 }
 
+/**
+ * Get all the direct children of the given node (no grand-children included).
+ * @param node Node to get the direct children for.
+ * @returns Array containing all the direct children of the given node.
+ */
 export function getDirectChildren(node: Node): Node[] {
     const result: Node[] = [];
     forEachDirectChild(node, child => result.push(child));
     return result;
 }
 
+/**
+ * Get all children of the given node (including grand-children).
+ * @param node Node to get the children for.
+ * @returns Array containing all the children of the given node.
+ */
 export function getAllChildren(node: Node): Node[] {
     const result: Node[] = [];
     forEachDirectChild(node, child => addAllChildren(child, result));
@@ -126,8 +152,18 @@ export function getAllChildren(node: Node): Node[] {
     }
 }
 
+/**
+ * Get the name of the given field (Useful to use in higher order functions).
+ * @param field To get the name for.
+ * @returns Name of the field.
+ */
 export function getFieldName(field: Field): string { return field.name }
 
+/**
+ * Print the tree to the console (Useful for debugging).
+ * @param node Node to print (Including its children).
+ * @param indent How for to indent the lines.
+ */
 export function printNode(node: Node, indent: number = 0): void {
     // Print type
     printText(`Type: ${node.type}`, indent);

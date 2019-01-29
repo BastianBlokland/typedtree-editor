@@ -1,6 +1,11 @@
 ﻿import * as Tree from "./tree";
 import * as Utils from "./utils";
 
+/**
+ * Compose json for the given node (and its children).
+ * @param node Node to create json for.
+ * @returns Json representing the given node.
+ */
 export function composeJson(node: Tree.Node): string {
     const obj = createObject(node);
     return JSON.stringify(obj, undefined, 2);

@@ -3,6 +3,11 @@ import * as Utils from "./utils";
 import * as ParserUtils from "./parserutils";
 import { ParseResult, createError, createSuccess } from "./parserutils";
 
+/**
+ * Load a tree as json from the given file or url.
+ * @param source Source to get the json from (Can be a file or a url).
+ * @returns Tree or parse failure.
+ */
 export async function load(source: File | string): Promise<ParseResult<Tree.Node>> {
     const loadTextResult = await (typeof source == "string" ?
         ParserUtils.loadTextFromUrl(source) :
@@ -13,6 +18,11 @@ export async function load(source: File | string): Promise<ParseResult<Tree.Node
     return parseJson(loadTextResult.value);
 }
 
+/**
+ * Parse a tree from a json string.
+ * @param jsonString Json to pare.
+ * @returns Tree or parse failure.
+ */
 export function parseJson(jsonString: string): ParseResult<Tree.Node> {
     let jsonObj: any = undefined;
     try {

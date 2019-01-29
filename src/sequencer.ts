@@ -1,15 +1,26 @@
 ﻿export type SequenceItem = () => Promise<void>
 
 export interface SequenceRunner {
+    /** Is this runner still running */
     readonly running: boolean
+    /** Is this runner currently waiting for new work items */
     readonly idle: boolean
+    /** Promise that resolves when the runner becomes idle. */
     readonly untilIdle: Promise<void>
+    /** Promise that resolves when this runner is stopped */
     readonly untilEnd: Promise<void>
 
+    /** Enqueue a new sequence item to the runner. */
     enqueue(item: SequenceItem): void
+
+    /** Stop the runner (Will stop accepting new items and will resolve the 'untilEnd' promise). */
     stop(): void
 }
 
+/**
+ * Construct a new sequence runner
+ * @returns new runner
+ */
 export function createRunner(): SequenceRunner {
     return new SequenceRunnerImpl();
 }
