@@ -18,6 +18,7 @@
     "savetree",
     "treedisplay",
     "treeparser",
+    "treepath",
     "treeserializer",
     "treeview",
     "truthy",

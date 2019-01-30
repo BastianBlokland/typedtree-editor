@@ -22,7 +22,7 @@ test("getNodeCount", () => {
 test("forEachDirectChild", () => {
     const testTree = createTestTree();
     const directChildTypes: string[] = [];
-    Tree.forEachDirectChild(testTree, child => directChildTypes.push(child.type));
+    Tree.forEachDirectChild(testTree, child => { directChildTypes.push(child.type) });
 
     expect(directChildTypes).toEqual(["node2", "node4"]);
 });
