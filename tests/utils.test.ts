@@ -1,5 +1,13 @@
 ﻿import * as Utils from "../src/utils";
 
+test("withNewElement", () => {
+    expect(Utils.withNewElement([1, 2, 3], 0, 1337)).toEqual([1337, 2, 3]);
+    expect(Utils.withNewElement([1, 2, 3], 1, 1337)).toEqual([1, 1337, 3]);
+    expect(Utils.withNewElement([1, 2, 3], 2, 1337)).toEqual([1, 2, 1337]);
+    expect(() => Utils.withNewElement([1], -1, 1337)).toThrowError();
+    expect(() => Utils.withNewElement([1], 1, 1337)).toThrowError();
+});
+
 test("find", () => {
     const array = [{ name: "foo", id: 1 }, { name: "bar", id: 2 }, { name: "baz", id: 3 }];
     expect(Utils.find(array, elem => elem.id == 1)).toEqual(array[0]);
