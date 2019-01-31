@@ -1,6 +1,17 @@
 ﻿import * as Utils from "./utils";
 
+/** Identifier for the node-type */
 export type NodeType = string
+
+/** Extracts the type of the value of a given field. */
+export type FieldValueType<T extends Field> = T["value"];
+
+/**
+ * Extracts the element type of the value of a given field.
+ * This means if you request the element type for a 'stringArray' field you will get the type 'string'.
+ */
+export type FieldElementType<T extends Field> =
+    FieldValueType<T> extends ReadonlyArray<infer U> ? U : FieldValueType<T>;
 
 /** Immutable structure representing a single node in the tree */
 export interface Node {
