@@ -9,11 +9,11 @@ import { ParseResult, createError, createSuccess } from "./parserutils";
  * @returns Tree or parse failure.
  */
 export async function load(source: File | string): Promise<ParseResult<Tree.Node>> {
-    const loadTextResult = await (typeof source == "string" ?
+    const loadTextResult = await (typeof source === "string" ?
         ParserUtils.loadTextFromUrl(source) :
         ParserUtils.loadTextFromFile(source));
 
-    if (loadTextResult.kind == "error")
+    if (loadTextResult.kind === "error")
         return loadTextResult;
     return parseJson(loadTextResult.value);
 }
@@ -40,11 +40,11 @@ export function parseJson(jsonString: string): ParseResult<Tree.Node> {
 }
 
 function parseNode(obj: any): Tree.Node {
-    if (obj == undefined || obj == null || typeof obj != "object")
+    if (obj === undefined || obj === null || typeof obj != "object")
         throw new Error("Invalid input obj");
 
     const type: any = obj.$type;
-    if (type == undefined || type == null || typeof type != "string")
+    if (type === undefined || type === null || typeof type != "string")
         throw new Error("Object is missing a '$type' key");
 
     return Tree.createNode(type, b => {
@@ -56,7 +56,7 @@ function parseNode(obj: any): Tree.Node {
 }
 
 function parseField(name: string, value: any): Tree.Field {
-    if (value == undefined || value == null)
+    if (value === undefined || value === null)
         throw new Error(`Invalid value for key: '${name}'`);
 
     switch (typeof value) {
@@ -87,7 +87,7 @@ function parseField(name: string, value: any): Tree.Field {
 }
 
 function getArrayType(array: any[]): string {
-    if (array.length == 0)
+    if (array.length === 0)
         throw new Error("Unable to determine type of empty array");
     const type = typeof array[0];
     for (let i: number = 1; i < array.length; i++) {

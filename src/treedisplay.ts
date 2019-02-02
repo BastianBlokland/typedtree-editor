@@ -43,7 +43,7 @@ function createField(
     yOffset: number): number {
 
     const field = node.getField(fieldName);
-    if (field == undefined)
+    if (field === undefined)
         return 0;
 
     const fieldSize = { x: positionTree.getSize(node).x, y: TreeView.getFieldHeight(field) };

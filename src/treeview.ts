@@ -121,21 +121,21 @@ class PositionTreeImpl implements PositionTree {
 
     getSize(node: Tree.Node): Vec.Size {
         const lookup = this._sizes.get(node);
-        if (lookup == undefined)
+        if (lookup === undefined)
             throw new Error("Node is not known to this view-tree");
         return lookup;
     }
 
     getArea(node: Tree.Node): Vec.Size {
         const lookup = this._areas.get(node);
-        if (lookup == undefined)
+        if (lookup === undefined)
             throw new Error("Node is not known to this view-tree");
         return lookup;
     }
 
     getPosition(node: Tree.Node): Vec.Position {
         const lookup = this._positions.get(node);
-        if (lookup == undefined)
+        if (lookup === undefined)
             throw new Error("Node is not known to this view-tree");
         return lookup;
     }
@@ -150,7 +150,7 @@ class PositionTreeImpl implements PositionTree {
         const size = this.getSize(node);
 
         const directChildren = Tree.getDirectChildren(node);
-        if (directChildren.length == 0) {
+        if (directChildren.length === 0) {
             this._areas.set(node, size);
             return size;
         }
