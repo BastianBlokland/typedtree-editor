@@ -2,11 +2,9 @@
 import * as DomUtils from "./domutils";
 import * as Vec from "./vector";
 import * as SvgJs from "svg.js";
+import { ClassName } from "./domutils";
 
 declare const SVG: typeof SvgJs;
-
-/** Html class identifier */
-export type ClassName = string;
 
 /** Display element that content can be added to. */
 export interface Element {
@@ -25,6 +23,15 @@ export interface Element {
     /** Add a text graphic to this element.
      * Note: Position is vertically centered. */
     addText(className: ClassName, text: string, position: Vec.Position): void
+
+    /** Add a editable text graphic to this element.
+     * Note: Position is vertically centered. */
+    addEditableText(
+        className: ClassName,
+        text: string,
+        position: Vec.Position,
+        size: Vec.Size,
+        callback: (newText: string) => void): void
 
     /** Add a line graphic to this element. */
     addLine(className: ClassName, from: Vec.Position, to: Vec.Position): void
@@ -56,7 +63,10 @@ export function initialize(): void {
     window.ondragstart = _ => false; // Disable native dragging as it interferes with ours.
     window.onkeydown = event => {
         switch (event.key) {
-            case "f": focusContent(); break;
+            case "f":
+                if (document.activeElement === null || document.activeElement.tagName != "INPUT")
+                    focusContent();
+                break;
         }
     };
     window.onmousedown = event => {
@@ -218,6 +228,25 @@ class GroupElement implements Element {
                 b.tspan(text).dy("0.6ex");
             }).
             addClass(className);
+    }
+
+    addEditableText(
+        className: ClassName,
+        text: string,
+        position: Vec.Position,
+        size: Vec.Size,
+        callback: (newText: string) => void): void {
+
+        const inputElement = DomUtils.createTextInput(className, text, callback);
+        this._svgGroup.group().
+            element("foreignObject").
+            x(position.x).
+            /* HACK: Ugly +2 here because i can't figure out why it seems to draw slightly too high on
+            most browsers */
+            y(position.y - Utils.half(size.y) + 2).
+            width(size.x).
+            height(size.y).
+            node.appendChild(inputElement);
     }
 
     addLine(className: ClassName, from: Vec.Position, to: Vec.Position): void {
