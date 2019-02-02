@@ -9,6 +9,22 @@ export function isArray(obj: any): boolean {
 }
 
 /**
+ * Create a new array that contains all the elements from the previous but with the given element
+ * replaced.
+ * @param array Source array.
+ * @param index Index of the element to replace.
+ * @param data Data for the new element.
+ * @returns New array with the changed element.
+ */
+export function withNewElement<T>(array: ReadonlyArray<T>, index: number, data: T): T[] {
+    if (index < 0 || index >= array.length)
+        throw new Error("Given index is outside of the bounds of the array");
+    const result = array.slice();
+    result[index] = data;
+    return result;
+}
+
+/**
  * Find a element in the given array that matches the predicate
  * @param array Array to check
  * @param predicate Predicate to match against elements

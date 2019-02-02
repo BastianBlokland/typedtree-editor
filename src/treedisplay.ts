@@ -12,6 +12,10 @@ export function setTree(root: Tree.Node): void {
     Display.clear();
     const positionTree = TreeView.createPositionTree(root);
     positionTree.nodes.forEach(n => createDisplay(n, positionTree));
+}
+
+/** Focus the given tree on the display. */
+export function focusTree(): void {
     Display.focusContent();
 }
 

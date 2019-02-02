@@ -1,16 +1,27 @@
 ﻿import * as Utils from "./utils";
 
+/** Identifier for the node-type */
 export type NodeType = string
 
-/** Immutable structure representing a single node in the tree */
-export interface Node {
-    readonly type: NodeType
-    readonly fields: ReadonlyArray<Field>
-    readonly fieldNames: ReadonlyArray<string>
+/** Extracts the type of the value of a given field. */
+export type FieldValueType<T> = T extends Field ? T["value"] : never;
 
-    getField(name: string): Field | undefined
-}
+/**
+ * Extracts the element type of the value of a given field.
+ * This means if you request the element type for a 'stringArray' field you will get the type 'string'.
+ */
+export type FieldElementType<T> =
+    T extends Field ? (FieldValueType<T> extends ReadonlyArray<infer U> ? U : FieldValueType<T>) : never;
 
+/** Filters out all non-array fields from a union. */
+export type OnlyArrayField<T> =
+    T extends Field ? (FieldValueType<T> extends ReadonlyArray<infer U> ? T : never) : never;
+
+/** Filter out all array fields from a union. */
+export type OnlyNonArrayField<T> =
+    T extends Field ? (FieldValueType<T> extends ReadonlyArray<infer U> ? never : T) : never;
+
+/** Union type of all possible fields */
 export type Field =
     StringField |
     NumberField |
@@ -20,6 +31,16 @@ export type Field =
     NumberArrayField |
     BooleanArrayField |
     NodeArrayField
+
+/** Immutable structure representing a single node in the tree */
+export interface Node {
+    readonly type: NodeType
+    readonly fields: ReadonlyArray<Field>
+    readonly fieldNames: ReadonlyArray<string>
+
+    getField(name: string): Field | undefined
+    getChild(output: FieldElementIdentifier): Node | undefined;
+}
 
 export interface StringField {
     readonly kind: "string"
@@ -69,6 +90,13 @@ export interface NodeArrayField {
     readonly value: ReadonlyArray<Node>
 }
 
+/* Identifier for a single element of a field, for non-arrays the offset will the 0. For arrays the
+offset will be the index into the array. */
+export interface FieldElementIdentifier {
+    readonly fieldName: string
+    readonly offset: number
+}
+
 /** Object that can be used to construct new nodes */
 export interface NodeBuilder {
     pushStringField(name: string, value: string): boolean
@@ -115,14 +143,33 @@ export function getNodeCount(node: Node): number {
  * Execute a callback for each direct child of the given node (no grand-children included).
  * @param node Node to execute callback on.
  * @param callback Callback to execute for each direct child.
+ * Can be short-circuited by returning false from the callback, if void or true is returned the loop
+ * will continue.
  */
-export function forEachDirectChild(node: Node, callback: (node: Node) => void): void {
-    node.fields.forEach(field => {
+export function forEachDirectChild(
+    node: Node,
+    callback: (node: Node, element: FieldElementIdentifier) => boolean | void): void {
+
+    for (let fieldIndex = 0; fieldIndex < node.fields.length; fieldIndex++) {
+        const field = node.fields[fieldIndex];
+
         switch (field.kind) {
-            case "node": callback(field.value); break;
-            case "nodeArray": field.value.forEach(callback); break;
+            case "node":
+                const result = callback(field.value, { fieldName: field.name, offset: 0 });
+                if (typeof result === "boolean" && !result)
+                    return;
+                break;
+
+            case "nodeArray":
+                for (let arrayIndex = 0; arrayIndex < field.value.length; arrayIndex++) {
+                    const node = field.value[arrayIndex];
+                    const result = callback(node, { fieldName: field.name, offset: arrayIndex });
+                    if (typeof result === "boolean" && !result)
+                        return;
+                }
+                break;
         }
-    });
+    }
 }
 
 /**
@@ -132,7 +179,7 @@ export function forEachDirectChild(node: Node, callback: (node: Node) => void): 
  */
 export function getDirectChildren(node: Node): Node[] {
     const result: Node[] = [];
-    forEachDirectChild(node, child => result.push(child));
+    forEachDirectChild(node, child => { result.push(child) });
     return result;
 }
 
@@ -231,6 +278,17 @@ class NodeImpl implements Node {
 
     getField(name: string): Field | undefined {
         return Utils.find(this._fields, field => field.name === name);
+    }
+
+    getChild(output: FieldElementIdentifier): Node | undefined {
+        const field = this.getField(output.fieldName);
+        if (field != undefined) {
+            if (field.kind === "node" && output.offset === 0)
+                return field.value;
+            if (field.kind === "nodeArray")
+                return field.value[output.offset];
+        }
+        return undefined;
     }
 }
 

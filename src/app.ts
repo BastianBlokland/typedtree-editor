@@ -35,6 +35,7 @@ function enqueueLoadTree(source: string | File): void {
             console.log(`Successfully loaded tree: ${name}`);
             // Tree.printNode(result.value, 2);
             setCurrentTree(result.value, name);
+            TreeDisplay.focusTree();
         }
     });
 }
