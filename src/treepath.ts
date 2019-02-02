@@ -21,7 +21,7 @@ export function findPathToRoot(root: Tree.Node, target: Tree.Node): Parent[] {
     throw new Error("'target' is not a (grand)child of 'root'");
 
     function findLeaf(node: Tree.Node, target: Tree.Node, path: Parent[]): boolean {
-        if (node == target)
+        if (node === target)
             return true;
 
         let found = false;
@@ -51,7 +51,7 @@ export function findPathToRoot(root: Tree.Node, target: Tree.Node): Parent[] {
  */
 export function getParent(root: Tree.Node, node: Tree.Node): Parent | undefined {
     const pathToRoot = findPathToRoot(root, node);
-    if (pathToRoot.length == 0)
+    if (pathToRoot.length === 0)
         return undefined;
     return pathToRoot[0];
 }

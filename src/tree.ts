@@ -156,7 +156,7 @@ export function forEachDirectChild(
         switch (field.kind) {
             case "node":
                 const result = callback(field.value, { fieldName: field.name, offset: 0 });
-                if (typeof result == "boolean" && !result)
+                if (typeof result === "boolean" && !result)
                     return;
                 break;
 
@@ -164,7 +164,7 @@ export function forEachDirectChild(
                 for (let arrayIndex = 0; arrayIndex < field.value.length; arrayIndex++) {
                     const node = field.value[arrayIndex];
                     const result = callback(node, { fieldName: field.name, offset: arrayIndex });
-                    if (typeof result == "boolean" && !result)
+                    if (typeof result === "boolean" && !result)
                         return;
                 }
                 break;
@@ -283,9 +283,9 @@ class NodeImpl implements Node {
     getChild(output: FieldElementIdentifier): Node | undefined {
         const field = this.getField(output.fieldName);
         if (field != undefined) {
-            if (field.kind == "node" && output.offset == 0)
+            if (field.kind === "node" && output.offset === 0)
                 return field.value;
-            if (field.kind == "nodeArray")
+            if (field.kind === "nodeArray")
                 return field.value[output.offset];
         }
         return undefined;
