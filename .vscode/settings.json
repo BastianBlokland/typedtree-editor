@@ -17,6 +17,7 @@
     "rbox",
     "savetree",
     "treedisplay",
+    "treemodifications",
     "treeparser",
     "treepath",
     "treeserializer",
