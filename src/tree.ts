@@ -4,14 +4,33 @@
 export type NodeType = string
 
 /** Extracts the type of the value of a given field. */
-export type FieldValueType<T extends Field> = T["value"];
+export type FieldValueType<T> = T extends Field ? T["value"] : never;
 
 /**
  * Extracts the element type of the value of a given field.
  * This means if you request the element type for a 'stringArray' field you will get the type 'string'.
  */
-export type FieldElementType<T extends Field> =
-    FieldValueType<T> extends ReadonlyArray<infer U> ? U : FieldValueType<T>;
+export type FieldElementType<T> =
+    T extends Field ? (FieldValueType<T> extends ReadonlyArray<infer U> ? U : FieldValueType<T>) : never;
+
+/** Filters out all non-array fields from a union. */
+export type OnlyArrayField<T> =
+    T extends Field ? (FieldValueType<T> extends ReadonlyArray<infer U> ? T : never) : never;
+
+/** Filter out all array fields from a union. */
+export type OnlyNonArrayField<T> =
+    T extends Field ? (FieldValueType<T> extends ReadonlyArray<infer U> ? never : T) : never;
+
+/** Union type of all possible fields */
+export type Field =
+    StringField |
+    NumberField |
+    BooleanField |
+    NodeField |
+    StringArrayField |
+    NumberArrayField |
+    BooleanArrayField |
+    NodeArrayField
 
 /** Immutable structure representing a single node in the tree */
 export interface Node {
@@ -22,16 +41,6 @@ export interface Node {
     getField(name: string): Field | undefined
     getChild(output: FieldElementIdentifier): Node | undefined;
 }
-
-export type Field =
-    StringField |
-    NumberField |
-    BooleanField |
-    NodeField |
-    StringArrayField |
-    NumberArrayField |
-    BooleanArrayField |
-    NodeArrayField
 
 export interface StringField {
     readonly kind: "string"
