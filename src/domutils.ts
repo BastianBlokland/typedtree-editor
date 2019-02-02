@@ -18,7 +18,7 @@ export function saveJsonText(json: string, fileName: string): void {
  */
 export function subscribeToClick(elementId: string, callback: () => void): void {
     const element = document.getElementById(elementId);
-    if (element == null)
+    if (element === null)
         throw new Error(`Element with id: ${elementId} not found`);
     element.onclick = callback;
 }
@@ -31,7 +31,7 @@ export function subscribeToClick(elementId: string, callback: () => void): void 
  */
 export function subscribeToFileInput(inputId: string, callback: (file: File) => void): void {
     const element = document.getElementById(inputId);
-    if (element == null)
+    if (element === null)
         throw new Error(`Element with id: ${inputId} not found`);
     const inputElement = <HTMLInputElement>element;
     element.onchange = _ => {
@@ -49,7 +49,7 @@ export function subscribeToFileInput(inputId: string, callback: (file: File) => 
  */
 export function setText(elementId: string, text: string): void {
     const element = document.getElementById(elementId);
-    if (element == null)
+    if (element === null)
         throw new Error(`Element with id: ${elementId} not found`);
     element.textContent = text;
 }

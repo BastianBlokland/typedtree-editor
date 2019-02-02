@@ -42,7 +42,7 @@ export function initialize(): void {
     if (svgDocument != null || svgRoot != null)
         throw new Error("Already initialized");
 
-    if (document.getElementById(rootSvgDomElement) == null)
+    if (document.getElementById(rootSvgDomElement) === null)
         throw new Error(`No dom element found with id: ${rootSvgDomElement}`);
 
     if (!SVG.supported)
@@ -243,6 +243,6 @@ function clampScale(newScale: number): number {
 }
 
 function assertInitialized(): void {
-    if (svgDocument == undefined || svgRoot == undefined)
+    if (svgDocument === undefined || svgRoot === undefined)
         throw new Error("Display hasn't been initialized");
 }

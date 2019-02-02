@@ -46,7 +46,7 @@ export function half(vector: Vector2): Vector2 {
  * @returns Multiplied vector.
  */
 export function multiply(vector: Vector2, amount: number | Vector2): Vector2 {
-    if (typeof amount == "number")
+    if (typeof amount === "number")
         return createVector(vector.x * amount, vector.y * amount);
 
     return createVector(vector.x * amount.x, vector.y * amount.y);
@@ -59,7 +59,7 @@ export function multiply(vector: Vector2, amount: number | Vector2): Vector2 {
  * @returns Divided vector.
  */
 export function divide(vector: Vector2, amount: number | Vector2): Vector2 {
-    if (typeof amount == "number")
+    if (typeof amount === "number")
         return createVector(vector.x / amount, vector.y / amount);
 
     return createVector(vector.x / amount.x, vector.y / amount.y);
@@ -72,7 +72,7 @@ export function divide(vector: Vector2, amount: number | Vector2): Vector2 {
  * @returns Added vector.
  */
 export function add(vector: Vector2, amount: number | Vector2): Vector2 {
-    if (typeof amount == "number")
+    if (typeof amount === "number")
         return createVector(vector.x + amount, vector.y + amount);
 
     return createVector(vector.x + amount.x, vector.y + amount.y);
@@ -85,7 +85,7 @@ export function add(vector: Vector2, amount: number | Vector2): Vector2 {
  * @returns Subtracted vector.
  */
 export function subtract(vector: Vector2, amount: number | Vector2): Vector2 {
-    if (typeof amount == "number")
+    if (typeof amount === "number")
         return createVector(vector.x - amount, vector.y - amount);
 
     return createVector(vector.x - amount.x, vector.y - amount.y);

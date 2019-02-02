@@ -208,7 +208,7 @@ class NodeImpl implements Node {
     private readonly _fields: ReadonlyArray<Field>;
 
     constructor(type: NodeType, fields: ReadonlyArray<Field>) {
-        if (!type || type == "")
+        if (!type || type === "")
             throw new Error("Node must has a type");
         if (Utils.hasDuplicates(fields.map(getFieldName)))
             throw new Error("Field names must be unique");
@@ -230,7 +230,7 @@ class NodeImpl implements Node {
     }
 
     getField(name: string): Field | undefined {
-        return Utils.find(this._fields, field => field.name == name);
+        return Utils.find(this._fields, field => field.name === name);
     }
 }
 
@@ -290,7 +290,7 @@ class NodeBuilderImpl implements NodeBuilder {
             return false;
 
         // Field names have to unique
-        if (this._fields.some(existingField => existingField.name == field.name))
+        if (this._fields.some(existingField => existingField.name === field.name))
             return false;
 
         this._fields.push(field);
