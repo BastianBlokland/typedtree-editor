@@ -51,10 +51,12 @@
 /* Field values */
 .stringFieldValue {
     background-color: #DDD;
+    width: 90%;
 }
 
 .numberFieldValue {
     background-color: #DDD;
+    width: 90%;
 }
 
 .booleanFieldValue {
