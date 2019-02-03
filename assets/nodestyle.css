@@ -61,6 +61,7 @@
 
 .booleanFieldValue {
     background-color: #DDD;
+    cursor: pointer;
 }
 
 .nodeConnection {
