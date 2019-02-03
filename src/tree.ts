@@ -21,7 +21,16 @@ export type OnlyArrayField<T> =
 export type OnlyNonArrayField<T> =
     T extends Field ? (FieldValueType<T> extends ReadonlyArray<infer U> ? never : T) : never;
 
-/** Union type of all possible fields */
+/** Union type of all possible elements in fields. */
+export type FieldElement = FieldElementType<Field>;
+
+/** Union type of all possible array fields. */
+export type ArrayField = OnlyArrayField<Field>;
+
+/** Union type of all possible non-array fields. */
+export type NonArrayField = OnlyNonArrayField<Field>;
+
+/** Union type of all possible fields. */
 export type Field =
     StringField |
     NumberField |
@@ -32,7 +41,7 @@ export type Field =
     BooleanArrayField |
     NodeArrayField
 
-/** Immutable structure representing a single node in the tree */
+/** Immutable structure representing a single node in the tree. */
 export interface Node {
     readonly type: NodeType
     readonly fields: ReadonlyArray<Field>

@@ -59,44 +59,56 @@ function createField(
 
     // Value
     switch (field.kind) {
-        case "string": createStringValue("", field.value, centeredYOffset); break;
-        case "number": createNumberValue("", field.value, centeredYOffset); break;
-        case "boolean": createBooleanValue("", field.value, centeredYOffset); break;
-        case "node": createNodeValue("", field.value, centeredYOffset); break;
         case "stringArray":
-            field.value.forEach((element, index) => {
-                createStringValue(`[${index}] `, element, centeredYOffset + index * nodeFieldHeight);
-            }); break;
         case "numberArray":
-            field.value.forEach((element, index) => {
-                createNumberValue(`[${index}] `, element, centeredYOffset + index * nodeFieldHeight);
-            }); break;
         case "booleanArray":
-            field.value.forEach((element, index) => {
-                createBooleanValue(`[${index}] `, element, centeredYOffset + index * nodeFieldHeight);
-            }); break;
         case "nodeArray":
-            field.value.forEach((element, index) => {
-                createNodeValue(`[${index}] `, element, centeredYOffset + index * nodeFieldHeight);
-            }); break;
-        default: Utils.assertNever(field);
+            createArrayFieldValue(field);
+            break;
+        default:
+            createNonArrayFieldValue(field);
+            break;
     }
     return fieldSize.y;
 
-    function createStringValue(prefix: string, value: string, fieldY: number) {
-        parent.addText("stringFieldValue", `${prefix}"${value}"`, { x: centerX, y: fieldY });
+    function createNonArrayFieldValue<T extends Tree.NonArrayField>(field: T): void {
+        createElementValue(field.value, 0, 0);
     }
 
-    function createNumberValue(prefix: string, value: number, fieldY: number) {
-        parent.addText("numberFieldValue", `${prefix}${value}`, { x: centerX, y: fieldY });
+    function createArrayFieldValue<T extends Tree.ArrayField>(field: T): void {
+        for (let i = 0; i < field.value.length; i++) {
+            const element = field.value[i];
+            const yOffset = i * nodeFieldHeight;
+            parent.addText("arrayFieldIndexPrefix", `[${i}]`, { x: centerX, y: centeredYOffset + yOffset });
+            createElementValue(element, 25, yOffset);
+        }
     }
 
-    function createBooleanValue(prefix: string, value: boolean, fieldY: number) {
-        parent.addText("booleanFieldValue", `${prefix}${value ? "true" : "false"}`, { x: centerX, y: fieldY });
+    function createElementValue<T extends Tree.FieldElement>(element: T, xOffset: number, yOffset: number): void {
+        const pos: Vec.Position = { x: centerX + xOffset, y: centeredYOffset + yOffset };
+        const size: Vec.Size = { x: fieldSize.x - pos.x, y: nodeFieldHeight };
+        switch (typeof element) {
+            case "string": createStringValue(element, pos, size); break;
+            case "number": createNumberValue(element, pos, size); break;
+            case "boolean": createBooleanValue(element, pos, size); break;
+            default: createNodeValue(<Tree.Node>element, pos, size); break;
+        }
     }
 
-    function createNodeValue(prefix: string, value: Tree.Node, fieldY: number) {
-        addConnection(parent, { x: fieldSize.x - 12, y: fieldY }, getRelativeVector(node, value, positionTree));
+    function createStringValue(value: string, pos: Vec.Position, size: Vec.Size) {
+        parent.addText("stringFieldValue", `"${value}"`, pos);
+    }
+
+    function createNumberValue(value: number, pos: Vec.Position, size: Vec.Size) {
+        parent.addText("numberFieldValue", `${value}`, pos);
+    }
+
+    function createBooleanValue(value: boolean, pos: Vec.Position, size: Vec.Size) {
+        parent.addText("booleanFieldValue", `${value ? "true" : "false"}`, pos);
+    }
+
+    function createNodeValue(value: Tree.Node, pos: Vec.Position, size: Vec.Size) {
+        addConnection(parent, { x: fieldSize.x - 12, y: pos.y }, getRelativeVector(node, value, positionTree));
     }
 }
 
