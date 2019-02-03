@@ -4,11 +4,13 @@
   // Common plugins
   "cSpell.words": [
     "bbox",
+    "callout",
     "crossorigin",
     "domutils",
     "jsnext",
     "junit",
     "nodestyle",
+    "noselect",
     "onwarn",
     "openexample",
     "opentree",
