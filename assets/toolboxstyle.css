@@ -16,6 +16,10 @@
     font-weight: bold;
 }
 
+.toolbox button {
+    cursor: pointer;
+}
+
 #opentree-container {
     display: flex;
     align-items: center;
