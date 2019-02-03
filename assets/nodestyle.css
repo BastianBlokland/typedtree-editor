@@ -61,6 +61,7 @@
 
 .booleanFieldValue {
     background-color: #DDD;
+    cursor: pointer;
 }
 
 .nodeConnection {
@@ -69,10 +70,13 @@
     fill: none;
 }
 
-/* On safari the number spinners are broken when used inside a foreign-svg object (they render in
-random places. Thats why we disable them here */
+/* Number spinners cause more problems then they are worth in our case. For example in Safari they
+render in completely random locations when used inside a svg foreign-object. */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
+}
+input[type=number] {
+    -moz-appearance: textfield;
 }
