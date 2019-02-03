@@ -48,6 +48,11 @@
     font-weight: bold;
 }
 
+/* Field values */
+.stringFieldValue {
+    background-color: #DDD;
+}
+
 .nodeConnection {
     stroke: #000;
     stroke-width: 4;

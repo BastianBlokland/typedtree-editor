@@ -52,7 +52,7 @@ function createField(
 
     const fieldSize = { x: positionTree.getSize(node).x, y: TreeView.getFieldHeight(field) };
     const centeredYOffset = yOffset + Utils.half(nodeFieldHeight);
-    const centerX = Utils.half(fieldSize.x);
+    const nameWidth = Utils.half(fieldSize.x) - 10;
 
     parent.addRect(`${field.kind}ValueBackground`, fieldSize, { x: 0, y: yOffset });
     parent.addText("nodeFieldName", `${field.name}:`, { x: 10, y: centeredYOffset });
@@ -79,13 +79,13 @@ function createField(
         for (let i = 0; i < field.value.length; i++) {
             const element = field.value[i];
             const yOffset = i * nodeFieldHeight;
-            parent.addText("arrayFieldIndexPrefix", `[${i}]`, { x: centerX, y: centeredYOffset + yOffset });
-            createElementValue(element, 25, yOffset);
+            parent.addText("arrayFieldIndexPrefix", `[${i}]`, { x: nameWidth, y: centeredYOffset + yOffset });
+            createElementValue(element, 20, yOffset);
         }
     }
 
     function createElementValue<T extends Tree.FieldElement>(element: T, xOffset: number, yOffset: number): void {
-        const pos: Vec.Position = { x: centerX + xOffset, y: centeredYOffset + yOffset };
+        const pos: Vec.Position = { x: nameWidth + xOffset, y: centeredYOffset + yOffset };
         const size: Vec.Size = { x: fieldSize.x - pos.x, y: nodeFieldHeight };
         switch (typeof element) {
             case "string": createStringValue(element, pos, size); break;
@@ -95,19 +95,21 @@ function createField(
         }
     }
 
-    function createStringValue(value: string, pos: Vec.Position, size: Vec.Size) {
-        parent.addText("stringFieldValue", `"${value}"`, pos);
+    function createStringValue(value: string, pos: Vec.Position, size: Vec.Size): void {
+        parent.addEditableText("stringFieldValue", value, pos, size, newText => {
+
+        });
     }
 
-    function createNumberValue(value: number, pos: Vec.Position, size: Vec.Size) {
+    function createNumberValue(value: number, pos: Vec.Position, size: Vec.Size): void {
         parent.addText("numberFieldValue", `${value}`, pos);
     }
 
-    function createBooleanValue(value: boolean, pos: Vec.Position, size: Vec.Size) {
+    function createBooleanValue(value: boolean, pos: Vec.Position, size: Vec.Size): void {
         parent.addText("booleanFieldValue", `${value ? "true" : "false"}`, pos);
     }
 
-    function createNodeValue(value: Tree.Node, pos: Vec.Position, size: Vec.Size) {
+    function createNodeValue(value: Tree.Node, pos: Vec.Position, size: Vec.Size): void {
         addConnection(parent, { x: fieldSize.x - 12, y: pos.y }, getRelativeVector(node, value, positionTree));
     }
 }
