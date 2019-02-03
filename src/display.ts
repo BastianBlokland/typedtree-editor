@@ -33,6 +33,15 @@ export interface Element {
         size: Vec.Size,
         callback: (newText: string) => void): void
 
+    /** Add a editable number graphic to this element.
+     * Note: Position is vertically centered. */
+    addEditableNumber(
+        className: ClassName,
+        number: number,
+        position: Vec.Position,
+        size: Vec.Size,
+        callback: (newNumber: number) => void): void
+
     /** Add a line graphic to this element. */
     addLine(className: ClassName, from: Vec.Position, to: Vec.Position): void
 
@@ -238,6 +247,25 @@ class GroupElement implements Element {
         callback: (newText: string) => void): void {
 
         const inputElement = DomUtils.createTextInput(className, text, callback);
+        this._svgGroup.group().
+            element("foreignObject").
+            x(position.x).
+            /* HACK: Ugly +2 here because i can't figure out why it seems to draw slightly too high on
+            most browsers */
+            y(position.y - Utils.half(size.y) + 2).
+            width(size.x).
+            height(size.y).
+            node.appendChild(inputElement);
+    }
+
+    addEditableNumber(
+        className: ClassName,
+        number: number,
+        position: Vec.Position,
+        size: Vec.Size,
+        callback: (newNumber: number) => void): void {
+
+        const inputElement = DomUtils.createNumberInput(className, number, callback);
         this._svgGroup.group().
             element("foreignObject").
             x(position.x).

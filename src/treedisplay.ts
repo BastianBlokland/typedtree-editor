@@ -147,7 +147,7 @@ function createField(
         size: Vec.Size,
         changed: elementChangedCallback<number>): void {
 
-        parent.addText("numberFieldValue", `${value}`, pos);
+        parent.addEditableNumber("numberFieldValue", value, pos, size, changed);
     }
 
     function createBooleanValue(

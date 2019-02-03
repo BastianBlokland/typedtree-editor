@@ -78,3 +78,25 @@ export function createTextInput(
     };
     return element;
 }
+
+/**
+ * Create a new input element of type number. Note: This does not get parented anywhere yet.
+ * @param className ClassName of the html element.
+ * @param number Initial number to show in the input.
+ * @param callback Callback that will get fired when the user changes the input.
+ * @returns Newly created input element.
+ */
+export function createNumberInput(
+    className: ClassName,
+    number: number,
+    callback: (newNumber: number) => void): HTMLInputElement {
+
+    const element = document.createElement("input");
+    element.setAttribute("type", "number");
+    element.className = className;
+    element.value = number.toString();
+    element.onchange = event => {
+        callback(Number(element.value));
+    };
+    return element;
+}
