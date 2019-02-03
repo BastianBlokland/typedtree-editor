@@ -252,7 +252,8 @@ class GroupElement implements Element {
 
                 b.tspan(text).dy("0.6ex");
             }).
-            addClass(className);
+            addClass(className).
+            addClass("noselect");
     }
 
     addEditableText(
