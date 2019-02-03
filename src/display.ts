@@ -88,8 +88,11 @@ export function initialize(): void {
         }
     };
     window.onmousedown = event => {
+        if (document.activeElement !== null && document.activeElement.tagName == "INPUT")
+            return;
         dragOffset = Vec.subtract(viewOffset, { x: event.clientX, y: event.clientY });
         dragging = true;
+
     };
     window.onmouseup = () => {
         dragging = false;
@@ -99,6 +102,9 @@ export function initialize(): void {
             setOffset(Vec.add(dragOffset, { x: event.clientX, y: event.clientY }));
     };
     window.onwheel = event => {
+        if (document.activeElement !== null && document.activeElement.tagName == "INPUT")
+            return;
+
         // Get data from the event
         const scrollDelta = -(<WheelEvent>event).deltaY * scrollScaleSpeed;
         const pointerPos: Vec.Position = { x: (<WheelEvent>event).pageX, y: (<WheelEvent>event).pageY };
@@ -110,8 +116,9 @@ export function initialize(): void {
         const offsetDelta = Vec.multiply(offsetToPointer, -zoomFactor);
 
         // Apply new scale and offset
-        setScale(newScale);
-        setOffsetDelta(offsetDelta);
+        viewOffset = Vec.add(viewOffset, offsetDelta);
+        scale = newScale;
+        updateRootTransform();
     };
 
     // Setup button listeners
@@ -150,7 +157,7 @@ export function getContentSize(): Vec.Vector2 {
 export function setScale(newScale: number): void {
     assertInitialized();
     scale = clampScale(newScale);
-    svgRoot!.scale(scale, scale, 0, 0);
+    updateRootTransform();
 }
 
 /**
@@ -168,7 +175,7 @@ export function setOffsetDelta(offsetDelta: Vec.Vector2): void {
 export function setOffset(newOffset: Vec.Vector2): void {
     assertInitialized();
     viewOffset = newOffset;
-    svgRoot!.translate(newOffset.x, newOffset.y);
+    updateRootTransform();
 }
 
 /** Focus on the current content (Will be centered and scaled to fit). */
@@ -321,6 +328,10 @@ class GroupElement implements Element {
             x(center.x - Utils.half(radius)).
             y(center.y - Utils.half(radius));
     }
+}
+
+function updateRootTransform(): void {
+    svgRoot!.node.setAttribute("transform", `translate(${viewOffset.x}, ${viewOffset.y})scale(${scale})`);
 }
 
 function clampScale(newScale: number): number {
