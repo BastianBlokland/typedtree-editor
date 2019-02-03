@@ -41,16 +41,27 @@ function enqueueLoadTree(source: string | File): void {
 }
 
 function enqueueSaveTree(): void {
-    if (currentTree === undefined)
-        return;
-
-    const treeJson = TreeSerializer.composeJson(currentTree);
-    DomUtils.saveJsonText(treeJson, currentTitle!);
+    sequencer!.enqueue(async () => {
+        if (currentTree !== undefined) {
+            const treeJson = TreeSerializer.composeJson(currentTree);
+            DomUtils.saveJsonText(treeJson, currentTitle!);
+        }
+    });
 }
 
-function setCurrentTree(node: Tree.Node, name: string): void {
-    currentTree = node;
+function enqueueUpdateTree(oldTree: Tree.Node, newTree: Tree.Node, name: string): void {
+    sequencer!.enqueue(async () => {
+        if (oldTree === currentTree) {
+            setCurrentTree(newTree, name);
+        }
+    });
+}
+
+function setCurrentTree(tree: Tree.Node, name: string): void {
+    currentTree = tree;
     currentTitle = name;
     DomUtils.setText("tree-title", name);
-    TreeDisplay.setTree(currentTree);
+    TreeDisplay.setTree(currentTree, newTree => {
+        enqueueUpdateTree(tree, newTree, name);
+    });
 }
