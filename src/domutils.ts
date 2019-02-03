@@ -100,3 +100,25 @@ export function createNumberInput(
     };
     return element;
 }
+
+/**
+ * Create a new input element of type checkbox. Note: This does not get parented anywhere yet.
+ * @param className ClassName of the html element.
+ * @param boolean If the checkbox should be initially checked or not.
+ * @param callback Callback that will get fired when the user changes the input.
+ * @returns Newly created input element.
+ */
+export function createBooleanInput(
+    className: ClassName,
+    boolean: boolean,
+    callback: (newBoolean: boolean) => void): HTMLInputElement {
+
+    const element = document.createElement("input");
+    element.setAttribute("type", "checkbox");
+    element.checked = boolean;
+    element.className = className;
+    element.onchange = event => {
+        callback(element.checked);
+    };
+    return element;
+}

@@ -28,19 +28,28 @@ export interface Element {
      * Note: Position is vertically centered. */
     addEditableText(
         className: ClassName,
-        text: string,
+        value: string,
         position: Vec.Position,
         size: Vec.Size,
-        callback: (newText: string) => void): void
+        callback: (newValue: string) => void): void
 
     /** Add a editable number graphic to this element.
      * Note: Position is vertically centered. */
     addEditableNumber(
         className: ClassName,
-        number: number,
+        value: number,
         position: Vec.Position,
         size: Vec.Size,
-        callback: (newNumber: number) => void): void
+        callback: (newValue: number) => void): void
+
+    /** Add a editable boolean graphic to this element.
+     * Note: Position is vertically centered. */
+    addEditableBoolean(
+        className: ClassName,
+        value: boolean,
+        position: Vec.Position,
+        size: Vec.Size,
+        callback: (newValue: boolean) => void): void
 
     /** Add a line graphic to this element. */
     addLine(className: ClassName, from: Vec.Position, to: Vec.Position): void
@@ -241,12 +250,12 @@ class GroupElement implements Element {
 
     addEditableText(
         className: ClassName,
-        text: string,
+        value: string,
         position: Vec.Position,
         size: Vec.Size,
-        callback: (newText: string) => void): void {
+        callback: (newValue: string) => void): void {
 
-        const inputElement = DomUtils.createTextInput(className, text, callback);
+        const inputElement = DomUtils.createTextInput(className, value, callback);
         this._svgGroup.group().
             element("foreignObject").
             x(position.x).
@@ -260,12 +269,31 @@ class GroupElement implements Element {
 
     addEditableNumber(
         className: ClassName,
-        number: number,
+        value: number,
         position: Vec.Position,
         size: Vec.Size,
-        callback: (newNumber: number) => void): void {
+        callback: (newValue: number) => void): void {
 
-        const inputElement = DomUtils.createNumberInput(className, number, callback);
+        const inputElement = DomUtils.createNumberInput(className, value, callback);
+        this._svgGroup.group().
+            element("foreignObject").
+            x(position.x).
+            /* HACK: Ugly +2 here because i can't figure out why it seems to draw slightly too high on
+            most browsers */
+            y(position.y - Utils.half(size.y) + 2).
+            width(size.x).
+            height(size.y).
+            node.appendChild(inputElement);
+    }
+
+    addEditableBoolean(
+        className: ClassName,
+        value: boolean,
+        position: Vec.Position,
+        size: Vec.Size,
+        callback: (newValue: boolean) => void): void {
+
+        const inputElement = DomUtils.createBooleanInput(className, value, callback);
         this._svgGroup.group().
             element("foreignObject").
             x(position.x).

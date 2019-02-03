@@ -156,7 +156,7 @@ function createField(
         size: Vec.Size,
         changed: elementChangedCallback<boolean>): void {
 
-        parent.addText("booleanFieldValue", `${value ? "true" : "false"}`, pos);
+        parent.addEditableBoolean("booleanFieldValue", value, pos, size, changed);
     }
 
     function createNodeValue(
