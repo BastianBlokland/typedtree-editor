@@ -67,7 +67,8 @@ export function initialize(): void {
     if (svgDocument != null || svgRoot != null)
         throw new Error("Already initialized");
 
-    if (document.getElementById(rootSvgDomElement) === null)
+    const rootSvgDom = document.getElementById(rootSvgDomElement);
+    if (rootSvgDom === null)
         throw new Error(`No dom element found with id: ${rootSvgDomElement}`);
 
     if (!SVG.supported)
@@ -78,6 +79,7 @@ export function initialize(): void {
     svgRoot = svgDocument.group();
 
     // Setup global listeners
+    const inputBlocker = document.getElementById("inputBlockerDomElement");
     window.ondragstart = _ => false; // Disable native dragging as it interferes with ours.
     window.onkeydown = event => {
         switch (event.key) {
@@ -96,10 +98,19 @@ export function initialize(): void {
     };
     window.onmouseup = () => {
         dragging = false;
+        if (inputBlocker != null)
+            inputBlocker.className = "order-back";
     };
     window.onmousemove = event => {
-        if (dragging)
+        if (document.activeElement !== null && document.activeElement.tagName == "INPUT") {
+            dragging = false;
+            return;
+        }
+        if (dragging) {
+            if (inputBlocker != null)
+                inputBlocker.className = "order-front";
             setOffset(Vec.add(dragOffset, { x: event.clientX, y: event.clientY }));
+        }
     };
     window.onwheel = event => {
         if (document.activeElement !== null && document.activeElement.tagName == "INPUT")
@@ -199,6 +210,7 @@ export function clear(): void {
 }
 
 const rootSvgDomElement = "svg-display";
+const inputBlockerDomElement = "input-blocker";
 const minScale = 0.1;
 const maxScale = 3;
 const scrollScaleSpeed = 0.001;
