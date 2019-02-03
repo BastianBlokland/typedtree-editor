@@ -2,11 +2,9 @@
 import * as DomUtils from "./domutils";
 import * as Vec from "./vector";
 import * as SvgJs from "svg.js";
+import { ClassName } from "./domutils";
 
 declare const SVG: typeof SvgJs;
-
-/** Html class identifier */
-export type ClassName = string;
 
 /** Display element that content can be added to. */
 export interface Element {
@@ -25,6 +23,33 @@ export interface Element {
     /** Add a text graphic to this element.
      * Note: Position is vertically centered. */
     addText(className: ClassName, text: string, position: Vec.Position): void
+
+    /** Add a editable text graphic to this element.
+     * Note: Position is vertically centered. */
+    addEditableText(
+        className: ClassName,
+        value: string,
+        position: Vec.Position,
+        size: Vec.Size,
+        callback: (newValue: string) => void): void
+
+    /** Add a editable number graphic to this element.
+     * Note: Position is vertically centered. */
+    addEditableNumber(
+        className: ClassName,
+        value: number,
+        position: Vec.Position,
+        size: Vec.Size,
+        callback: (newValue: number) => void): void
+
+    /** Add a editable boolean graphic to this element.
+     * Note: Position is vertically centered. */
+    addEditableBoolean(
+        className: ClassName,
+        value: boolean,
+        position: Vec.Position,
+        size: Vec.Size,
+        callback: (newValue: boolean) => void): void
 
     /** Add a line graphic to this element. */
     addLine(className: ClassName, from: Vec.Position, to: Vec.Position): void
@@ -56,12 +81,18 @@ export function initialize(): void {
     window.ondragstart = _ => false; // Disable native dragging as it interferes with ours.
     window.onkeydown = event => {
         switch (event.key) {
-            case "f": focusContent(); break;
+            case "f":
+                if (document.activeElement === null || document.activeElement.tagName != "INPUT")
+                    focusContent();
+                break;
         }
     };
     window.onmousedown = event => {
+        if (document.activeElement !== null && document.activeElement.tagName == "INPUT")
+            return;
         dragOffset = Vec.subtract(viewOffset, { x: event.clientX, y: event.clientY });
         dragging = true;
+
     };
     window.onmouseup = () => {
         dragging = false;
@@ -71,6 +102,9 @@ export function initialize(): void {
             setOffset(Vec.add(dragOffset, { x: event.clientX, y: event.clientY }));
     };
     window.onwheel = event => {
+        if (document.activeElement !== null && document.activeElement.tagName == "INPUT")
+            return;
+
         // Get data from the event
         const scrollDelta = -(<WheelEvent>event).deltaY * scrollScaleSpeed;
         const pointerPos: Vec.Position = { x: (<WheelEvent>event).pageX, y: (<WheelEvent>event).pageY };
@@ -82,8 +116,9 @@ export function initialize(): void {
         const offsetDelta = Vec.multiply(offsetToPointer, -zoomFactor);
 
         // Apply new scale and offset
-        setScale(newScale);
-        setOffsetDelta(offsetDelta);
+        viewOffset = Vec.add(viewOffset, offsetDelta);
+        scale = newScale;
+        updateRootTransform();
     };
 
     // Setup button listeners
@@ -122,7 +157,7 @@ export function getContentSize(): Vec.Vector2 {
 export function setScale(newScale: number): void {
     assertInitialized();
     scale = clampScale(newScale);
-    svgRoot!.scale(scale, scale, 0, 0);
+    updateRootTransform();
 }
 
 /**
@@ -140,7 +175,7 @@ export function setOffsetDelta(offsetDelta: Vec.Vector2): void {
 export function setOffset(newOffset: Vec.Vector2): void {
     assertInitialized();
     viewOffset = newOffset;
-    svgRoot!.translate(newOffset.x, newOffset.y);
+    updateRootTransform();
 }
 
 /** Focus on the current content (Will be centered and scaled to fit). */
@@ -220,6 +255,63 @@ class GroupElement implements Element {
             addClass(className);
     }
 
+    addEditableText(
+        className: ClassName,
+        value: string,
+        position: Vec.Position,
+        size: Vec.Size,
+        callback: (newValue: string) => void): void {
+
+        const inputElement = DomUtils.createTextInput(className, value, callback);
+        this._svgGroup.group().
+            element("foreignObject").
+            x(position.x).
+            /* HACK: Ugly +2 here because i can't figure out why it seems to draw slightly too high on
+            most browsers */
+            y(position.y - Utils.half(size.y) + 2).
+            width(size.x).
+            height(size.y).
+            node.appendChild(inputElement);
+    }
+
+    addEditableNumber(
+        className: ClassName,
+        value: number,
+        position: Vec.Position,
+        size: Vec.Size,
+        callback: (newValue: number) => void): void {
+
+        const inputElement = DomUtils.createNumberInput(className, value, callback);
+        this._svgGroup.group().
+            element("foreignObject").
+            x(position.x).
+            /* HACK: Ugly +2 here because i can't figure out why it seems to draw slightly too high on
+            most browsers */
+            y(position.y - Utils.half(size.y) + 2).
+            width(size.x).
+            height(size.y).
+            node.appendChild(inputElement);
+    }
+
+    addEditableBoolean(
+        className: ClassName,
+        value: boolean,
+        position: Vec.Position,
+        size: Vec.Size,
+        callback: (newValue: boolean) => void): void {
+
+        const inputElement = DomUtils.createBooleanInput(className, value, callback);
+        this._svgGroup.group().
+            element("foreignObject").
+            x(position.x).
+            /* HACK: Ugly +2 here because i can't figure out why it seems to draw slightly too high on
+            most browsers */
+            y(position.y - Utils.half(size.y) + 2).
+            width(size.x).
+            height(size.y).
+            node.appendChild(inputElement);
+    }
+
     addLine(className: ClassName, from: Vec.Position, to: Vec.Position): void {
         this._svgGroup.line(from.x, from.y, to.x, to.y).
             addClass(className);
@@ -236,6 +328,10 @@ class GroupElement implements Element {
             x(center.x - Utils.half(radius)).
             y(center.y - Utils.half(radius));
     }
+}
+
+function updateRootTransform(): void {
+    svgRoot!.node.setAttribute("transform", `translate(${viewOffset.x}, ${viewOffset.y})scale(${scale})`);
 }
 
 function clampScale(newScale: number): number {

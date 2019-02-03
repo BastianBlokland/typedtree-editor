@@ -1,5 +1,8 @@
 ﻿import "file-saver";
 
+/** Html class identifier */
+export type ClassName = string;
+
 /**
  * Save a json text file on the users machine.
  * @param json Json to save to the users machine.
@@ -52,4 +55,70 @@ export function setText(elementId: string, text: string): void {
     if (element === null)
         throw new Error(`Element with id: ${elementId} not found`);
     element.textContent = text;
+}
+
+/**
+ * Create a new input element of type text. Note: This does not get parented anywhere yet.
+ * @param className ClassName of the html element.
+ * @param text Initial text to show in the input.
+ * @param callback Callback that will get fired when the user changes the input.
+ * @returns Newly created input element.
+ */
+export function createTextInput(
+    className: ClassName,
+    text: string,
+    callback: (newText: string) => void): HTMLInputElement {
+
+    const element = document.createElement("input");
+    element.setAttribute("type", "text");
+    element.className = className;
+    element.value = text;
+    element.onchange = event => {
+        callback(element.value);
+    };
+    return element;
+}
+
+/**
+ * Create a new input element of type number. Note: This does not get parented anywhere yet.
+ * @param className ClassName of the html element.
+ * @param number Initial number to show in the input.
+ * @param callback Callback that will get fired when the user changes the input.
+ * @returns Newly created input element.
+ */
+export function createNumberInput(
+    className: ClassName,
+    number: number,
+    callback: (newNumber: number) => void): HTMLInputElement {
+
+    const element = document.createElement("input");
+    element.setAttribute("type", "number");
+    element.className = className;
+    element.value = number.toString();
+    element.onchange = event => {
+        callback(Number(element.value));
+    };
+    return element;
+}
+
+/**
+ * Create a new input element of type checkbox. Note: This does not get parented anywhere yet.
+ * @param className ClassName of the html element.
+ * @param boolean If the checkbox should be initially checked or not.
+ * @param callback Callback that will get fired when the user changes the input.
+ * @returns Newly created input element.
+ */
+export function createBooleanInput(
+    className: ClassName,
+    boolean: boolean,
+    callback: (newBoolean: boolean) => void): HTMLInputElement {
+
+    const element = document.createElement("input");
+    element.setAttribute("type", "checkbox");
+    element.checked = boolean;
+    element.className = className;
+    element.onchange = event => {
+        callback(element.checked);
+    };
+    return element;
 }

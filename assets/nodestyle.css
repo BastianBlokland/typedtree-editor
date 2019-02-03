@@ -48,8 +48,31 @@
     font-weight: bold;
 }
 
+/* Field values */
+.stringFieldValue {
+    background-color: #DDD;
+    width: 90%;
+}
+
+.numberFieldValue {
+    background-color: #DDD;
+    width: 90%;
+}
+
+.booleanFieldValue {
+    background-color: #DDD;
+}
+
 .nodeConnection {
     stroke: #000;
     stroke-width: 4;
     fill: none;
+}
+
+/* On safari the number spinners are broken when used inside a foreign-svg object (they render in
+random places. Thats why we disable them here */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
