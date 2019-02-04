@@ -79,7 +79,7 @@ export function initialize(): void {
     svgRoot = svgDocument.group();
 
     // Setup global listeners
-    const inputBlocker = document.getElementById("inputBlockerDomElement");
+    const inputBlocker = document.getElementById(inputBlockerDomElement);
     window.ondragstart = _ => false; // Disable native dragging as it interferes with ours.
     window.onkeydown = event => {
         switch (event.key) {
