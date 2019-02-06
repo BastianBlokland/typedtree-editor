@@ -3,5 +3,15 @@
 
     <circle id="nodeConnector" cx="0" cy="0" r="7" />
 
+    <g id="arrayOrderUp">
+      <rect x="-4" y="-4" width="8" height="8" stroke-width="1" stroke="#000"/>
+      <path d="M -3 3 L 0 -3 L 3 3 z" fill="#000" stroke="none"/>
+    </g>
+
+    <g id="arrayOrderDown">
+      <rect x="-4" y="-4" width="8" height="8" stroke-width="1" stroke="#000" />
+      <path d="M -3 -3 L 0 3 L 3 -3 z" fill="#000" stroke="none"/>
+    </g>
+
   </defs>
 </svg>
