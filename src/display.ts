@@ -57,9 +57,8 @@ export interface Element {
     /** Add a bezier graphic to this element. */
     addBezier(className: ClassName, from: Vec.Position, c1: Vec.Position, c2: Vec.Position, to: Vec.Position): void
 
-    /** Add a circle graphic to this element.
-     * Note: Position represents the center of the circle. */
-    addCircle(className: ClassName, radius: number, position: Vec.Position): void
+    /** Add a external graphic to this element. */
+    addGraphics(className: ClassName, graphicsId: string, position: Vec.Position): void
 }
 
 /** Initialize the display, needs to be done once. */
@@ -211,6 +210,7 @@ export function clear(): void {
 
 const rootSvgDomElement = "svg-display";
 const inputBlockerDomElement = "input-blocker";
+const graphicsFilePath = "graphics.svg";
 const minScale = 0.1;
 const maxScale = 3;
 const scrollScaleSpeed = 0.001;
@@ -335,11 +335,11 @@ class GroupElement implements Element {
             addClass(className);
     }
 
-    addCircle(className: ClassName, radius: number, center: Vec.Position): void {
-        this._svgGroup.circle(radius).
+    addGraphics(className: ClassName, graphicsId: string, position: Vec.Position): void {
+        this._svgGroup.use(graphicsId, graphicsFilePath).
             addClass(className).
-            x(center.x - Utils.half(radius)).
-            y(center.y - Utils.half(radius));
+            x(position.x).
+            y(position.y);
     }
 }
 

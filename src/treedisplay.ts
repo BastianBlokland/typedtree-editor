@@ -32,7 +32,6 @@ const nodeHeaderHeight = TreeView.nodeHeaderHeight;
 const halfNodeHeightHeight = Utils.half(nodeHeaderHeight);
 const nodeFieldHeight = TreeView.nodeFieldHeight;
 const nodeInputSlotOffset: Vec.Vector2 = { x: 0, y: 12.5 };
-const nodeConnectionSlotRadius = 15;
 const nodeConnectionCurviness = .7;
 
 type nodeChangedCallback = (newNode: Tree.Node) => void;
@@ -169,7 +168,7 @@ function createField(
 }
 
 function addConnection(parent: Display.Element, from: Vec.Position, to: Vec.Position): void {
-    parent.addCircle("nodeOutput", nodeConnectionSlotRadius, from);
+    parent.addGraphics("nodeOutput", "nodeConnector", from);
 
     const target = Vec.add(to, nodeInputSlotOffset);
     const c1 = { x: Utils.lerp(from.x, target.x, nodeConnectionCurviness), y: from.y };
