@@ -58,7 +58,11 @@ export interface Element {
     addBezier(className: ClassName, from: Vec.Position, c1: Vec.Position, c2: Vec.Position, to: Vec.Position): void
 
     /** Add a external graphic to this element. */
-    addGraphics(className: ClassName, graphicsId: string, position: Vec.Position): void
+    addGraphics(
+        className: ClassName,
+        graphicsId: string,
+        position: Vec.Position,
+        clickCallback?: (() => void)): void
 }
 
 /** Initialize the display, needs to be done once. */
@@ -335,11 +339,18 @@ class GroupElement implements Element {
             addClass(className);
     }
 
-    addGraphics(className: ClassName, graphicsId: string, position: Vec.Position): void {
-        this._svgGroup.use(graphicsId, graphicsFilePath).
+    addGraphics(
+        className: ClassName,
+        graphicsId: string,
+        position: Vec.Position,
+        clickCallback?: () => void): void {
+
+        const elem = this._svgGroup.use(graphicsId, graphicsFilePath).
             addClass(className).
             x(position.x).
             y(position.y);
+        if (clickCallback != undefined)
+            elem.click(clickCallback);
     }
 }
 
