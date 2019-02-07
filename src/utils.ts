@@ -23,6 +23,23 @@ export function withNewElement<T>(array: ReadonlyArray<T>, index: number, data: 
     result[index] = data;
     return result;
 }
+/**
+ * Create a new array that contains all the elements from the previous but with two elements swapped.
+ * @param array Source array.
+ * @param indexA Index to swap with 'indexB'
+ * @param indexB Index to swap with 'indexA'
+ * @returns New array with the swapped elements.
+ */
+export function withSwappedElements<T>(array: ReadonlyArray<T>, indexA: number, indexB: number): T[] {
+    if (indexA < 0 || indexA >= array.length)
+        throw new Error("Given index isA outside of the bounds of the array");
+    if (indexB < 0 || indexB >= array.length)
+        throw new Error("Given index isB outside of the bounds of the array");
+    const result = array.slice();
+    result[indexA] = array[indexB];
+    result[indexB] = array[indexA];
+    return result;
+}
 
 /**
  * Find a element in the given array that matches the predicate
