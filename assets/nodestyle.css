@@ -70,6 +70,15 @@
     fill: none;
 }
 
+.fieldValueButton:hover {
+    fill: #FFF;
+    cursor: pointer;
+}
+
+.fieldValueButton {
+    fill: #999;
+}
+
 /* Number spinners cause more problems then they are worth in our case. For example in Safari they
 render in completely random locations when used inside a svg foreign-object. */
 input::-webkit-outer-spin-button,
