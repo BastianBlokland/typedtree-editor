@@ -32,7 +32,6 @@ const nodeHeaderHeight = TreeView.nodeHeaderHeight;
 const halfNodeHeightHeight = Utils.half(nodeHeaderHeight);
 const nodeFieldHeight = TreeView.nodeFieldHeight;
 const nodeInputSlotOffset: Vec.Vector2 = { x: 0, y: 12.5 };
-const nodeConnectionSlotRadius = 15;
 const nodeConnectionCurviness = .7;
 
 type nodeChangedCallback = (newNode: Tree.Node) => void;
@@ -104,12 +103,26 @@ function createField(
         field: T,
         changed: fieldChangedCallback<T>): void {
 
+        const array = <ReadonlyArray<Tree.FieldElementType<T>>>field.value;
         for (let i = 0; i < field.value.length; i++) {
-            const element = field.value[i];
+            const element = array[i];
             const yOffset = i * nodeFieldHeight;
-            parent.addText("arrayFieldIndexPrefix", `[${i}]`, { x: nameWidth, y: centeredYOffset + yOffset });
-            createElementValue(element, 20, yOffset, newElement => {
-                changed(TreeModifications.fieldWithElement(field, <Tree.FieldElementType<T>>newElement, i));
+            const yPos = centeredYOffset + yOffset;
+
+            // Reorder buttons
+            parent.addGraphics("fieldValueButton", "arrayOrderUp", { x: nameWidth, y: yPos - 5 }, () => {
+                const newArray = Utils.withSwappedElements(array, i, (i == 0 ? array.length : i) - 1);
+                changed(TreeModifications.fieldWithValue(field, <Tree.FieldValueType<T>><unknown>newArray));
+            });
+            parent.addGraphics("fieldValueButton", "arrayOrderDown", { x: nameWidth, y: yPos + 5 }, () => {
+                const newArray = Utils.withSwappedElements(array, i, (i + 1) % array.length);
+                changed(TreeModifications.fieldWithValue(field, <Tree.FieldValueType<T>><unknown>newArray));
+            });
+
+            // Prefix and element value
+            parent.addText("arrayFieldIndexPrefix", `[${i}]`, { x: nameWidth + 7, y: yPos });
+            createElementValue(element, 30, yOffset, newElement => {
+                changed(TreeModifications.fieldWithElement(field, newElement, i));
             });
         }
     }
@@ -169,7 +182,7 @@ function createField(
 }
 
 function addConnection(parent: Display.Element, from: Vec.Position, to: Vec.Position): void {
-    parent.addCircle("nodeOutput", nodeConnectionSlotRadius, from);
+    parent.addGraphics("nodeOutput", "nodeConnector", from);
 
     const target = Vec.add(to, nodeInputSlotOffset);
     const c1 = { x: Utils.lerp(from.x, target.x, nodeConnectionCurviness), y: from.y };
