@@ -23,6 +23,21 @@ export function withNewElement<T>(array: ReadonlyArray<T>, index: number, data: 
     result[index] = data;
     return result;
 }
+
+/**
+ * Create a new array that contains all elements from the given array except the one at the given index.
+ * @param array Source array.
+ * @param index Index of the element to remove.
+ * @returns New array without one of the elements.
+ */
+export function withoutElement<T>(array: ReadonlyArray<T>, index: number): T[] {
+    if (index < 0 || index >= array.length)
+        throw new Error("Given index is outside of the bounds of the array");
+    const result = array.slice();
+    result.splice(index, 1);
+    return result;
+}
+
 /**
  * Create a new array that contains all the elements from the previous but with two elements swapped.
  * @param array Source array.
