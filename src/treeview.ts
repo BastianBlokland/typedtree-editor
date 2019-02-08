@@ -82,7 +82,7 @@ export function getFieldHeight(field: Tree.Field): number {
         case "numberArray":
         case "booleanArray":
         case "nodeArray":
-            return nodeFieldHeight * field.value.length;
+            return nodeFieldHeight * Math.max(1, field.value.length);
         default:
             Utils.assertNever(field);
             return 0;
