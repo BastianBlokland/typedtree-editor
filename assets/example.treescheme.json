@@ -1,0 +1,168 @@
+﻿{
+  "nodeAliases": [
+    {
+      "name": "AI.Item",
+      "values": [
+        "AI.Items.Selector",
+        "AI.Items.Sequence",
+        "AI.Items.Condition",
+        "AI.Items.MoveToTarget",
+        "AI.Items.CastAbility",
+        "AI.Items.FindTarget",
+        "AI.Items.AttackTarget",
+        "AI.Items.Eat",
+        "AI.Items.PlayRandomAnimation"
+      ]
+    },
+    {
+      "name": "AI.Condition",
+      "values": [
+        "AI.Conditions.IsHungry",
+        "AI.Conditions.OutOfHealth",
+        "AI.Conditions.IsAbilityCharged",
+        "AI.Conditions.IsEnemyInRange",
+        "AI.Conditions.HasFood"
+      ]
+    }
+  ],
+  "nodeTypes": [
+    {
+      "type": "AI.Items.Selector",
+      "fields": [
+        {
+          "name": "children",
+          "valueType": "AI.Item[]"
+        }
+      ]
+    },
+    {
+      "type": "AI.Items.Sequence",
+      "fields": [
+        {
+          "name": "children",
+          "valueType": "AI.Item[]"
+        }
+      ]
+    },
+    {
+      "type": "AI.Items.Condition",
+      "fields": [
+        {
+          "name": "conditions",
+          "valueType": "AI.Condition[]"
+        },
+        {
+          "name": "invert",
+          "valueType": "boolean"
+        },
+        {
+          "child": "AI.Item"
+        }
+      ]
+    },
+    {
+      "type": "AI.Items.MoveToTarget",
+      "fields": [
+        {
+          "name": "run",
+          "valueType": "boolean"
+        },
+        {
+          "name": "minimumDistance",
+          "valueType": "number"
+        }
+      ]
+    },
+    {
+      "type": "AI.Items.CastAbility",
+      "fields": [
+        {
+          "name": "abilityId",
+          "valueType": "number"
+        }
+      ]
+    },
+    {
+      "type": "AI.Items.FindTarget",
+      "fields": [
+        {
+          "name": "allowedTargets",
+          "valueType": "string[]"
+        },
+        {
+          "name": "targetRange",
+          "valueType": "number"
+        },
+        {
+          "name": "includeBosses",
+          "valueType": "boolean"
+        }
+      ]
+    },
+    {
+      "type": "AI.Items.AttackTarget",
+      "fields": [
+        {
+          "name": "attackDuration",
+          "valueType": "number"
+        },
+        {
+          "name": "attackDamage",
+          "valueType": "number"
+        }
+      ]
+    },
+    {
+      "type": "AI.Items.Eat",
+      "fields": []
+    },
+    {
+      "type": "AI.Items.PlayRandomAnimation",
+      "fields": [
+        {
+          "name": "animations",
+          "valueType": "string[]"
+        },
+        {
+          "name": "animationSpeeds",
+          "valueType": "number[]"
+        }
+      ]
+    },
+    {
+      "type": "AI.Conditions.IsHungry",
+      "fields": []
+    },
+    {
+      "type": "AI.Conditions.OutOfHealth",
+      "fields": []
+    },
+    {
+      "type": "AI.Conditions.IsAbilityCharged",
+      "fields": [
+        {
+          "name": "abilityId",
+          "valueType": "number"
+        }
+      ]
+    },
+    {
+      "type": "AI.Conditions.IsEnemyInRange",
+      "fields": [
+        {
+          "name": "range",
+          "valueType": "number"
+        }
+      ]
+    },
+    {
+      "type": "AI.Conditions.HasFood",
+      "fields": [
+        {
+          "name": "includeVegetables",
+          "valueType": "boolean"
+        }
+      ]
+    }
+  ]
+}
