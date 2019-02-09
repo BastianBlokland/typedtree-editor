@@ -37,7 +37,7 @@ test("allNodesHavePositions", () => {
 test("singleNodeHasExpectedPosition", () => {
     const testTree = Tree.createNode("root");
     const positionTree = TreeView.createPositionTree(testTree);
-    expect(positionTree.getPosition(testTree)).toEqual(Vec.zeroVector);
+    expect(positionTree.getPosition(testTree)).toEqual(positionTree.rootOffset);
 });
 
 test("singleNodeHasExpectedSize", () => {
