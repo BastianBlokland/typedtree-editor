@@ -1,8 +1,8 @@
 ﻿{
-  "$type": "AI.Selector",
+  "$type": "AI.Items.Selector",
   "children": [
     {
-      "$type": "AI.Condition",
+      "$type": "AI.Items.Condition",
       "conditions": [
         {
           "$type": "AI.Conditions.OutOfHealth"
@@ -10,7 +10,7 @@
       ],
       "invert": false,
       "child": {
-        "$type": "AI.PlayRandomAnimation",
+        "$type": "AI.Items.PlayRandomAnimation",
         "animations": [
           "dead"
         ],
@@ -20,7 +20,7 @@
       }
     },
     {
-      "$type": "AI.Condition",
+      "$type": "AI.Items.Condition",
       "conditions": [
         {
           "$type": "AI.Conditions.IsAbilityCharged",
@@ -33,25 +33,25 @@
       ],
       "invert": false,
       "child": {
-        "$type": "AI.Sequence",
+        "$type": "AI.Items.Sequence",
         "children": [
           {
-            "$type": "AI.MoveToTarget",
+            "$type": "AI.Items.MoveToTarget",
             "run": false,
             "minimumDistance": 25
           },
           {
-            "$type": "AI.CastAbility",
+            "$type": "AI.Items.CastAbility",
             "abilityId": 1
           }
         ]
       }
     },
     {
-      "$type": "AI.Sequence",
+      "$type": "AI.Items.Sequence",
       "children": [
         {
-          "$type": "AI.FindTarget",
+          "$type": "AI.Items.FindTarget",
           "allowedTargets": [
             "Ground",
             "Air"
@@ -60,22 +60,22 @@
           "includeBosses": true
         },
         {
-          "$type": "AI.MoveToTarget",
+          "$type": "AI.Items.MoveToTarget",
           "run": true,
           "minimumDistance": 1
         },
         {
-          "$type": "AI.AttackTarget",
+          "$type": "AI.Items.AttackTarget",
           "attackDuration": 1.7,
           "attackDamage": 55
         }
       ]
     },
     {
-      "$type": "AI.Selector",
+      "$type": "AI.Items.Selector",
       "children": [
         {
-          "$type": "AI.Condition",
+          "$type": "AI.Items.Condition",
           "conditions": [
             {
               "$type": "AI.Conditions.IsHungry"
@@ -87,11 +87,11 @@
           ],
           "invert": false,
           "child": {
-            "$type": "AI.Eat"
+            "$type": "AI.Items.Eat"
           }
         },
         {
-          "$type": "AI.PlayRandomAnimation",
+          "$type": "AI.Items.PlayRandomAnimation",
           "animations": [
             "standing",
             "sitting",
