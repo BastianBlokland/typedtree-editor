@@ -291,7 +291,7 @@ class NodeImpl implements Node {
 
     getChild(output: FieldElementIdentifier): Node | undefined {
         const field = this.getField(output.fieldName);
-        if (field != undefined) {
+        if (field !== undefined) {
             if (field.kind === "node" && output.offset === 0)
                 return field.value;
             if (field.kind === "nodeArray")

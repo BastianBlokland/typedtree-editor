@@ -24,7 +24,7 @@ test("savedJsonIsIdenticalToReadJson", () => {
     }`);
     const nodeParseResult = Tree̦Parser.parseJson(json);
     expect(nodeParseResult.kind).toBe("success");
-    if (nodeParseResult.kind == "success") {
+    if (nodeParseResult.kind === "success") {
         const composedJson = TreeSerializer.composeJson(nodeParseResult.value);
         expect(composedJson).toEqual(json);
     }

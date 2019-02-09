@@ -38,7 +38,7 @@ export function subscribeToFileInput(inputId: string, callback: (file: File) => 
         throw new Error(`Element with id: ${inputId} not found`);
     const inputElement = <HTMLInputElement>element;
     element.onchange = _ => {
-        if (inputElement.files != null && inputElement.files.length > 0)
+        if (inputElement.files !== null && inputElement.files.length > 0)
             callback(inputElement.files[0]);
         inputElement.value = "";
     };

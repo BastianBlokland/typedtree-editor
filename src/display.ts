@@ -87,13 +87,13 @@ export function initialize(): void {
     window.onkeydown = event => {
         switch (event.key) {
             case "f":
-                if (document.activeElement === null || document.activeElement.tagName != "INPUT")
+                if (document.activeElement === null || document.activeElement.tagName !== "INPUT")
                     focusContent();
                 break;
         }
     };
     window.onmousedown = event => {
-        if (document.activeElement !== null && document.activeElement.tagName == "INPUT")
+        if (document.activeElement !== null && document.activeElement.tagName === "INPUT")
             return;
         dragOffset = Vec.subtract(viewOffset, { x: event.clientX, y: event.clientY });
         dragging = true;
@@ -101,22 +101,22 @@ export function initialize(): void {
     };
     window.onmouseup = () => {
         dragging = false;
-        if (inputBlocker != null)
+        if (inputBlocker !== null)
             inputBlocker.className = "order-back";
     };
     window.onmousemove = event => {
-        if (document.activeElement !== null && document.activeElement.tagName == "INPUT") {
+        if (document.activeElement !== null && document.activeElement.tagName === "INPUT") {
             dragging = false;
             return;
         }
         if (dragging) {
-            if (inputBlocker != null)
+            if (inputBlocker !== null)
                 inputBlocker.className = "order-front";
             setOffset(Vec.add(dragOffset, { x: event.clientX, y: event.clientY }));
         }
     };
     window.onwheel = event => {
-        if (document.activeElement !== null && document.activeElement.tagName == "INPUT")
+        if (document.activeElement !== null && document.activeElement.tagName === "INPUT")
             return;
 
         // Get data from the event
@@ -320,7 +320,7 @@ class GroupElement implements Element {
             addClass(className).
             x(position.x).
             y(position.y);
-        if (clickCallback != undefined)
+        if (clickCallback !== undefined)
             elem.click(clickCallback);
     }
 }

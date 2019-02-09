@@ -121,7 +121,7 @@ function createField(
 
             // Reorder buttons
             parent.addGraphics("fieldValueButton", "arrayOrderUp", { x: nameWidth + 12, y: yPos - 5 }, () => {
-                const newArray = Utils.withSwappedElements(array, i, (i == 0 ? array.length : i) - 1);
+                const newArray = Utils.withSwappedElements(array, i, (i === 0 ? array.length : i) - 1);
                 changed(TreeModifications.fieldWithValue(field, <Tree.FieldValueType<T>><unknown>newArray));
             });
             parent.addGraphics("fieldValueButton", "arrayOrderDown", { x: nameWidth + 12, y: yPos + 5 }, () => {

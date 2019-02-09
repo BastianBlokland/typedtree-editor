@@ -36,7 +36,7 @@ export function loadTextFromFile(file: File): Promise<ParseResult<string>> {
     const fileReader = new FileReader();
     return new Promise((resolve, reject) => {
         fileReader.onload = () => {
-            if (fileReader.result != null && typeof fileReader.result === "string")
+            if (fileReader.result !== null && typeof fileReader.result === "string")
                 resolve(createSuccess(fileReader.result));
             else
                 resolve(createError("File does not contain text"));

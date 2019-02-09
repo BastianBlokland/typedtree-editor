@@ -49,7 +49,7 @@ function parseNode(obj: any): Tree.Node {
 
     return Tree.createNode(type, b => {
         Object.keys(obj).forEach(key => {
-            if (key != "$type") {
+            if (key !== "$type") {
                 const field = parseField(key, obj[key]);
                 if (field !== undefined)
                     b.pushField(field);
