@@ -11,6 +11,18 @@ test("fieldTypeIsParsedSuccessfully", () => {
         expect(nodeParseResult.value).toEqual(Tree.createNode("test"));
 });
 
+test("emptyArraysAreFilteredOut", () => {
+    const json = `{
+        "$type": "test",
+        "field": []
+    }`;
+    const nodeParseResult = Tree̦Parser.parseJson(json);
+    console.log(nodeParseResult);
+    expect(nodeParseResult.kind).toBe("success");
+    if (nodeParseResult.kind == "success")
+        expect(nodeParseResult.value.fields.length).toBe(0);
+});
+
 test("fieldTypeIsRequired", () => {
     const json = `{ }`;
     const nodeParseResult = Tree̦Parser.parseJson(json);
