@@ -27,7 +27,7 @@
   ],
   "nodeTypes": [
     {
-      "type": "AI.Items.Selector",
+      "identifier": "AI.Items.Selector",
       "fields": [
         {
           "name": "children",
@@ -37,7 +37,7 @@
       ]
     },
     {
-      "type": "AI.Items.Sequence",
+      "identifier": "AI.Items.Sequence",
       "fields": [
         {
           "name": "children",
@@ -47,7 +47,7 @@
       ]
     },
     {
-      "type": "AI.Items.Condition",
+      "identifier": "AI.Items.Condition",
       "fields": [
         {
           "name": "conditions",
@@ -67,7 +67,7 @@
       ]
     },
     {
-      "type": "AI.Items.MoveToTarget",
+      "identifier": "AI.Items.MoveToTarget",
       "fields": [
         {
           "name": "run",
@@ -82,7 +82,7 @@
       ]
     },
     {
-      "type": "AI.Items.CastAbility",
+      "identifier": "AI.Items.CastAbility",
       "fields": [
         {
           "name": "abilityId",
@@ -92,7 +92,7 @@
       ]
     },
     {
-      "type": "AI.Items.FindTarget",
+      "identifier": "AI.Items.FindTarget",
       "fields": [
         {
           "name": "allowedTargets",
@@ -112,7 +112,7 @@
       ]
     },
     {
-      "type": "AI.Items.AttackTarget",
+      "identifier": "AI.Items.AttackTarget",
       "fields": [
         {
           "name": "attackDuration",
@@ -127,11 +127,11 @@
       ]
     },
     {
-      "type": "AI.Items.Eat",
+      "identifier": "AI.Items.Eat",
       "fields": []
     },
     {
-      "type": "AI.Items.PlayRandomAnimation",
+      "identifier": "AI.Items.PlayRandomAnimation",
       "fields": [
         {
           "name": "animations",
@@ -146,15 +146,15 @@
       ]
     },
     {
-      "type": "AI.Conditions.IsHungry",
+      "identifier": "AI.Conditions.IsHungry",
       "fields": []
     },
     {
-      "type": "AI.Conditions.OutOfHealth",
+      "identifier": "AI.Conditions.OutOfHealth",
       "fields": []
     },
     {
-      "type": "AI.Conditions.IsAbilityCharged",
+      "identifier": "AI.Conditions.IsAbilityCharged",
       "fields": [
         {
           "name": "abilityId",
@@ -164,7 +164,7 @@
       ]
     },
     {
-      "type": "AI.Conditions.IsEnemyInRange",
+      "identifier": "AI.Conditions.IsEnemyInRange",
       "fields": [
         {
           "name": "range",
@@ -174,7 +174,7 @@
       ]
     },
     {
-      "type": "AI.Conditions.HasFood",
+      "identifier": "AI.Conditions.HasFood",
       "fields": [
         {
           "name": "includeVegetables",
