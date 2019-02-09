@@ -62,7 +62,7 @@ function parseNode(obj: any): Tree.Node {
 
 function parseField(name: string, value: any): Tree.Field | undefined {
     if (value === undefined || value === null)
-        throw new Error(`Invalid value for key: '${name}'`);
+        return undefined;
 
     switch (typeof value) {
         case "string": return { kind: "string", name: name, value: value };
