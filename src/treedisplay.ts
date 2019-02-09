@@ -21,6 +21,7 @@ export function setTree(root: Tree.Node, changed: treeChangedCallback | undefine
             }
         });
     });
+    Display.setContentOffset(positionTree.rootOffset);
 }
 
 /** Focus the given tree on the display. */
