@@ -39,25 +39,30 @@ export function parseJson(jsonString: string): ParseResult<Tree.Node> {
     }
 }
 
+const anonymousNodeType: Tree.NodeType = "Anonymous";
+
 function parseNode(obj: any): Tree.Node {
-    if (obj === undefined || obj === null || typeof obj != "object")
+    if (obj === undefined || obj === null || typeof obj !== "object")
         throw new Error("Invalid input obj");
 
-    const type: any = obj.$type;
-    if (type === undefined || type === null || typeof type != "string")
-        throw new Error("Object is missing a '$type' key");
+    let type: any = obj.$type;
+    if (type === undefined || type === null || typeof type !== "string")
+        type = anonymousNodeType;
 
     return Tree.createNode(type, b => {
         Object.keys(obj).forEach(key => {
-            if (key != "$type")
-                b.pushField(parseField(key, obj[key]));
+            if (key !== "$type") {
+                const field = parseField(key, obj[key]);
+                if (field !== undefined)
+                    b.pushField(field);
+            }
         });
     });
 }
 
-function parseField(name: string, value: any): Tree.Field {
+function parseField(name: string, value: any): Tree.Field | undefined {
     if (value === undefined || value === null)
-        throw new Error(`Invalid value for key: '${name}'`);
+        return undefined;
 
     switch (typeof value) {
         case "string": return { kind: "string", name: name, value: value };
@@ -66,6 +71,9 @@ function parseField(name: string, value: any): Tree.Field {
         case "object": {
             if (Utils.isArray(value)) {
                 const array: any[] = value;
+                if (array.length === 0)
+                    return undefined;
+
                 const arrayType = getArrayType(array);
                 switch (arrayType) {
                     case "string": return { kind: "stringArray", name: name, value: array };
@@ -91,7 +99,7 @@ function getArrayType(array: any[]): string {
         throw new Error("Unable to determine type of empty array");
     const type = typeof array[0];
     for (let i: number = 1; i < array.length; i++) {
-        if (typeof array[i] != type)
+        if (typeof array[i] !== type)
             throw new Error("Array consists of mixed types");
     }
     return type;

@@ -27,9 +27,9 @@ test("withSwappedElements", () => {
 
 test("find", () => {
     const array = [{ name: "foo", id: 1 }, { name: "bar", id: 2 }, { name: "baz", id: 3 }];
-    expect(Utils.find(array, elem => elem.id == 1)).toEqual(array[0]);
-    expect(Utils.find(array, elem => elem.id == 2)).toEqual(array[1]);
-    expect(Utils.find(array, elem => elem.id == 3)).toEqual(array[2]);
+    expect(Utils.find(array, elem => elem.id === 1)).toEqual(array[0]);
+    expect(Utils.find(array, elem => elem.id === 2)).toEqual(array[1]);
+    expect(Utils.find(array, elem => elem.id === 3)).toEqual(array[2]);
 });
 
 test("formatJson", () => {

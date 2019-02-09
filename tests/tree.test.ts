@@ -8,7 +8,7 @@ test("cannotPushDuplicateField", () => {
     expect(result.fields.length).toBe(1);
 
     const field = result.getField("testField");
-    if (field != undefined && field.kind == "boolean")
+    if (field !== undefined && field.kind === "boolean")
         expect(field.value).toBeTruthy();
     else
         throw new Error("Field not found");
