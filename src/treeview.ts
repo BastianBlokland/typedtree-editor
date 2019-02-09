@@ -25,6 +25,8 @@ export interface PositionTree {
     readonly nodes: ReadonlyArray<Tree.Node>
     /** Total area taken up by this tree. */
     readonly totalArea: Vec.Size
+    /** Offset of the root node, can be used to center something on the tree for example */
+    readonly rootOffset: Vec.Size
 
     /**
      * Get the size of the given node.
@@ -82,7 +84,7 @@ export function getFieldHeight(field: Tree.Field): number {
         case "numberArray":
         case "booleanArray":
         case "nodeArray":
-            return nodeFieldHeight * field.value.length;
+            return nodeFieldHeight * Math.max(1, field.value.length);
         default:
             Utils.assertNever(field);
             return 0;
@@ -104,7 +106,7 @@ class PositionTreeImpl implements PositionTree {
 
         this.addSizes(root);
         this._totalArea = this.addAreas(root);
-        this.addPositions(root, { x: 0, y: 0 });
+        this.addPositions(root, this.rootOffset);
     }
 
     get root(): Tree.Node {
@@ -117,6 +119,11 @@ class PositionTreeImpl implements PositionTree {
 
     get totalArea(): Vec.Size {
         return this._totalArea;
+    }
+
+    get rootOffset(): Vec.Position {
+        const rootArea = this.getArea(this._root);
+        return { x: 0, y: -Utils.half(rootArea.y) };
     }
 
     getSize(node: Tree.Node): Vec.Size {

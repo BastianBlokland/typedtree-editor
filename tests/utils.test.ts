@@ -8,6 +8,14 @@ test("withNewElement", () => {
     expect(() => Utils.withNewElement([1], 1, 1337)).toThrowError();
 });
 
+test("withoutElement", () => {
+    expect(Utils.withoutElement([1, 2, 3], 0)).toEqual([2, 3]);
+    expect(Utils.withoutElement([1, 2, 3], 1)).toEqual([1, 3]);
+    expect(Utils.withoutElement([1, 2, 3], 2)).toEqual([1, 2]);
+    expect(() => Utils.withoutElement([1], -1)).toThrowError();
+    expect(() => Utils.withoutElement([1], 1)).toThrowError();
+});
+
 test("withSwappedElements", () => {
     expect(Utils.withSwappedElements([1, 2, 3], 1, 2)).toEqual([1, 3, 2]);
     expect(Utils.withSwappedElements([1, 2, 3], 0, 1)).toEqual([2, 1, 3]);

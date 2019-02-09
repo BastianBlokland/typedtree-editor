@@ -1,4 +1,5 @@
 ﻿import * as Utils from "../src/utils";
+import * as Tree from "../src/tree";
 import * as TreeSerializer from "../src/treeserializer";
 import * as Tree̦Parser from "../src/treeparser";
 
@@ -27,4 +28,13 @@ test("savedJsonIsIdenticalToReadJson", () => {
         const composedJson = TreeSerializer.composeJson(nodeParseResult.value);
         expect(composedJson).toEqual(json);
     }
+});
+
+test("emptyArraysAreNotExported", () => {
+    const node = Tree.createNode("root", b => b.pushNumberArrayField("field", []))
+
+    const composedJson = TreeSerializer.composeJson(node);
+    expect(composedJson).toEqual(Utils.formatJson(`{
+        "$type": "root"
+    }`));
 });

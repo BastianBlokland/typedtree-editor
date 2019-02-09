@@ -21,6 +21,7 @@ export function setTree(root: Tree.Node, changed: treeChangedCallback | undefine
             }
         });
     });
+    Display.setContentOffset(positionTree.rootOffset);
 }
 
 /** Focus the given tree on the display. */
@@ -109,19 +110,27 @@ function createField(
             const yOffset = i * nodeFieldHeight;
             const yPos = centeredYOffset + yOffset;
 
+            /* NOTE: There are some ugly casts here because the type-system cannot quite follow what
+            we are doing here. */
+
+            // Element deletion button
+            parent.addGraphics("fieldValueButton", "arrayDelete", { x: nameWidth, y: yPos }, () => {
+                const newArray = Utils.withoutElement(array, i);
+                changed(TreeModifications.fieldWithValue(field, <Tree.FieldValueType<T>><unknown>newArray));
+            });
+
             // Reorder buttons
-            parent.addGraphics("fieldValueButton", "arrayOrderUp", { x: nameWidth, y: yPos - 5 }, () => {
+            parent.addGraphics("fieldValueButton", "arrayOrderUp", { x: nameWidth + 12, y: yPos - 5 }, () => {
                 const newArray = Utils.withSwappedElements(array, i, (i == 0 ? array.length : i) - 1);
                 changed(TreeModifications.fieldWithValue(field, <Tree.FieldValueType<T>><unknown>newArray));
             });
-            parent.addGraphics("fieldValueButton", "arrayOrderDown", { x: nameWidth, y: yPos + 5 }, () => {
+            parent.addGraphics("fieldValueButton", "arrayOrderDown", { x: nameWidth + 12, y: yPos + 5 }, () => {
                 const newArray = Utils.withSwappedElements(array, i, (i + 1) % array.length);
                 changed(TreeModifications.fieldWithValue(field, <Tree.FieldValueType<T>><unknown>newArray));
             });
 
-            // Prefix and element value
-            parent.addText("arrayFieldIndexPrefix", `[${i}]`, { x: nameWidth + 7, y: yPos });
-            createElementValue(element, 30, yOffset, newElement => {
+            // Element value
+            createElementValue(element, 20, yOffset, newElement => {
                 changed(TreeModifications.fieldWithElement(field, newElement, i));
             });
         }

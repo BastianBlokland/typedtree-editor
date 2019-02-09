@@ -150,46 +150,12 @@ export function createElement(className: ClassName, position: Vec.Position): Ele
     return new GroupElement(svgRoot!, className, position);
 }
 
-/** Get the size of the current window */
-export function getDisplaySize(): Vec.Vector2 {
-    assertInitialized();
-    const bounds = svgDocument!.rbox();
-    return { x: bounds.width, y: bounds.height };
-}
-
-/** Get the total size of the current content */
-export function getContentSize(): Vec.Vector2 {
-    assertInitialized();
-    const contentSize = svgRoot!.bbox();
-    return { x: contentSize.width, y: contentSize.height };
-}
-
 /**
- * Set the global content scale (Can be used for zooming).
- * @param newScale New global content scale.
+ * Provide a root offset of the content. (Will be used for centering)
+ * @param offset Offset to use for centering content
  */
-export function setScale(newScale: number): void {
-    assertInitialized();
-    scale = clampScale(newScale);
-    updateRootTransform();
-}
-
-/**
- * Offset the current content by the given delta.
- * @param offsetDelta Delta to move the content by.
- */
-export function setOffsetDelta(offsetDelta: Vec.Vector2): void {
-    setOffset(Vec.add(viewOffset, offsetDelta));
-}
-
-/**
- * Set the new global offset (Can be used to pan the content).
- * @param newOffset New global offset.
- */
-export function setOffset(newOffset: Vec.Vector2): void {
-    assertInitialized();
-    viewOffset = newOffset;
-    updateRootTransform();
+export function setContentOffset(offset: Vec.Position): void {
+    contentOffset = offset;
 }
 
 /** Focus on the current content (Will be centered and scaled to fit). */
@@ -202,8 +168,12 @@ export function focusContent(): void {
     setScale(Math.min(displaySize.x / contentSize.x, displaySize.y / contentSize.y));
 
     // Calculate offset to center the content
-    const actualContentSize = Vec.multiply(contentSize, scale);
-    setOffset(Vec.add(halfDisplayMargin, Vec.half(Vec.subtract(displaySize, actualContentSize))));
+    const scaledContentSize = Vec.multiply(contentSize, scale);
+    const scaledContentOffset = Vec.multiply(contentOffset, scale);
+    const centeringOffset = Vec.add(
+        Vec.half(Vec.subtract(displaySize, scaledContentSize)),
+        Vec.invert(scaledContentOffset));
+    setOffset(Vec.add(halfDisplayMargin, centeringOffset));
 }
 
 /** Clear all content from this display. */
@@ -215,7 +185,7 @@ export function clear(): void {
 const rootSvgDomElement = "svg-display";
 const inputBlockerDomElement = "input-blocker";
 const graphicsFilePath = "graphics.svg";
-const minScale = 0.1;
+const minScale = 0.05;
 const maxScale = 3;
 const scrollScaleSpeed = 0.001;
 const displayMargin: Vec.Vector2 = { x: 75, y: 75 };
@@ -224,6 +194,7 @@ const halfDisplayMargin = Vec.half(displayMargin);
 let svgDocument: SvgJs.Doc | undefined;
 let svgRoot: SvgJs.G | undefined;
 let viewOffset = Vec.zeroVector;
+let contentOffset = Vec.zeroVector;
 let scale = 1;
 let dragging = false;
 let dragOffset = Vec.zeroVector;
@@ -352,6 +323,40 @@ class GroupElement implements Element {
         if (clickCallback != undefined)
             elem.click(clickCallback);
     }
+}
+
+/** Get the size of the current window */
+function getDisplaySize(): Vec.Vector2 {
+    assertInitialized();
+    const bounds = svgDocument!.rbox();
+    return { x: bounds.width, y: bounds.height };
+}
+
+/** Get the total size of the current content */
+function getContentSize(): Vec.Vector2 {
+    assertInitialized();
+    const contentSize = svgRoot!.bbox();
+    return { x: contentSize.width, y: contentSize.height };
+}
+
+/**
+ * Set the global content scale (Can be used for zooming).
+ * @param newScale New global content scale.
+ */
+function setScale(newScale: number): void {
+    assertInitialized();
+    scale = clampScale(newScale);
+    updateRootTransform();
+}
+
+/**
+ * Set the new global offset (Can be used to pan the content).
+ * @param newOffset New global offset.
+ */
+function setOffset(newOffset: Vec.Vector2): void {
+    assertInitialized();
+    viewOffset = newOffset;
+    updateRootTransform();
 }
 
 function updateRootTransform(): void {
