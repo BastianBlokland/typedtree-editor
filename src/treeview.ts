@@ -6,7 +6,7 @@ import * as Vec from "./vector";
 export const nodeHeaderHeight = 25;
 
 /** Width of a node. */
-export const nodeWidth = 300;
+export const nodeWidth = 350;
 
 /** Horizontal spaces between nodes. */
 export const nodeHorizontalSpacing = 100;
