@@ -39,13 +39,15 @@ export function parseJson(jsonString: string): ParseResult<Tree.Node> {
     }
 }
 
+const anonymousNodeType: Tree.NodeType = "Anonymous";
+
 function parseNode(obj: any): Tree.Node {
     if (obj === undefined || obj === null || typeof obj !== "object")
         throw new Error("Invalid input obj");
 
-    const type: any = obj.$type;
+    let type: any = obj.$type;
     if (type === undefined || type === null || typeof type !== "string")
-        throw new Error("Object is missing a '$type' key");
+        type = anonymousNodeType;
 
     return Tree.createNode(type, b => {
         Object.keys(obj).forEach(key => {

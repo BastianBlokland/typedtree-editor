@@ -23,19 +23,12 @@ test("emptyArraysAreFilteredOut", () => {
         expect(nodeParseResult.value.fields.length).toBe(0);
 });
 
-test("fieldTypeIsRequired", () => {
+test("fieldTypeDefaultsToAnonymous", () => {
     const json = `{ }`;
     const nodeParseResult = Tree̦Parser.parseJson(json);
-    expect(nodeParseResult.kind).toBe("error");
-});
-
-test("fieldTypeIsRequiredInInnerNode", () => {
-    const json = `{
-        "$type": "test"
-        "node": {}
-    }`;
-    const nodeParseResult = Tree̦Parser.parseJson(json);
-    expect(nodeParseResult.kind).toBe("error");
+    expect(nodeParseResult.kind).toBe("success");
+    if (nodeParseResult.kind === "success")
+        expect(nodeParseResult.value.type).toBe("Anonymous");
 });
 
 test("numberIsParsedSuccessfully", () => {
