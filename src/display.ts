@@ -150,48 +150,6 @@ export function createElement(className: ClassName, position: Vec.Position): Ele
     return new GroupElement(svgRoot!, className, position);
 }
 
-/** Get the size of the current window */
-export function getDisplaySize(): Vec.Vector2 {
-    assertInitialized();
-    const bounds = svgDocument!.rbox();
-    return { x: bounds.width, y: bounds.height };
-}
-
-/** Get the total size of the current content */
-export function getContentSize(): Vec.Vector2 {
-    assertInitialized();
-    const contentSize = svgRoot!.bbox();
-    return { x: contentSize.width, y: contentSize.height };
-}
-
-/**
- * Set the global content scale (Can be used for zooming).
- * @param newScale New global content scale.
- */
-export function setScale(newScale: number): void {
-    assertInitialized();
-    scale = clampScale(newScale);
-    updateRootTransform();
-}
-
-/**
- * Offset the current content by the given delta.
- * @param offsetDelta Delta to move the content by.
- */
-export function setOffsetDelta(offsetDelta: Vec.Vector2): void {
-    setOffset(Vec.add(viewOffset, offsetDelta));
-}
-
-/**
- * Set the new global offset (Can be used to pan the content).
- * @param newOffset New global offset.
- */
-export function setOffset(newOffset: Vec.Vector2): void {
-    assertInitialized();
-    viewOffset = newOffset;
-    updateRootTransform();
-}
-
 /** Focus on the current content (Will be centered and scaled to fit). */
 export function focusContent(): void {
     assertInitialized();
@@ -352,6 +310,48 @@ class GroupElement implements Element {
         if (clickCallback != undefined)
             elem.click(clickCallback);
     }
+}
+
+/** Get the size of the current window */
+function getDisplaySize(): Vec.Vector2 {
+    assertInitialized();
+    const bounds = svgDocument!.rbox();
+    return { x: bounds.width, y: bounds.height };
+}
+
+/** Get the total size of the current content */
+function getContentSize(): Vec.Vector2 {
+    assertInitialized();
+    const contentSize = svgRoot!.bbox();
+    return { x: contentSize.width, y: contentSize.height };
+}
+
+/**
+ * Set the global content scale (Can be used for zooming).
+ * @param newScale New global content scale.
+ */
+function setScale(newScale: number): void {
+    assertInitialized();
+    scale = clampScale(newScale);
+    updateRootTransform();
+}
+
+/**
+ * Offset the current content by the given delta.
+ * @param offsetDelta Delta to move the content by.
+ */
+function setOffsetDelta(offsetDelta: Vec.Vector2): void {
+    setOffset(Vec.add(viewOffset, offsetDelta));
+}
+
+/**
+ * Set the new global offset (Can be used to pan the content).
+ * @param newOffset New global offset.
+ */
+function setOffset(newOffset: Vec.Vector2): void {
+    assertInitialized();
+    viewOffset = newOffset;
+    updateRootTransform();
 }
 
 function updateRootTransform(): void {
