@@ -31,7 +31,8 @@
       "fields": [
         {
           "name": "children",
-          "valueType": "AI.Item[]"
+          "valueType": "AI.Item",
+          "isArray": true
         }
       ]
     },
@@ -40,7 +41,8 @@
       "fields": [
         {
           "name": "children",
-          "valueType": "AI.Item[]"
+          "valueType": "AI.Item",
+          "isArray": true
         }
       ]
     },
@@ -49,14 +51,18 @@
       "fields": [
         {
           "name": "conditions",
-          "valueType": "AI.Condition[]"
+          "valueType": "AI.Condition",
+          "isArray": true
         },
         {
           "name": "invert",
-          "valueType": "boolean"
+          "valueType": "boolean",
+          "isArray": false
         },
         {
-          "child": "AI.Item"
+          "name": "child",
+          "valueType": "AI.Item",
+          "isArray": false
         }
       ]
     },
@@ -65,11 +71,13 @@
       "fields": [
         {
           "name": "run",
-          "valueType": "boolean"
+          "valueType": "boolean",
+          "isArray": false
         },
         {
           "name": "minimumDistance",
-          "valueType": "number"
+          "valueType": "number",
+          "isArray": false
         }
       ]
     },
@@ -78,7 +86,8 @@
       "fields": [
         {
           "name": "abilityId",
-          "valueType": "number"
+          "valueType": "number",
+          "isArray": false
         }
       ]
     },
@@ -87,15 +96,18 @@
       "fields": [
         {
           "name": "allowedTargets",
-          "valueType": "string[]"
+          "valueType": "string",
+          "isArray": true
         },
         {
           "name": "targetRange",
-          "valueType": "number"
+          "valueType": "number",
+          "isArray": false
         },
         {
           "name": "includeBosses",
-          "valueType": "boolean"
+          "valueType": "boolean",
+          "isArray": false
         }
       ]
     },
@@ -104,11 +116,13 @@
       "fields": [
         {
           "name": "attackDuration",
-          "valueType": "number"
+          "valueType": "number",
+          "isArray": false
         },
         {
           "name": "attackDamage",
-          "valueType": "number"
+          "valueType": "number",
+          "isArray": false
         }
       ]
     },
@@ -121,11 +135,13 @@
       "fields": [
         {
           "name": "animations",
-          "valueType": "string[]"
+          "valueType": "string",
+          "isArray": true
         },
         {
           "name": "animationSpeeds",
-          "valueType": "number[]"
+          "valueType": "number",
+          "isArray": true
         }
       ]
     },
@@ -142,7 +158,8 @@
       "fields": [
         {
           "name": "abilityId",
-          "valueType": "number"
+          "valueType": "number",
+          "isArray": false
         }
       ]
     },
@@ -151,7 +168,8 @@
       "fields": [
         {
           "name": "range",
-          "valueType": "number"
+          "valueType": "number",
+          "isArray": false
         }
       ]
     },
@@ -160,7 +178,8 @@
       "fields": [
         {
           "name": "includeVegetables",
-          "valueType": "boolean"
+          "valueType": "boolean",
+          "isArray": false
         }
       ]
     }
