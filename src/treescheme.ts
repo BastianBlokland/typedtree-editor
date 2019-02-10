@@ -1,7 +1,7 @@
 ﻿import * as Utils from "./utils";
 
 /** Possible types a field can have */
-export type FieldValueType = "string" | "number" | "boolean" | NodeAlias
+export type FieldValueType = "string" | "number" | "boolean" | Alias
 
 /** Identifier for a node */
 export type NodeIdentifier = string;
@@ -13,7 +13,7 @@ export type NodeIdentifier = string;
  * all 'Condition' node types, and then you can use that alias in a field of a node. So a node can
  * define a field of type 'Condition' that can then contain any node from the alias. */
 export interface Scheme {
-    readonly nodeAliases: ReadonlyArray<NodeAlias>
+    readonly aliases: ReadonlyArray<Alias>
     readonly nodes: ReadonlyArray<NodeDefinition>
 
     getAlias(identifier: string): ReadonlyArray<string> | undefined
@@ -21,7 +21,7 @@ export interface Scheme {
 }
 
 /** Named group of nodes */
-export interface NodeAlias {
+export interface Alias {
     readonly identifier: string
     readonly values: ReadonlyArray<NodeIdentifier>
 }
@@ -43,7 +43,7 @@ export interface FieldDefinition {
 
 /** Builder that can be used to create a scheme */
 export interface SchemeBuilder {
-    pushAlias(identifier: string, values: ReadonlyArray<NodeIdentifier>): NodeAlias | undefined
+    pushAlias(identifier: string, values: ReadonlyArray<NodeIdentifier>): Alias | undefined
     pushNodeDefinition(identifier: string, callback?: (builder: NodeDefinitionBuilder) => void): boolean
 }
 
@@ -88,8 +88,8 @@ export function getPrettyFieldValueType(valueType: FieldValueType, isArray: bool
  */
 export function printScheme(scheme: Scheme, indent: number = 0): void {
     // Aliases
-    printText(`Aliases: (${scheme.nodeAliases.length})`, indent);
-    scheme.nodeAliases.forEach(a => {
+    printText(`Aliases: (${scheme.aliases.length})`, indent);
+    scheme.aliases.forEach(a => {
         printText(`${a.identifier} (${a.values.length})`, indent + 1);
         a.values.forEach(aVal => printText(aVal, indent + 2));
     });
@@ -109,10 +109,10 @@ export function printScheme(scheme: Scheme, indent: number = 0): void {
 }
 
 class SchemeImpl implements Scheme {
-    private readonly _nodeAliases: ReadonlyArray<NodeAlias>;
+    private readonly _aliases: ReadonlyArray<Alias>;
     private readonly _nodes: ReadonlyArray<NodeDefinition>;
 
-    constructor(aliases: ReadonlyArray<NodeAlias>, nodes: ReadonlyArray<NodeDefinition>) {
+    constructor(aliases: ReadonlyArray<Alias>, nodes: ReadonlyArray<NodeDefinition>) {
         // Verify that there are no duplicate aliases.
         if (Utils.hasDuplicates(aliases.map(a => a.identifier)))
             throw new Error("Aliases must be unique");
@@ -127,12 +127,12 @@ class SchemeImpl implements Scheme {
             });
         }
 
-        this._nodeAliases = aliases;
+        this._aliases = aliases;
         this._nodes = nodes;
     }
 
-    get nodeAliases(): ReadonlyArray<NodeAlias> {
-        return this._nodeAliases;
+    get aliases(): ReadonlyArray<Alias> {
+        return this._aliases;
     }
 
     get nodes(): ReadonlyArray<NodeDefinition> {
@@ -140,7 +140,7 @@ class SchemeImpl implements Scheme {
     }
 
     getAlias(identifier: string): ReadonlyArray<string> | undefined {
-        const alias = Utils.find(this._nodeAliases, a => a.identifier == identifier);
+        const alias = Utils.find(this._aliases, a => a.identifier == identifier);
         return alias === undefined ? undefined : alias.values;
     }
 
@@ -149,7 +149,7 @@ class SchemeImpl implements Scheme {
     }
 }
 
-class NodeAliasImpl implements NodeAlias {
+class AliasImpl implements Alias {
     private readonly _identifier: string;
     private readonly _values: ReadonlyArray<NodeIdentifier>;
 
@@ -206,26 +206,26 @@ class NodeDefinitionImpl implements NodeDefinition {
 }
 
 class SchemeBuilderImpl implements SchemeBuilder {
-    private _nodeAliases: NodeAlias[];
+    private _aliases: Alias[];
     private _nodes: NodeDefinition[];
     private _build: boolean;
 
     constructor() {
-        this._nodeAliases = [];
+        this._aliases = [];
         this._nodes = [];
     }
 
-    pushAlias(identifier: string, values: ReadonlyArray<NodeIdentifier>): NodeAlias | undefined {
+    pushAlias(identifier: string, values: ReadonlyArray<NodeIdentifier>): Alias | undefined {
         // New content cannot be pushed after building the scheme
         if (this._build)
             return undefined;
 
         // Aliases have to unique
-        if (this._nodeAliases.some(existingAlias => existingAlias.identifier === identifier))
+        if (this._aliases.some(existingAlias => existingAlias.identifier === identifier))
             return undefined;
 
-        const alias = new NodeAliasImpl(identifier, values);
-        this._nodeAliases.push(alias);
+        const alias = new AliasImpl(identifier, values);
+        this._aliases.push(alias);
         return alias;
     }
 
@@ -250,7 +250,7 @@ class SchemeBuilderImpl implements SchemeBuilder {
 
     build(): Scheme {
         this._build = true;
-        return new SchemeImpl(this._nodeAliases, this._nodes);
+        return new SchemeImpl(this._aliases, this._nodes);
     }
 }
 

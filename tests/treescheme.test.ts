@@ -8,7 +8,7 @@ test("cannotPushDuplicateAlias", () => {
         b.pushNodeDefinition("Node2");
     })
 
-    expect(scheme.nodeAliases.length).toBe(1);
+    expect(scheme.aliases.length).toBe(1);
     expect(scheme.getAlias("testAlias")).toEqual(["Node1"]);
 });
 
@@ -51,7 +51,7 @@ test("aliasesCanBeFound", () => {
 });
 
 test("fieldCanReferenceAnAlias", () => {
-    let alias: TreeScheme.NodeAlias | undefined = undefined;
+    let alias: TreeScheme.Alias | undefined = undefined;
     const scheme = TreeScheme.createScheme(b => {
         alias = b.pushAlias("Alias1", ["Node1", "Node2"]);
         b.pushNodeDefinition("Node1");

@@ -1,7 +1,7 @@
 ﻿{
-  "nodeAliases": [
+  "aliases": [
     {
-      "name": "AI.Item",
+      "identifier": "AI.Item",
       "values": [
         "AI.Items.Selector",
         "AI.Items.Sequence",
@@ -15,7 +15,7 @@
       ]
     },
     {
-      "name": "AI.Condition",
+      "identifier": "AI.Condition",
       "values": [
         "AI.Conditions.IsHungry",
         "AI.Conditions.OutOfHealth",
@@ -25,7 +25,7 @@
       ]
     }
   ],
-  "nodeTypes": [
+  "nodes": [
     {
       "identifier": "AI.Items.Selector",
       "fields": [
