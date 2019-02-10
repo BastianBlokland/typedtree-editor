@@ -65,16 +65,6 @@ export function createScheme(callback: (builder: SchemeBuilder) => void): Scheme
 }
 
 /**
- * Construct a new alias.
- * @param identifier Identifier for the alias.
- * @param values Values for the alias. (Note: values cannot contain duplicates)
- * @returns Newly constructed alias.
- */
-export function createAlias(identifier: string, values: ReadonlyArray<NodeIdentifier>): Alias {
-    return new AliasImpl(identifier, values);
-}
-
-/**
  * Create a pretty looking string (for example 'string[]') from a field type. (Usefully for debugging)
  * @param valueType Type of the field.
  * @param isArray Is this field an array.
@@ -89,7 +79,6 @@ export function getPrettyFieldValueType(valueType: FieldValueType, isArray: bool
         default: // In this case its actually an alias so we return its identifier
             return `${valueType.identifier}${isArray ? "[]" : ""}`;
     }
-    return "";
 }
 
 /**
