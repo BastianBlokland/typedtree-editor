@@ -1,6 +1,6 @@
 ﻿import * as Vec from "../src/vector";
 import * as Tree from "../src/tree";
-import * as TreeView from "../src/treeview";
+import * as TreeView from "../src/tree.view";
 
 test("allChildNodeExists", () => {
     const testTree = createTestTree();

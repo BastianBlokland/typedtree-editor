@@ -1,7 +1,7 @@
 ﻿import * as Utils from "../src/utils";
 import * as Tree from "../src/tree";
-import * as TreeSerializer from "../src/treeserializer";
-import * as Tree̦Parser from "../src/treeparser";
+import * as TreeSerializer from "../src/tree.serializer";
+import * as Tree̦Parser from "../src/tree.parser";
 
 test("savedJsonIsIdenticalToReadJson", () => {
     const json = Utils.formatJson(`{

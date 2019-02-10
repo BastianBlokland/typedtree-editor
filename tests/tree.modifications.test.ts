@@ -1,5 +1,5 @@
 ﻿import * as Tree from "../src/tree";
-import * as TreeModifications from "../src/treemodifications";
+import * as TreeModifications from "../src/tree.modifications";
 
 test("fieldWithValueString", () => {
     const field: Tree.StringField = { kind: "string", name: "testName", value: "oldValue" };

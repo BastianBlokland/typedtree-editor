@@ -1,5 +1,5 @@
 ﻿import * as Tree from "../src/tree";
-import * as Tree̦Parser from "../src/treeparser";
+import * as Tree̦Parser from "../src/tree.parser";
 
 test("fieldTypeIsParsedSuccessfully", () => {
     const json = `{

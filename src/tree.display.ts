@@ -1,6 +1,6 @@
 ﻿import * as Tree from "./tree";
-import * as TreeModifications from "./treemodifications";
-import * as TreeView from "./treeview";
+import * as TreeModifications from "./tree.modifications";
+import * as TreeView from "./tree.view";
 import * as Utils from "./utils";
 import * as Vec from "./vector";
 import * as Display from "./display";

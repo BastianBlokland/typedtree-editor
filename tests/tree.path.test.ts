@@ -1,5 +1,5 @@
 ﻿import * as Tree from "../src/tree";
-import * as TreePath from "../src/treepath";
+import * as TreePath from "../src/tree.path";
 
 test("findPathToRoot", () => {
     let nodeToTest: Tree.Node | undefined;

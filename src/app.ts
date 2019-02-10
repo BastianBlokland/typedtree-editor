@@ -1,9 +1,9 @@
 ﻿import * as DomUtils from "./domutils";
 import * as Sequencer from "./sequencer";
 import * as Tree from "./tree";
-import * as TreeParser from "./treeparser";
-import * as TreeSerializer from "./treeserializer";
-import * as TreeDisplay from "./treedisplay";
+import * as TreeParser from "./tree.parser";
+import * as TreeSerializer from "./tree.serializer";
+import * as TreeDisplay from "./tree.display";
 
 /** Function to run the main app logic in. */
 export async function run(): Promise<void> {
