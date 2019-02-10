@@ -15,6 +15,9 @@ export type NodeIdentifier = string;
 export interface Scheme {
     readonly nodeAliases: ReadonlyArray<NodeAlias>
     readonly nodes: ReadonlyArray<NodeDefinition>
+
+    getAlias(identifier: string): ReadonlyArray<string> | undefined
+    getNode(identifier: string): NodeDefinition | undefined
 }
 
 /** Named group of nodes */
@@ -27,6 +30,8 @@ export interface NodeAlias {
 export interface NodeDefinition {
     readonly identifier: NodeIdentifier
     readonly fields: ReadonlyArray<FieldDefinition>
+
+    getField(name: string): FieldDefinition | undefined
 }
 
 /** Definition of a field (name and type) */
@@ -44,7 +49,7 @@ export interface SchemeBuilder {
 
 /** Builder that can be used to create a node definition */
 export interface NodeDefinitionBuilder {
-    pushField(name: string, valueType: FieldValueType, isArray: boolean): boolean
+    pushField(name: string, valueType: FieldValueType, isArray?: boolean): boolean
 }
 
 /**
@@ -115,10 +120,12 @@ class SchemeImpl implements Scheme {
         if (Utils.hasDuplicates(nodes.map(a => a.identifier)))
             throw new Error("Node identifier must be unique");
         // Verify that aliases only reference nodes that actually exist.
-        aliases.map(a => a.values).reduce((a, b) => a.concat(b)).forEach(aliasVal => {
-            if (!nodes.some(nodeDef => nodeDef.identifier === aliasVal))
-                throw new Error(`Alias defines a value '${aliasVal}' that is not a type in the types array`);
-        });
+        if (aliases.length > 0) {
+            aliases.map(a => a.values).reduce((a, b) => a.concat(b)).forEach(aliasVal => {
+                if (!nodes.some(nodeDef => nodeDef.identifier === aliasVal))
+                    throw new Error(`Alias defines a value '${aliasVal}' that is not a type in the types array`);
+            });
+        }
 
         this._nodeAliases = aliases;
         this._nodes = nodes;
@@ -130,6 +137,15 @@ class SchemeImpl implements Scheme {
 
     get nodes(): ReadonlyArray<NodeDefinition> {
         return this._nodes;
+    }
+
+    getAlias(identifier: string): ReadonlyArray<string> | undefined {
+        const alias = Utils.find(this._nodeAliases, a => a.identifier == identifier);
+        return alias === undefined ? undefined : alias.values;
+    }
+
+    getNode(identifier: string): NodeDefinition | undefined {
+        return Utils.find(this._nodes, a => a.identifier == identifier);
     }
 }
 
@@ -182,6 +198,10 @@ class NodeDefinitionImpl implements NodeDefinition {
 
     get fields(): ReadonlyArray<FieldDefinition> {
         return this._fields;
+    }
+
+    getField(name: string): FieldDefinition | undefined {
+        return Utils.find(this._fields, f => f.name === name);
     }
 }
 
@@ -244,7 +264,7 @@ class NodeDefinitionBuilderImpl implements NodeDefinitionBuilder {
         this._fields = [];
     }
 
-    pushField(name: string, valueType: FieldValueType, isArray: boolean): boolean {
+    pushField(name: string, valueType: FieldValueType, isArray?: boolean): boolean {
         // New content cannot be pushed after building the definition
         if (this._build)
             return false;
@@ -253,7 +273,11 @@ class NodeDefinitionBuilderImpl implements NodeDefinitionBuilder {
         if (this._fields.some(existingField => existingField.name === name))
             return false;
 
-        this._fields.push({ name: name, valueType: valueType, isArray: isArray });
+        this._fields.push({
+            name: name,
+            valueType: valueType,
+            isArray: isArray === undefined ? false : isArray
+        });
         return true;
     }
 
