@@ -25,6 +25,7 @@
     "treeparser",
     "treepath",
     "treescheme",
+    "treeschemeparser",
     "treeserializer",
     "treeview",
     "truthy",

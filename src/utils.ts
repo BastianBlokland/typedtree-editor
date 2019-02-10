@@ -1,14 +1,4 @@
 ﻿/**
- * Check if given object is an array
- * @param obj Object to check.
- * @returns True if the obj is an array otherwise false.
- */
-export function isArray(obj: any): boolean {
-    // Wrapper to get a 'boolean' typed result.
-    return Array.isArray(obj);
-}
-
-/**
  * Create a new array that contains all the elements from the previous but with the given element
  * replaced.
  * @param array Source array.

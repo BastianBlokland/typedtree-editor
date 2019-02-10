@@ -44,6 +44,7 @@ export interface FieldDefinition {
 /** Builder that can be used to create a scheme */
 export interface SchemeBuilder {
     pushAlias(identifier: string, values: ReadonlyArray<NodeIdentifier>): Alias | undefined
+    getAlias(identifier: string): Alias | undefined
     pushNodeDefinition(identifier: string, callback?: (builder: NodeDefinitionBuilder) => void): boolean
 }
 
@@ -61,6 +62,16 @@ export function createScheme(callback: (builder: SchemeBuilder) => void): Scheme
     const builder = new SchemeBuilderImpl();
     callback(builder);
     return builder.build();
+}
+
+/**
+ * Construct a new alias.
+ * @param identifier Identifier for the alias.
+ * @param values Values for the alias. (Note: values cannot contain duplicates)
+ * @returns Newly constructed alias.
+ */
+export function createAlias(identifier: string, values: ReadonlyArray<NodeIdentifier>): Alias {
+    return new AliasImpl(identifier, values);
 }
 
 /**
@@ -227,6 +238,10 @@ class SchemeBuilderImpl implements SchemeBuilder {
         const alias = new AliasImpl(identifier, values);
         this._aliases.push(alias);
         return alias;
+    }
+
+    getAlias(identifier: string): Alias | undefined {
+        return Utils.find(this._aliases, a => a.identifier == identifier);
     }
 
     pushNodeDefinition(identifier: string, callback?: (builder: NodeDefinitionBuilder) => void): boolean {
