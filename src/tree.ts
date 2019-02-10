@@ -119,15 +119,13 @@ export interface NodeBuilder {
     pushField(field: Field): boolean
 }
 
-export type BuildCallback = (builder: NodeBuilder) => void
-
 /**
  * Construct a new node
  * @param type Type of the node to construct
  * @param callback Callback that can be used to add additional data to this node.
- * @returns Newly constructed node
+ * @returns Newly constructed (immutable) node
  */
-export function createNode(type: NodeType, callback: BuildCallback | undefined = undefined): Node {
+export function createNode(type: NodeType, callback?: (builder: NodeBuilder) => void): Node {
     if (callback === undefined)
         return new NodeImpl(type, []);
     const builder = new NodeBuilderImpl(type);
@@ -264,7 +262,7 @@ class NodeImpl implements Node {
     private readonly _fields: ReadonlyArray<Field>;
 
     constructor(type: NodeType, fields: ReadonlyArray<Field>) {
-        if (!type || type === "")
+        if (type === "")
             throw new Error("Node must has a type");
         if (Utils.hasDuplicates(fields.map(getFieldName)))
             throw new Error("Field names must be unique");
