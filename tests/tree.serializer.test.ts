@@ -22,10 +22,10 @@ test("savedJsonIsIdenticalToReadJson", () => {
             ]
         }
     }`);
-    const nodeParseResult = Tree̦Parser.parseJson(json);
-    expect(nodeParseResult.kind).toBe("success");
-    if (nodeParseResult.kind === "success") {
-        const composedJson = TreeSerializer.composeJson(nodeParseResult.value);
+    const parseResult = Tree̦Parser.parseJson(json);
+    expect(parseResult.kind).toBe("success");
+    if (parseResult.kind === "success") {
+        const composedJson = TreeSerializer.composeJson(parseResult.value);
         expect(composedJson).toEqual(json);
     }
 });

@@ -4,34 +4,17 @@ import * as Tree̦SchemeParser from "../src/treescheme.parser";
 test("basicSchemeIsParsedSuccessfully", () => {
     const json = `{
         "aliases": [
-            {
-                "identifier": "Alias",
-                "values": [ "NodeA", "NodeB" ]
-            }
+            { "identifier": "Alias", "values": [ "NodeA", "NodeB" ] }
         ],
         "nodes": [
             { "identifier": "NodeA" },
             {
                 "identifier": "NodeB",
                 "fields": [
-                    {
-                        "name": "field1",
-                        "valueType": "Alias",
-                        "isArray": true
-                    },
-                    {
-                        "name": "field2",
-                        "valueType": "boolean"
-                    },
-                    {
-                        "name": "field3",
-                        "valueType": "string"
-                    },
-                    {
-                        "name": "field4",
-                        "valueType": "number",
-                        "isArray": true
-                    }
+                    { "name": "field1", "valueType": "Alias", "isArray": true },
+                    { "name": "field2", "valueType": "boolean" },
+                    { "name": "field3", "valueType": "string" },
+                    { "name": "field4", "valueType": "number", "isArray": true }
                 ]
             }
         ]
