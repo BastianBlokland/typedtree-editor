@@ -42,7 +42,11 @@ function parseScheme(obj: any): TreeScheme.Scheme {
     if (obj === undefined || obj === null || typeof obj !== "object")
         throw new Error("Invalid input obj");
 
-    return TreeScheme.createScheme(schemeBuilder => {
+    const rootAliasIdentifier = ParserUtils.validateString(obj.rootAlias);
+    if (rootAliasIdentifier === undefined)
+        throw new Error(`Root-alias identifier '${obj.rootAlias}' of scheme is invalid`);
+
+    return TreeScheme.createScheme(rootAliasIdentifier, schemeBuilder => {
         parseAliases(schemeBuilder, obj);
         parseNodes(schemeBuilder, obj);
     });

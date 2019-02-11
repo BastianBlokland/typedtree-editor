@@ -1,4 +1,5 @@
 ﻿{
+  "rootAlias": "AI.Item",
   "aliases": [
     {
       "identifier": "AI.Item",

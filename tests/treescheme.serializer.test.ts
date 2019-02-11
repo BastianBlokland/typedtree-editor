@@ -4,6 +4,7 @@ import * as TreeSchemeParser from "../src/treescheme.parser";
 
 test("savedJsonIsIdenticalToReadJson", () => {
     const json = Utils.formatJson(`{
+        "rootAlias": "Alias",
         "aliases": [
             { "identifier": "Alias", "values": [ "NodeA", "NodeB" ] }
         ],

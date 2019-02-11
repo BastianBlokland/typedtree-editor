@@ -12,6 +12,7 @@ export function composeJson(scheme: TreeScheme.Scheme): string {
 
 function createSchemeObject(scheme: TreeScheme.Scheme): Object {
     const obj: any = {};
+    obj.rootAlias = scheme.rootAlias.identifier;
     obj.aliases = scheme.aliases.map(createAliasObject);
     obj.nodes = scheme.nodes.map(createNodeObject);
     return obj;

@@ -13,6 +13,7 @@ export type NodeIdentifier = string;
  * all 'Condition' node types, and then you can use that alias in a field of a node. So a node can
  * define a field of type 'Condition' that can then contain any node from the alias. */
 export interface Scheme {
+    readonly rootAlias: Alias
     readonly aliases: ReadonlyArray<Alias>
     readonly nodes: ReadonlyArray<NodeDefinition>
 
@@ -55,11 +56,12 @@ export interface NodeDefinitionBuilder {
 
 /**
  * Construct a new scheme
+ * @param rootAliasIdentifier Identifier for the alias that is used for the root-node.
  * @param callback Callback that can be used to define what data should be on the scheme.
  * @returns Newly constructed (immutable) scheme.
  */
-export function createScheme(callback: (builder: SchemeBuilder) => void): Scheme {
-    const builder = new SchemeBuilderImpl();
+export function createScheme(rootAliasIdentifier: string, callback: (builder: SchemeBuilder) => void): Scheme {
+    const builder = new SchemeBuilderImpl(rootAliasIdentifier);
     callback(builder);
     return builder.build();
 }
@@ -109,10 +111,14 @@ export function printScheme(scheme: Scheme, indent: number = 0): void {
 }
 
 class SchemeImpl implements Scheme {
+    private readonly _rootAlias: Alias;
     private readonly _aliases: ReadonlyArray<Alias>;
     private readonly _nodes: ReadonlyArray<NodeDefinition>;
 
-    constructor(aliases: ReadonlyArray<Alias>, nodes: ReadonlyArray<NodeDefinition>) {
+    constructor(rootAlias: Alias, aliases: ReadonlyArray<Alias>, nodes: ReadonlyArray<NodeDefinition>) {
+        // Verify that root-alias exists in the aliases array.
+        if (!aliases.some(a => a === rootAlias))
+            throw new Error("RootAlias must exist in aliases array");
         // Verify that there are no duplicate aliases.
         if (Utils.hasDuplicates(aliases.map(a => a.identifier)))
             throw new Error("Aliases must be unique");
@@ -127,8 +133,13 @@ class SchemeImpl implements Scheme {
             });
         }
 
+        this._rootAlias = rootAlias;
         this._aliases = aliases;
         this._nodes = nodes;
+    }
+
+    get rootAlias(): Alias {
+        return this._rootAlias;
     }
 
     get aliases(): ReadonlyArray<Alias> {
@@ -206,11 +217,13 @@ class NodeDefinitionImpl implements NodeDefinition {
 }
 
 class SchemeBuilderImpl implements SchemeBuilder {
+    private _rootAliasIdentifier: string;
     private _aliases: Alias[];
     private _nodes: NodeDefinition[];
     private _build: boolean;
 
-    constructor() {
+    constructor(rootAliasIdentifier: string) {
+        this._rootAliasIdentifier = rootAliasIdentifier;
         this._aliases = [];
         this._nodes = [];
     }
@@ -254,7 +267,10 @@ class SchemeBuilderImpl implements SchemeBuilder {
 
     build(): Scheme {
         this._build = true;
-        return new SchemeImpl(this._aliases, this._nodes);
+        const rootAlias = this.getAlias(this._rootAliasIdentifier);
+        if (rootAlias === undefined)
+            throw new Error(`Root alias '${this._rootAliasIdentifier}' not found in alias set`);
+        return new SchemeImpl(rootAlias, this._aliases, this._nodes);
     }
 }
 

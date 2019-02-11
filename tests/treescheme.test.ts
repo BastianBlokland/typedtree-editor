@@ -1,7 +1,7 @@
 ﻿import * as TreeScheme from "../src/treescheme";
 
 test("cannotPushDuplicateAlias", () => {
-    const scheme = TreeScheme.createScheme(b => {
+    const scheme = TreeScheme.createScheme("testAlias", b => {
         b.pushAlias("testAlias", ["Node1"]);
         expect(b.pushAlias("testAlias", ["Node2"])).toBeFalsy();
         b.pushNodeDefinition("Node1");
@@ -13,7 +13,8 @@ test("cannotPushDuplicateAlias", () => {
 });
 
 test("cannotPushDuplicateNodes", () => {
-    const scheme = TreeScheme.createScheme(b => {
+    const scheme = TreeScheme.createScheme("testAlias", b => {
+        b.pushAlias("testAlias", ["Node1"]);
         b.pushNodeDefinition("Node1");
         expect(b.pushNodeDefinition("Node1")).toBeFalsy();
     })
@@ -22,7 +23,8 @@ test("cannotPushDuplicateNodes", () => {
 });
 
 test("cannotPushNodeWithDuplicateFields", () => {
-    const scheme = TreeScheme.createScheme(b => {
+    const scheme = TreeScheme.createScheme("testAlias", b => {
+        b.pushAlias("testAlias", ["Node1"]);
         b.pushNodeDefinition("Node1", b => {
             b.pushField("field1", "string");
             expect(b.pushField("field1", "boolean")).toBeFalsy();
@@ -33,15 +35,22 @@ test("cannotPushNodeWithDuplicateFields", () => {
     expect(scheme.getNode("Node1")!.getField("field1")!.valueType).toBe("string");
 });
 
+test("cannotCreateSchemeWithoutRootAlias", () => {
+    expect(() => TreeScheme.createScheme("invalid", b => {
+        b.pushAlias("testAlias", ["Node1"]);
+        b.pushNodeDefinition("Node2");
+    })).toThrowError();
+});
+
 test("cannotCreateSchemeWithMissingAlias", () => {
-    expect(() => TreeScheme.createScheme(b => {
+    expect(() => TreeScheme.createScheme("testAlias", b => {
         b.pushAlias("testAlias", ["Node1"]);
         b.pushNodeDefinition("Node2");
     })).toThrowError();
 });
 
 test("aliasesCanBeFound", () => {
-    const scheme = TreeScheme.createScheme(b => {
+    const scheme = TreeScheme.createScheme("Alias1", b => {
         b.pushAlias("Alias1", ["Node1", "Node2"]);
         b.pushNodeDefinition("Node1");
         b.pushNodeDefinition("Node2");
@@ -52,7 +61,7 @@ test("aliasesCanBeFound", () => {
 
 test("fieldCanReferenceAnAlias", () => {
     let alias: TreeScheme.Alias | undefined = undefined;
-    const scheme = TreeScheme.createScheme(b => {
+    const scheme = TreeScheme.createScheme("Alias1", b => {
         alias = b.pushAlias("Alias1", ["Node1", "Node2"]);
         b.pushNodeDefinition("Node1");
         b.pushNodeDefinition("Node2", b => {
@@ -64,7 +73,8 @@ test("fieldCanReferenceAnAlias", () => {
 });
 
 test("fieldsCanBeFound", () => {
-    const scheme = TreeScheme.createScheme(b => {
+    const scheme = TreeScheme.createScheme("Alias1", b => {
+        b.pushAlias("Alias1", ["Node1"]);
         b.pushNodeDefinition("Node1", b => {
             b.pushField("field1", "boolean");
             b.pushField("field2", "string", true);
