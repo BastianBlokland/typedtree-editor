@@ -3,7 +3,7 @@ import * as TreeModifications from "./tree.modifications";
 import * as TreeView from "./tree.view";
 import * as Utils from "./utils";
 import * as Vec from "./vector";
-import * as Display from "./display";
+import * as SvgDisplay from "./svg.display";
 
 export type treeChangedCallback = (newTree: Tree.Node) => void;
 
@@ -12,7 +12,7 @@ export type treeChangedCallback = (newTree: Tree.Node) => void;
  * @param root Root node for the tree to draw.
  */
 export function setTree(root: Tree.Node, changed: treeChangedCallback | undefined = undefined): void {
-    Display.clear();
+    SvgDisplay.clear();
     const positionTree = TreeView.createPositionTree(root);
     positionTree.nodes.forEach(node => {
         createNode(node, positionTree, newNode => {
@@ -21,12 +21,12 @@ export function setTree(root: Tree.Node, changed: treeChangedCallback | undefine
             }
         });
     });
-    Display.setContentOffset(positionTree.rootOffset);
+    SvgDisplay.setContentOffset(positionTree.rootOffset);
 }
 
 /** Focus the given tree on the display. */
 export function focusTree(): void {
-    Display.focusContent();
+    SvgDisplay.focusContent();
 }
 
 const nodeHeaderHeight = TreeView.nodeHeaderHeight;
@@ -43,7 +43,7 @@ function createNode(
     changed: nodeChangedCallback): void {
 
     const size = positionTree.getSize(node);
-    const nodeElement = Display.createElement("node", positionTree.getPosition(node));
+    const nodeElement = SvgDisplay.createElement("node", positionTree.getPosition(node));
 
     nodeElement.addRect("nodeBackground", size, Vec.zeroVector);
     nodeElement.addText("nodeTypeText", node.type, { x: Utils.half(size.x), y: halfNodeHeightHeight });
@@ -61,7 +61,7 @@ type fieldChangedCallback<T extends Tree.Field> = (newField: T) => void;
 function createField(
     node: Tree.Node,
     fieldName: string,
-    parent: Display.Element,
+    parent: SvgDisplay.Element,
     positionTree: TreeView.PositionTree,
     yOffset: number,
     changed: fieldChangedCallback<Tree.Field>): number {
@@ -190,7 +190,7 @@ function createField(
     }
 }
 
-function addConnection(parent: Display.Element, from: Vec.Position, to: Vec.Position): void {
+function addConnection(parent: SvgDisplay.Element, from: Vec.Position, to: Vec.Position): void {
     parent.addGraphics("nodeOutput", "nodeConnector", from);
 
     const target = Vec.add(to, nodeInputSlotOffset);
