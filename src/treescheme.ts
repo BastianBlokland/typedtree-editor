@@ -90,6 +90,7 @@ export function getPrettyFieldValueType(valueType: FieldValueType, isArray: bool
  */
 export function printScheme(scheme: Scheme, indent: number = 0): void {
     // Aliases
+    printText(`RootAlias: '${scheme.rootAlias.identifier}'`, indent);
     printText(`Aliases: (${scheme.aliases.length})`, indent);
     scheme.aliases.forEach(a => {
         printText(`${a.identifier} (${a.values.length})`, indent + 1);
