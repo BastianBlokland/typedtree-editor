@@ -8,8 +8,11 @@
     "classname",
     "crossorigin",
     "domutils",
+    "fieldname",
+    "fieldvalue",
     "jsnext",
     "junit",
+    "nodefield",
     "nodescheme",
     "nodestyle",
     "noselect",
@@ -35,7 +38,7 @@
     "tsout",
     "typedtree",
     "ulist"
-],
+  ],
   // Search settings
   "search.useIgnoreFiles": false,
   "search.exclude": {},

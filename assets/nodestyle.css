@@ -1,4 +1,4 @@
-﻿#svg-display .nodeBackground {
+﻿#svg-display .node-background {
     fill: #999;
     rx: 10;
     ry: 10;
@@ -6,13 +6,13 @@
     stroke-width: 4;
 }
 
-#svg-display .nodeTypeText {
+#svg-display .node-type {
     text-anchor: middle;
     font-weight: bold;
 }
 
 /* Field backgrounds */
-#svg-display .stringValueBackground, #svg-display .stringArrayValueBackground {
+#svg-display .string-value-background, #svg-display .stringArray-value-background {
     fill: #696;
     rx: 10;
     ry: 10;
@@ -20,7 +20,7 @@
     stroke-width: 2;
 }
 
-#svg-display .numberValueBackground, #svg-display .numberArrayValueBackground {
+#svg-display .number-value-background, #svg-display .numberArray-value-background {
     fill: #669;
     rx: 10;
     ry: 10;
@@ -28,7 +28,7 @@
     stroke-width: 2;
 }
 
-#svg-display .booleanValueBackground, #svg-display .booleanArrayValueBackground {
+#svg-display .boolean-value-background, #svg-display .booleanArray-value-background {
     fill: #966;
     rx: 10;
     ry: 10;
@@ -36,7 +36,7 @@
     stroke-width: 2;
 }
 
-#svg-display .nodeValueBackground, #svg-display .nodeArrayValueBackground {
+#svg-display .node-value-background, #svg-display .nodeArray-value-background {
     fill: #999966;
     rx: 10;
     ry: 10;
@@ -44,38 +44,38 @@
     stroke-width: 2;
 }
 
-#svg-display .nodeFieldName {
+#svg-display .fieldname {
     font-weight: bold;
 }
 
 /* Field values */
-#svg-display .stringFieldValue {
+#svg-display .string-value {
     background-color: #DDD;
     width: 90%;
 }
 
-#svg-display .numberFieldValue {
+#svg-display .number-value {
     background-color: #DDD;
     width: 90%;
 }
 
-#svg-display .booleanFieldValue {
+#svg-display .boolean-value {
     background-color: #DDD;
     cursor: pointer;
 }
 
-#svg-display .nodeConnection {
+#svg-display .connection {
     stroke: #000;
     stroke-width: 4;
     fill: none;
 }
 
-#svg-display .fieldValueButton:hover {
+#svg-display .fieldvalue-button:hover {
     fill: #FFF;
     cursor: pointer;
 }
 
-#svg-display .fieldValueButton {
+#svg-display .fieldvalue-button {
     fill: #999;
 }
 
