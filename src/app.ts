@@ -10,6 +10,7 @@ export async function run(): Promise<void> {
     sequencer = Sequencer.createRunner();
 
     window.onkeydown = onDomKeyPress;
+    DomUtils.subscribeToClick("toolbox-toggle", toggleToolbox);
     DomUtils.subscribeToFileInput("opentree-file", enqueueLoadTree);
     DomUtils.subscribeToClick("openexample-button", () => enqueueLoadTree("example.tree.json"));
     DomUtils.subscribeToClick("savetree-button", enqueueSaveTree);
@@ -71,8 +72,21 @@ function setCurrentTree(tree: Tree.Node, name: string): void {
     });
 }
 
+function toggleToolbox(): void {
+    const toolbox = document.getElementById("toolbox");
+    if (toolbox === null)
+        throw new Error("Unable to find 'toolbox'");
+    if (toolbox.style.visibility === 'hidden') {
+        toolbox.style.visibility = 'visible';
+    }
+    else {
+        toolbox.style.visibility = 'hidden';
+    }
+}
+
 function onDomKeyPress(event: KeyboardEvent): void {
     switch (event.key) {
+        case "t": toggleToolbox(); break;
         case "f":
             if (currentTree !== undefined)
                 TreeDisplay.focusTree();

@@ -1,14 +1,14 @@
-﻿.toolbox {
+﻿#toolbox {
     position: absolute;
     left: 10px;
-    bottom: 10px;
+    bottom: 45px;
     width: 300px;
     border-radius: 8px;
     border: 4px solid #000;
     background-color: #888;
 }
 
-.toolbox > .element {
+#toolbox > .element {
     margin-top: 5px;
     margin-bottom: 5px;
     margin-left: 2.5%;
@@ -20,25 +20,25 @@
 }
 
 /* Show cursor on buttons in the toolbox */
-.toolbox button {
+#toolbox button {
     cursor: pointer;
 }
 
-.toolbox #opentree-container {
+#toolbox #opentree-container {
     display: flex;
     align-items: center;
     text-align: center;
     font-size: 10pt;
 }
 
-.toolbox #opentree-container #opentree-header {
+#toolbox #opentree-container #opentree-header {
     width: 25%
 }
-.toolbox #opentree-container #opentree-file {
+#toolbox #opentree-container #opentree-file {
     width: 75%;
 }
 
-.toolbox > .header {
+#toolbox > .header {
     margin: 5px;
     font-size: 15pt;
     font-weight: bold;
