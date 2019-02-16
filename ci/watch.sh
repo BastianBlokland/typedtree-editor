@@ -18,7 +18,7 @@ runDevelopmentWebServer ()
 {
     # Kill all other programs currently occuping that port (our process should not leak as we put
     # a trap in place but just in case)
-    lsof -n -i4TCP:$TEST_PORT | grep LISTEN | awk '{ print $2 }' | xargs kill
+    lsof -n -i4TCP:$TEST_PORT | grep LISTEN | awk '{ print $2 }' | xargs kill 2> /dev/null || true
 
     # Start the 'live-server' (included as a npm package)
     ./node_modules/.bin/live-server build --watch=./* --port=$TEST_PORT
