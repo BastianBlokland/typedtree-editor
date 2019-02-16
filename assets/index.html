@@ -20,13 +20,17 @@
     <a href="https://github.com/BastianBlokland/typedtree-editor" id=github-button>GitHub</a>
 
     <div class="toolbox">
-      <button type="button" class="toolbox-element" id="savetree-button">Save tree</button>
-      <div class="toolbox-element" id="opentree-container">
-        <div id="opentree-header">Open tree</div>
+      <div class="header">Scheme</div>
+      <div id="scheme-display"></div>
+
+      <div class="header">Tree</div>
+      <button type="button" class="element" id="savetree-button">Save</button>
+      <div class="element" id="opentree-container">
+        <div id="opentree-header">Open</div>
         <input type="file" id="opentree-file" accept=".json" />
       </div>
-      <button type="button" class="toolbox-element" id="openexample-button">Open example</button>
-      <button type="button" class="toolbox-element" id="focus-button">Focus</button>
+      <button type="button" class="element" id="openexample-button">Open example</button>
+      <button type="button" class="element" id="focus-button">Focus</button>
     </div>
   </div>
 

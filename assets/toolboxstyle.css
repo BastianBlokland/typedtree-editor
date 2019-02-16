@@ -1,32 +1,95 @@
 ﻿.toolbox {
     position: absolute;
-    right: 10px;
+    left: 10px;
     bottom: 10px;
-    width: 160px;
+    width: 300px;
     border-radius: 8px;
     border: 4px solid #000;
-    background-color: #999;
+    background-color: #888;
 }
 
-.toolbox-element {
-    margin: 2.5%;
+.toolbox > .element {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 2.5%;
+    margin-right: 2.5%;
     width: 95%;
     background-color: #DDD;
     border-radius: 4px;
     font-weight: bold;
 }
 
+/* Show cursor on buttons in the toolbox */
 .toolbox button {
     cursor: pointer;
 }
 
-#opentree-container {
+.toolbox #opentree-container {
     display: flex;
     align-items: center;
     text-align: center;
     font-size: 10pt;
 }
 
-#opentree-header, #opentree-file {
-    width: 50%;
+.toolbox #opentree-container #opentree-header {
+    width: 25%
+}
+.toolbox #opentree-container #opentree-file {
+    width: 75%;
+}
+
+.toolbox > .header {
+    margin: 5px;
+    font-size: 15pt;
+    font-weight: bold;
+    text-align: center;
+    color: #FFF;
+}
+
+#scheme-display {
+    overflow: scroll;
+    white-space: nowrap;
+    padding: 5px;
+    height: 400px;
+    margin: 5px;
+    border: 2px solid #000;
+    background-color: #BBB;
+}
+
+#scheme-display ul {
+    margin-block-start: 5px;
+    margin-block-end: 5px;
+    padding-inline-start: 20px;
+    margin: 2px;
+}
+
+#scheme-display .header {
+    font-size: 12pt;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+#scheme-display .identifier {
+    font-size: 10pt;
+}
+
+#scheme-display .field-type {
+    font-size: 10pt;
+    margin-left: 5px;
+    font-weight: bolder;
+}
+
+/* Show pointer to indicate that you can expand this entry */
+#scheme-display details summary {
+    cursor: pointer;
+}
+
+/* Hide the summary arrows on chrome */
+#scheme-display details summary::-webkit-details-marker {
+    display: none;
+}
+
+/* Hide the summary arrows on firefox */
+#scheme-display details summary:first-of-type {
+    list-style-type: none;
 }

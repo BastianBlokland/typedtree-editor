@@ -5,6 +5,7 @@
   "cSpell.words": [
     "bbox",
     "callout",
+    "classname",
     "crossorigin",
     "domutils",
     "jsnext",
@@ -12,12 +13,14 @@
     "nodescheme",
     "nodestyle",
     "noselect",
+    "olist",
     "onwarn",
     "openexample",
     "opentree",
     "parserutils",
     "polyfill",
     "rbox",
+    "rootalias",
     "savetree",
     "textfield",
     "treedisplay",
@@ -30,7 +33,8 @@
     "treeview",
     "truthy",
     "tsout",
-    "typedtree"
+    "typedtree",
+    "ulist"
 ],
   // Search settings
   "search.useIgnoreFiles": false,

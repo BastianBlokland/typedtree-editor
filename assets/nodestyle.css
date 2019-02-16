@@ -1,4 +1,4 @@
-﻿.nodeBackground {
+﻿#svg-display .nodeBackground {
     fill: #999;
     rx: 10;
     ry: 10;
@@ -6,13 +6,13 @@
     stroke-width: 4;
 }
 
-.nodeTypeText {
+#svg-display .nodeTypeText {
     text-anchor: middle;
     font-weight: bold;
 }
 
 /* Field backgrounds */
-.stringValueBackground, .stringArrayValueBackground {
+#svg-display .stringValueBackground, #svg-display .stringArrayValueBackground {
     fill: #696;
     rx: 10;
     ry: 10;
@@ -20,7 +20,7 @@
     stroke-width: 2;
 }
 
-.numberValueBackground, .numberArrayValueBackground {
+#svg-display .numberValueBackground, #svg-display .numberArrayValueBackground {
     fill: #669;
     rx: 10;
     ry: 10;
@@ -28,7 +28,7 @@
     stroke-width: 2;
 }
 
-.booleanValueBackground, .booleanArrayValueBackground {
+#svg-display .booleanValueBackground, #svg-display .booleanArrayValueBackground {
     fill: #966;
     rx: 10;
     ry: 10;
@@ -36,7 +36,7 @@
     stroke-width: 2;
 }
 
-.nodeValueBackground, .nodeArrayValueBackground {
+#svg-display .nodeValueBackground, #svg-display .nodeArrayValueBackground {
     fill: #999966;
     rx: 10;
     ry: 10;
@@ -44,48 +44,48 @@
     stroke-width: 2;
 }
 
-.nodeFieldName {
+#svg-display .nodeFieldName {
     font-weight: bold;
 }
 
 /* Field values */
-.stringFieldValue {
+#svg-display .stringFieldValue {
     background-color: #DDD;
     width: 90%;
 }
 
-.numberFieldValue {
+#svg-display .numberFieldValue {
     background-color: #DDD;
     width: 90%;
 }
 
-.booleanFieldValue {
+#svg-display .booleanFieldValue {
     background-color: #DDD;
     cursor: pointer;
 }
 
-.nodeConnection {
+#svg-display .nodeConnection {
     stroke: #000;
     stroke-width: 4;
     fill: none;
 }
 
-.fieldValueButton:hover {
+#svg-display .fieldValueButton:hover {
     fill: #FFF;
     cursor: pointer;
 }
 
-.fieldValueButton {
+#svg-display .fieldValueButton {
     fill: #999;
 }
 
 /* Number spinners cause more problems then they are worth in our case. For example in Safari they
 render in completely random locations when used inside a svg foreign-object. */
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
+#svg-display input::-webkit-outer-spin-button,
+#svg-display input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
-input[type=number] {
+#svg-display input[type=number] {
     -moz-appearance: textfield;
 }

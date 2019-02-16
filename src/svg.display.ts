@@ -70,19 +70,19 @@ export function initialize(): void {
     if (svgDocument != null || svgRoot != null)
         throw new Error("Already initialized");
 
-    const rootSvgDom = document.getElementById(rootSvgDomElement);
+    const rootSvgDom = document.getElementById(rootSvgDomElementId);
     if (rootSvgDom === null)
-        throw new Error(`No dom element found with id: ${rootSvgDomElement}`);
+        throw new Error(`No dom element found with id: ${rootSvgDomElementId}`);
 
     if (!SVG.supported)
         throw new Error("Svg not supported");
 
     // Create document
-    svgDocument = SVG(rootSvgDomElement);
+    svgDocument = SVG(rootSvgDomElementId);
     svgRoot = svgDocument.group();
 
     // Setup global listeners
-    const inputBlocker = document.getElementById(inputBlockerDomElement);
+    const inputBlocker = document.getElementById(inputBlockerDomElementId);
     window.ondragstart = _ => false; // Disable native dragging as it interferes with ours.
     window.onkeydown = event => {
         switch (event.key) {
@@ -182,8 +182,8 @@ export function clear(): void {
     svgRoot!.clear();
 }
 
-const rootSvgDomElement = "svg-display";
-const inputBlockerDomElement = "input-blocker";
+const rootSvgDomElementId = "svg-display";
+const inputBlockerDomElementId = "input-blocker";
 const graphicsFilePath = "graphics.svg";
 const minScale = 0.05;
 const maxScale = 3;
@@ -250,7 +250,9 @@ class GroupElement implements Element {
         size: Vec.Size,
         callback: (newValue: string) => void): void {
 
-        const inputElement = DomUtils.createTextInput(className, value, callback);
+        const inputElement = DomUtils.createTextInput(value, callback);
+        inputElement.className = className;
+
         this._svgGroup.group().
             element("foreignObject").
             x(position.x).
@@ -269,7 +271,9 @@ class GroupElement implements Element {
         size: Vec.Size,
         callback: (newValue: number) => void): void {
 
-        const inputElement = DomUtils.createNumberInput(className, value, callback);
+        const inputElement = DomUtils.createNumberInput(value, callback);
+        inputElement.className = className;
+
         this._svgGroup.group().
             element("foreignObject").
             x(position.x).
@@ -288,7 +292,9 @@ class GroupElement implements Element {
         size: Vec.Size,
         callback: (newValue: boolean) => void): void {
 
-        const inputElement = DomUtils.createBooleanInput(className, value, callback);
+        const inputElement = DomUtils.createBooleanInput(value, callback);
+        inputElement.className = className;
+
         this._svgGroup.group().
             element("foreignObject").
             x(position.x).
