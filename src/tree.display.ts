@@ -11,17 +11,20 @@ export type treeChangedCallback = (newTree: Tree.Node) => void;
  * Draw the given tree.
  * @param root Root node for the tree to draw.
  */
-export function setTree(root: Tree.Node, changed: treeChangedCallback | undefined = undefined): void {
+export function setTree(root: Tree.Node | undefined, changed: treeChangedCallback | undefined = undefined): void {
     SvgDisplay.clear();
-    const positionTree = TreeView.createPositionTree(root);
-    positionTree.nodes.forEach(node => {
-        createNode(node, positionTree, newNode => {
-            if (changed !== undefined) {
-                changed(TreeModifications.treeWithReplacedNode(root, node, newNode));
-            }
+
+    if (root !== undefined) {
+        const positionTree = TreeView.createPositionTree(root);
+        positionTree.nodes.forEach(node => {
+            createNode(node, positionTree, newNode => {
+                if (changed !== undefined) {
+                    changed(TreeModifications.treeWithReplacedNode(root, node, newNode));
+                }
+            });
         });
-    });
-    SvgDisplay.setContentOffset(positionTree.rootOffset);
+        SvgDisplay.setContentOffset(positionTree.rootOffset);
+    }
 }
 
 /** Focus the given tree on the display. */

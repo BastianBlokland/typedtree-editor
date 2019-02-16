@@ -55,7 +55,7 @@ function enqueueSaveTree(): void {
     });
 }
 
-function enqueueUpdateTree(oldTree: Tree.Node, newTree: Tree.Node, name: string): void {
+function enqueueUpdateTree(oldTree: Tree.Node, newTree?: Tree.Node, name?: string): void {
     sequencer!.enqueue(async () => {
         if (oldTree === currentTree) {
             setCurrentTree(newTree, name);
@@ -63,12 +63,13 @@ function enqueueUpdateTree(oldTree: Tree.Node, newTree: Tree.Node, name: string)
     });
 }
 
-function setCurrentTree(tree: Tree.Node, name: string): void {
+function setCurrentTree(tree: Tree.Node | undefined, name?: string): void {
     currentTree = tree;
     currentTitle = name;
-    DomUtils.setText("tree-title", name);
-    TreeDisplay.setTree(currentTree, newTree => {
-        enqueueUpdateTree(tree, newTree, name);
+    DomUtils.setText("tree-title", name === undefined ? "" : name);
+    TreeDisplay.setTree(tree, newTree => {
+        if (tree !== undefined)
+            enqueueUpdateTree(tree, newTree, name);
     });
 }
 
