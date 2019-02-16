@@ -9,9 +9,14 @@ import * as TreeDisplay from "./tree.display";
 export async function run(): Promise<void> {
     sequencer = Sequencer.createRunner();
 
+    window.onkeydown = onDomKeyPress;
     DomUtils.subscribeToFileInput("opentree-file", enqueueLoadTree);
     DomUtils.subscribeToClick("openexample-button", () => enqueueLoadTree("example.tree.json"));
     DomUtils.subscribeToClick("savetree-button", enqueueSaveTree);
+    DomUtils.subscribeToClick("focus-button", () => {
+        if (currentTree !== undefined)
+            TreeDisplay.focusTree();
+    });
 
     console.log("Started running");
 
@@ -64,4 +69,13 @@ function setCurrentTree(tree: Tree.Node, name: string): void {
     TreeDisplay.setTree(currentTree, newTree => {
         enqueueUpdateTree(tree, newTree, name);
     });
+}
+
+function onDomKeyPress(event: KeyboardEvent): void {
+    switch (event.key) {
+        case "f":
+            if (currentTree !== undefined)
+                TreeDisplay.focusTree();
+            break;
+    }
 }

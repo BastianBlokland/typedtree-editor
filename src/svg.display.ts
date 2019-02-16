@@ -83,16 +83,8 @@ export function initialize(): void {
 
     // Setup global listeners
     const inputBlocker = document.getElementById(inputBlockerDomElementId);
-    window.ondragstart = _ => false; // Disable native dragging as it interferes with ours.
-    window.onkeydown = event => {
-        switch (event.key) {
-            case "f":
-                if (document.activeElement === null || document.activeElement.tagName !== "INPUT")
-                    focusContent();
-                break;
-        }
-    };
-    window.onmousedown = event => {
+    rootSvgDom.ondragstart = _ => false; // Disable native dragging as it interferes with ours.
+    rootSvgDom.onmousedown = event => {
         if (document.activeElement !== null && document.activeElement.tagName === "INPUT")
             return;
         dragOffset = Vec.subtract(viewOffset, { x: event.clientX, y: event.clientY });
@@ -115,7 +107,7 @@ export function initialize(): void {
             setOffset(Vec.add(dragOffset, { x: event.clientX, y: event.clientY }));
         }
     };
-    window.onwheel = event => {
+    rootSvgDom.onwheel = event => {
         if (document.activeElement !== null && document.activeElement.tagName === "INPUT")
             return;
 
@@ -134,9 +126,6 @@ export function initialize(): void {
         scale = newScale;
         updateRootTransform();
     };
-
-    // Setup button listeners
-    DomUtils.subscribeToClick("focus-button", focusContent);
 }
 
 /**
