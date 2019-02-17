@@ -60,6 +60,9 @@ function enqueueLoadScheme(source: string | File): void {
 function enqueueLoadTree(source: string | File): void {
     const name = typeof source === "string" ? source : source.name;
     sequencer!.enqueue(async () => {
+        if (currentScheme === undefined)
+            throw new Error("Unable to load a tree without a scheme being loaded first");
+
         const result = await TreeParser.load(source);
         if (result.kind === "error")
             alert(`Failed to load. Error: ${result.errorMessage}`);
