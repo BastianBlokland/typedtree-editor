@@ -15,13 +15,17 @@ export async function run(): Promise<void> {
 
     window.onkeydown = onDomKeyPress;
     DomUtils.subscribeToClick("toolbox-toggle", toggleToolbox);
-    DomUtils.subscribeToFileInput("opentree-file", enqueueLoadTree);
-    DomUtils.subscribeToClick("openexample-button", () => enqueueLoadTree("example.tree.json"));
-    DomUtils.subscribeToClick("savetree-button", enqueueSaveTree);
     DomUtils.subscribeToClick("focus-button", () => {
         if (currentTree !== undefined)
             TreeDisplay.focusTree();
     });
+
+    DomUtils.subscribeToFileInput("openscheme-file", enqueueLoadScheme);
+    DomUtils.subscribeToClick("savescheme-button", enqueueSaveScheme);
+
+    DomUtils.subscribeToFileInput("opentree-file", enqueueLoadTree);
+    DomUtils.subscribeToClick("savetree-button", enqueueSaveTree);
+
 
     console.log("Started running");
 
@@ -67,6 +71,15 @@ function enqueueLoadTree(source: string | File): void {
     });
 }
 
+function enqueueSaveScheme(): void {
+    sequencer!.enqueue(async () => {
+        if (currentScheme !== undefined) {
+            const treeJson = TreeSchemeSerializer.composeJson(currentScheme);
+            DomUtils.saveJsonText(treeJson, currentSchemeName!);
+        }
+    });
+}
+
 function enqueueSaveTree(): void {
     sequencer!.enqueue(async () => {
         if (currentTree !== undefined) {
@@ -104,12 +117,10 @@ function toggleToolbox(): void {
     const toolbox = document.getElementById("toolbox");
     if (toolbox === null)
         throw new Error("Unable to find 'toolbox'");
-    if (toolbox.style.visibility === 'hidden') {
+    if (toolbox.style.visibility === 'hidden')
         toolbox.style.visibility = 'visible';
-    }
-    else {
+    else
         toolbox.style.visibility = 'hidden';
-    }
 }
 
 function onDomKeyPress(event: KeyboardEvent): void {

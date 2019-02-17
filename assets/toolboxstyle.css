@@ -2,7 +2,7 @@
     position: absolute;
     left: 5px;
     bottom: 35px;
-    width: 250px;
+    width: 300px;
     border-radius: 8px;
     border: 4px solid #000;
     background-color: #888;
@@ -24,18 +24,19 @@
     cursor: pointer;
 }
 
-#toolbox #opentree-container {
+#toolbox #openscheme-container, #toolbox #opentree-container {
     display: flex;
     align-items: center;
     text-align: center;
     font-size: 10pt;
 }
 
-#toolbox #opentree-container #opentree-header {
-    width: 25%
+#toolbox #openscheme-container #openscheme-header, #toolbox #opentree-container #opentree-header {
+    width: 30%
 }
-#toolbox #opentree-container #opentree-file {
-    width: 75%;
+
+#toolbox #openscheme-container #openscheme-file, #toolbox #opentree-container #opentree-file {
+    width: 70%;
 }
 
 #toolbox > .header {

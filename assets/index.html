@@ -17,21 +17,27 @@
   <a href="https://github.com/BastianBlokland/typedtree-editor" id=github-button>GitHub</a>
 
   <!-- Button to toggle the toolbox -->
-  <button type="button" id="toolbox-toggle">Toolbox</button>
+  <button type="button" id="toolbox-toggle">Toolbox (t)</button>
+
+  <!-- Button to focus the view -->
+  <button type="button" id="focus-button">Focus (f)</button>
 
   <!-- Toolbox containing the main ways to interact with the app -->
   <div id="toolbox">
     <div class="header">Scheme</div>
     <div id="scheme-display"></div>
+    <div class="element" id="openscheme-container">
+      <div id="openscheme-header">Open scheme</div>
+      <input type="file" id="openscheme-file" accept=".json" />
+    </div>
+    <button type="button" class="element" id="savescheme-button">Save scheme</button>
 
     <div class="header">Tree</div>
-    <button type="button" class="element" id="savetree-button">Save</button>
     <div class="element" id="opentree-container">
-      <div id="opentree-header">Open</div>
+      <div id="opentree-header">Open tree</div>
       <input type="file" id="opentree-file" accept=".json" />
     </div>
-    <button type="button" class="element" id="openexample-button">Open example</button>
-    <button type="button" class="element" id="focus-button">Focus</button>
+    <button type="button" class="element" id="savetree-button">Save tree</button>
   </div>
 
   <!-- Svg tree content -->
