@@ -39,7 +39,6 @@ function enqueueLoadTree(source: string | File): void {
             alert(`Failed to load. Error: ${result.errorMessage}`);
         else {
             console.log(`Successfully loaded tree: ${name}`);
-            // Tree.printNode(result.value, 2);
             setCurrentTree(result.value, name);
             TreeDisplay.focusTree();
         }
@@ -91,6 +90,13 @@ function onDomKeyPress(event: KeyboardEvent): void {
         case "f":
             if (currentTree !== undefined)
                 TreeDisplay.focusTree();
+            break;
+        case "1":
+            if (currentTree !== undefined) {
+                const str = Tree.toString(currentTree);
+                alert(str);
+                console.log(str);
+            }
             break;
     }
 }
