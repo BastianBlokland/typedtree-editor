@@ -26,9 +26,9 @@ export async function run(): Promise<void> {
     DomUtils.subscribeToFileInput("opentree-file", enqueueLoadTree);
     DomUtils.subscribeToClick("savetree-button", enqueueSaveTree);
 
-
     console.log("Started running");
 
+    console.log("Start loading example scheme and tree");
     enqueueLoadScheme("example.treescheme.json");
     enqueueLoadTree("example.tree.json");
 
@@ -101,6 +101,10 @@ function setCurrentScheme(scheme: TreeScheme.Scheme, name: string): void {
     currentScheme = scheme;
     currentSchemeName = name;
     TreeSchemeDisplay.setScheme(currentScheme);
+
+    // Loading a new scheme invalidates the current tree. (In theory we could support checking if the
+    // previously loaded tree is still compatible with the new scheme)
+    setCurrentTree(undefined, undefined);
 }
 
 function setCurrentTree(tree: Tree.Node | undefined, name?: string): void {
