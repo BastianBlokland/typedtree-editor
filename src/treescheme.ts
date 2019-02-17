@@ -84,31 +84,41 @@ export function getPrettyFieldValueType(valueType: FieldValueType, isArray: bool
 }
 
 /**
- * Print the scheme to the console (Useful for debugging).
+ * Create a string representation for a scheme. (Useful for debugging)
+ * @param scheme Scheme to create the string representation for.
+ * @returns Newly created string representation of the scheme.
+ */
+export function toString(scheme: Scheme): string {
+    let result = "";
+    printScheme(scheme, undefined, (line: string, indent: number) => {
+        result += `${" ".repeat(indent * 2)}${line}\n`;
+    });
+    return result;
+}
+
+/**
+ * Print a scheme. (Useful for debugging)
  * @param scheme Scheme to print.
  * @param indent How for to indent the lines.
+ * @param printLine Method to use for printing the line
  */
-export function printScheme(scheme: Scheme, indent: number = 0): void {
+export function printScheme(scheme: Scheme, indent: number = 0, printLine: (line: string, indent: number) => void): void {
     // Aliases
-    printText(`RootAlias: '${scheme.rootAlias.identifier}'`, indent);
-    printText(`Aliases: (${scheme.aliases.length})`, indent);
+    printLine(`RootAlias: '${scheme.rootAlias.identifier}'`, indent);
+    printLine(`Aliases: (${scheme.aliases.length})`, indent);
     scheme.aliases.forEach(a => {
-        printText(`${a.identifier} (${a.values.length})`, indent + 1);
-        a.values.forEach(aVal => printText(aVal, indent + 2));
+        printLine(`-${a.identifier} (${a.values.length})`, indent + 1);
+        a.values.forEach(aVal => printLine(aVal, indent + 2));
     });
 
     // Node definitions
-    printText(`Nodes: (${scheme.nodes.length})`, indent);
+    printLine(`Nodes: (${scheme.nodes.length})`, indent);
     scheme.nodes.forEach(n => {
-        printText(`${n.identifier} (${n.fields.length})`, indent + 1);
+        printLine(`-${n.identifier} (${n.fields.length})`, indent + 1);
         n.fields.forEach(f => {
-            printText(`${f.name} (${getPrettyFieldValueType(f.valueType, f.isArray)})`, indent + 2);
+            printLine(`${f.name} (${getPrettyFieldValueType(f.valueType, f.isArray)})`, indent + 2);
         });
     });
-
-    function printText(text: string, indent: number) {
-        console.log(`${" ".repeat(indent * 2)}${text}`);
-    }
 }
 
 class SchemeImpl implements Scheme {
