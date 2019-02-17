@@ -71,12 +71,13 @@
 
 #scheme-display .identifier {
     font-size: 10pt;
+    margin-right: 5px;
 }
 
 #scheme-display .field-type {
     font-size: 10pt;
-    margin-left: 5px;
     font-weight: bolder;
+    margin-right: 5px;
 }
 
 /* Show pointer to indicate that you can expand this entry */
