@@ -1,3 +1,8 @@
+﻿/**
+ * Configuration file for rollup.
+ * https://rollupjs.org/guide/en#configuration-files
+ */
+
 import pkg from './package.json'
 
 export default {
