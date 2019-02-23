@@ -16,20 +16,20 @@
     "./build"
   ],
   "dependencies": {
-    "file-saver": "^2.0.0",
+    "file-saver": "^2.0.1",
     "svg.js": "^2.7.1"
   },
   "devDependencies": {
     "@types/file-saver": "^2.0.0",
-    "@types/jest": "^23.3.13",
+    "@types/jest": "^23.3.14",
     "codecov": "^3.2.0",
     "jest": "^23.6.0",
-    "jest-junit": "^6.2.1",
+    "jest-junit": "^6.3.0",
     "live-server": "^1.2.1",
-    "rollup": "^1.1.2",
+    "rollup": "^1.2.3",
     "ts-jest": "^23.10.5",
-    "tsc-watch": "^1.1.36",
-    "typescript": "^3.3.1",
+    "tsc-watch": "^1.1.39",
+    "typescript": "^3.3.3333",
     "typescript-tslint-plugin": "^0.3.1",
     "uglify-js-es6": "^2.8.9"
   }
