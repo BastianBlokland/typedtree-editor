@@ -1,3 +1,7 @@
+﻿/**
+ * @file Jest tests for tree.path.ts
+ */
+
 import * as Tree from "../src/tree";
 import * as TreePath from "../src/tree.path";
 

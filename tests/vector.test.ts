@@ -1,3 +1,7 @@
+﻿/**
+ * @file Jest tests for vector.ts
+ */
+
 import * as Vec from "../src/vector";
 
 test("half", () => {

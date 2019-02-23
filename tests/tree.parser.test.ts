@@ -1,3 +1,7 @@
+﻿/**
+ * @file Jest tests for tree.parser.ts
+ */
+
 import * as Tree from "../src/tree";
 import * as Tree̦Parser from "../src/tree.parser";
 

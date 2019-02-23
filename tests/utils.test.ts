@@ -1,3 +1,7 @@
+﻿/**
+ * @file Jest tests for utils.ts
+ */
+
 import * as Utils from "../src/utils";
 
 test("withNewElement", () => {

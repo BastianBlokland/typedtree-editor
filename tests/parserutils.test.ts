@@ -1,3 +1,7 @@
+﻿/**
+ * @file Jest tests for parserutils.ts
+ */
+
 import * as ParserUtils from "../src/parserutils";
 
 test("isString", () => {

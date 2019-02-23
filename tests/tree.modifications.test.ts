@@ -1,3 +1,7 @@
+﻿/**
+ * @file Jest tests for tree.modifications.ts
+ */
+
 import * as Tree from "../src/tree";
 import * as TreeModifications from "../src/tree.modifications";
 
