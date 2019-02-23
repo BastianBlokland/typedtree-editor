@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file Utilities and types for use in parsers.
  */
 

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file Responsible for searching tree structures. Can be used to find a path between two related
  * nodes.
  */

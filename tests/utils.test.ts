@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file Jest tests for utils.ts
  */
 

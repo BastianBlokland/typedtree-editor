@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file Responsible for displaying tree-scheme's as dom elements.
  */
 

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file Responsible for converting a tree model into a 2d structure that can be used to display tree's.
  * Example usage:
  * - Create a 'PositionTree' for a given tree structure.

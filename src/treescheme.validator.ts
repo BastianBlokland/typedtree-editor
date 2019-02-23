@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file Can be used to validate if a tree matches a tree-scheme.
  */
 

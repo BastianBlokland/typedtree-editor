@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file Responsible for serializing tree's to json.
  */
 

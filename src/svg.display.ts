@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file Responsible for creating svg display elements and updating them.
  */
 
