@@ -19,9 +19,12 @@ info "Setting Content-Security-Policy"
 # Note: Using 'tr' to strip the newlines
 CSP_CONTENT="$(tail -c +4 < ./assets/csp.txt | tr -d '\n')";
 CSP_ELEMENT='<meta http-equiv="Content-Security-Policy" content="'"$CSP_CONTENT"'">'
-sed -i '' -e "/<!-- Content-Security-Policy -->/a\\
+sed -i.backup -e "/<!-- Content-Security-Policy -->/a\\
     \ \ $CSP_ELEMENT
     " ./build/*.html
+
+info "Cleaning backup files"
+rm -rf ./build/*.backup
 
 info "Finished build"
 exit 0
