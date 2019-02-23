@@ -11,7 +11,7 @@ echo "INFO: Rolling up JavaScript"
 ./ci/rollup.sh
 
 echo "INFO: Copying assets"
-cp ./assets/* ./build/
+cp -r ./assets/ ./build/
 
 echo "INFO: Finished build"
 exit 0
