@@ -1,4 +1,5 @@
 ﻿import * as Utils from "./utils";
+import * as Tree from "./tree";
 
 /** Possible types a field can have */
 export type FieldValueType = "string" | "number" | "boolean" | Alias
@@ -25,6 +26,8 @@ export interface Scheme {
 export interface Alias {
     readonly identifier: string
     readonly values: ReadonlyArray<NodeIdentifier>
+
+    containsValue(identifier: NodeIdentifier): boolean
 }
 
 /** Definition of a node (what kind of fields it has) */
@@ -80,6 +83,20 @@ export function getPrettyFieldValueType(valueType: FieldValueType, isArray: bool
             return `${valueType}${isArray ? "[]" : ""}`;
         default: // In this case its actually an alias so we return its identifier
             return `${valueType.identifier}${isArray ? "[]" : ""}`;
+    }
+}
+
+/**
+ * Get a FieldKind from a field-definition.
+ * @param field Definition of a field to get the field-kind for.
+ * @returns FieldKind that corresponds for the given field-definition.
+ */
+export function getFieldKind(field: FieldDefinition): Tree.FieldKind {
+    switch (field.valueType) {
+        case "string": return field.isArray ? "stringArray" : "string";
+        case "number": return field.isArray ? "numberArray" : "number";
+        case "boolean": return field.isArray ? "booleanArray" : "boolean";
+        default: return field.isArray ? "nodeArray" : "node";
     }
 }
 
@@ -195,6 +212,10 @@ class AliasImpl implements Alias {
 
     get values(): ReadonlyArray<NodeIdentifier> {
         return this._values;
+    }
+
+    containsValue(identifier: NodeIdentifier): boolean {
+        return this._values.indexOf(identifier) >= 0;
     }
 }
 

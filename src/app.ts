@@ -8,6 +8,7 @@ import * as TreeScheme from "./treescheme";
 import * as TreeSchemeParser from "./treescheme.parser";
 import * as TreeSchemeSerializer from "./treescheme.serializer";
 import * as TreeSchemeDisplay from "./treescheme.display";
+import * as TreeSchemeValidator from "./treescheme.validator";
 
 /** Function to run the main app logic in. */
 export async function run(): Promise<void> {
@@ -60,13 +61,25 @@ function enqueueLoadScheme(source: string | File): void {
 function enqueueLoadTree(source: string | File): void {
     const name = typeof source === "string" ? source : source.name;
     sequencer!.enqueue(async () => {
-        if (currentScheme === undefined)
-            throw new Error("Unable to load a tree without a scheme being loaded first");
+        // Start by clearing the current loaded tree.
+        setCurrentTree(undefined, undefined);
 
+        // Download and pars the tree from the given source.
         const result = await TreeParser.load(source);
         if (result.kind === "error")
-            alert(`Failed to load. Error: ${result.errorMessage}`);
+            alert(`Failed to parse tree. Error: ${result.errorMessage}`);
         else {
+            if (currentScheme === undefined) {
+                alert("Failed to load tree. Error: No scheme loaded");
+                return;
+            }
+            // Validated the parsed tree against the current scheme.
+            const validateResult = TreeSchemeValidator.validate(currentScheme, result.value);
+            if (validateResult !== true) {
+                alert(`Failed to validate tree. Error: ${validateResult.errorMessage}`);
+                return;
+            }
+
             console.log(`Successfully loaded tree: ${name}`);
             setCurrentTree(result.value, name);
             TreeDisplay.focusTree();

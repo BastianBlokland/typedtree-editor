@@ -6,6 +6,9 @@ export type NodeType = string
 /** Extracts the type of the value of a given field. */
 export type FieldValueType<T> = T extends Field ? T["value"] : never;
 
+/** Extracts the kinds of a given field */
+export type FieldValueKind<T> = T extends Field ? T["kind"] : never;
+
 /**
  * Extracts the element type of the value of a given field.
  * This means if you request the element type for a 'stringArray' field you will get the type 'string'.
@@ -29,6 +32,9 @@ export type ArrayField = OnlyArrayField<Field>;
 
 /** Union type of all possible non-array fields. */
 export type NonArrayField = OnlyNonArrayField<Field>;
+
+/** Union type of all the possible field kinds. */
+export type FieldKind = FieldValueKind<Field>;
 
 /** Union type of all possible fields. */
 export type Field =

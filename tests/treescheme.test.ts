@@ -59,6 +59,18 @@ test("aliasesCanBeFound", () => {
     expect(scheme.getAlias("Alias1")).toEqual(["Node1", "Node2"]);
 });
 
+test("aliasesContainsWorksAsExpected", () => {
+    let alias: TreeScheme.Alias | undefined = undefined;
+    TreeScheme.createScheme("Alias1", b => {
+        alias = b.pushAlias("Alias1", ["Node1", "Node2"]);
+        b.pushNodeDefinition("Node1");
+        b.pushNodeDefinition("Node2");
+    });
+
+    expect(alias!.containsValue("Node1")).toBeTruthy();
+    expect(alias!.containsValue("Node3")).toBeFalsy();
+});
+
 test("fieldCanReferenceAnAlias", () => {
     let alias: TreeScheme.Alias | undefined = undefined;
     const scheme = TreeScheme.createScheme("Alias1", b => {
@@ -91,4 +103,29 @@ test("fieldsCanBeFound", () => {
         valueType: "string",
         isArray: true
     });
+});
+
+test("fieldKindMatchesExpectedOutput", () => {
+    const scheme = TreeScheme.createScheme("Alias1", b => {
+        const alias = b.pushAlias("Alias1", ["Node1"]);
+        b.pushNodeDefinition("Node1", b => {
+            b.pushField("field1", "string");
+            b.pushField("field2", "string", true);
+            b.pushField("field3", "boolean");
+            b.pushField("field4", "boolean", true);
+            b.pushField("field5", "number");
+            b.pushField("field6", "number", true);
+            b.pushField("field7", alias!);
+            b.pushField("field8", alias!, true);
+        });
+    });
+    const node = scheme.getNode("Node1");
+    expect(TreeScheme.getFieldKind(node!.getField("field1")!)).toBe("string");
+    expect(TreeScheme.getFieldKind(node!.getField("field2")!)).toBe("stringArray");
+    expect(TreeScheme.getFieldKind(node!.getField("field3")!)).toBe("boolean");
+    expect(TreeScheme.getFieldKind(node!.getField("field4")!)).toBe("booleanArray");
+    expect(TreeScheme.getFieldKind(node!.getField("field5")!)).toBe("number");
+    expect(TreeScheme.getFieldKind(node!.getField("field6")!)).toBe("numberArray");
+    expect(TreeScheme.getFieldKind(node!.getField("field7")!)).toBe("node");
+    expect(TreeScheme.getFieldKind(node!.getField("field8")!)).toBe("nodeArray");
 });
