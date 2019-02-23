@@ -14,6 +14,10 @@ steps:
 - script: ./ci/deploy.sh "$(Build.SourceBranch)" "$(storagestaticconnection)"
   displayName: 'Deploy'
 
+- script: ./ci/report-coverage.sh "$(typedtreeeditor-codecov)"
+  displayName: 'Publish test coverage to codecov.io'
+  condition: always()
+
 - task: PublishTestResults@2
   displayName: 'Publish test results'
   inputs:
@@ -22,7 +26,7 @@ steps:
   condition: always()
 
 - task: PublishCodeCoverageResults@1
-  displayName: 'Publish test coverage results'
+  displayName: 'Publish test coverage to azure'
   inputs:
     codeCoverageTool: Cobertura
     summaryFileLocation: '$(System.DefaultWorkingDirectory)/coverage/cobertura-coverage.xml'
