@@ -67,8 +67,9 @@ export function createWithText<K extends keyof HTMLElementTagNameMap>(
     className?: ClassName): HTMLElementTagNameMap[K] {
 
     const elem: HTMLElementTagNameMap[K] = document.createElement(tagName);
-    if (className !== undefined)
+    if (className !== undefined) {
         elem.className = className;
+    }
     elem.textContent = textContent;
     return elem;
 }
@@ -83,8 +84,9 @@ export function createWithText<K extends keyof HTMLElementTagNameMap>(
 export function createSummary(textContent: string, className?: ClassName): HTMLElement {
     const elem = document.createElement("summary");
     elem.textContent = textContent;
-    if (className !== undefined)
+    if (className !== undefined) {
         elem.className = className;
+    }
     return elem;
 }
 
@@ -96,8 +98,9 @@ export function createSummary(textContent: string, className?: ClassName): HTMLE
  */
 export function subscribeToClick(elementId: string, callback: () => void): void {
     const element = document.getElementById(elementId);
-    if (element === null)
+    if (element === null) {
         throw new Error(`Element with id: ${elementId} not found`);
+    }
     element.onclick = callback;
 }
 
@@ -109,12 +112,14 @@ export function subscribeToClick(elementId: string, callback: () => void): void 
  */
 export function subscribeToFileInput(inputId: string, callback: (file: File) => void): void {
     const element = document.getElementById(inputId);
-    if (element === null)
+    if (element === null) {
         throw new Error(`Element with id: ${inputId} not found`);
-    const inputElement = <HTMLInputElement>element;
+    }
+    const inputElement = element as HTMLInputElement;
     element.onchange = _ => {
-        if (inputElement.files !== null && inputElement.files.length > 0)
+        if (inputElement.files !== null && inputElement.files.length > 0) {
             callback(inputElement.files[0]);
+        }
         inputElement.value = "";
     };
 }
@@ -124,8 +129,9 @@ export function subscribeToFileInput(inputId: string, callback: (file: File) => 
  * @param element Element to delete the children from.
  */
 export function clearChildren(element: HTMLElement): void {
-    while (element.firstChild)
+    while (element.firstChild) {
         element.removeChild(element.firstChild);
+    }
 }
 
 /**
@@ -136,8 +142,9 @@ export function clearChildren(element: HTMLElement): void {
  */
 export function setText(elementId: string, text: string): void {
     const element = document.getElementById(elementId);
-    if (element === null)
+    if (element === null) {
         throw new Error(`Element with id: ${elementId} not found`);
+    }
     element.textContent = text;
 }
 

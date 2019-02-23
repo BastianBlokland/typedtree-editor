@@ -2,11 +2,11 @@
  * @file Immutable data-model for representing tree scheme's.
  */
 
-import * as Utils from "./utils";
 import * as Tree from "./tree";
+import * as Utils from "./utils";
 
 /** Possible types a field can have */
-export type FieldValueType = "string" | "number" | "boolean" | Alias
+export type FieldValueType = "string" | "number" | "boolean" | Alias;
 
 /** Identifier for a node */
 export type NodeIdentifier = string;
@@ -18,47 +18,47 @@ export type NodeIdentifier = string;
  * all 'Condition' node types, and then you can use that alias in a field of a node. So a node can
  * define a field of type 'Condition' that can then contain any node from the alias. */
 export interface Scheme {
-    readonly rootAlias: Alias
-    readonly aliases: ReadonlyArray<Alias>
-    readonly nodes: ReadonlyArray<NodeDefinition>
+    readonly rootAlias: Alias;
+    readonly aliases: ReadonlyArray<Alias>;
+    readonly nodes: ReadonlyArray<NodeDefinition>;
 
-    getAlias(identifier: string): ReadonlyArray<string> | undefined
-    getNode(identifier: string): NodeDefinition | undefined
+    getAlias(identifier: string): ReadonlyArray<string> | undefined;
+    getNode(identifier: string): NodeDefinition | undefined;
 }
 
 /** Named group of nodes */
 export interface Alias {
-    readonly identifier: string
-    readonly values: ReadonlyArray<NodeIdentifier>
+    readonly identifier: string;
+    readonly values: ReadonlyArray<NodeIdentifier>;
 
-    containsValue(identifier: NodeIdentifier): boolean
+    containsValue(identifier: NodeIdentifier): boolean;
 }
 
 /** Definition of a node (what kind of fields it has) */
 export interface NodeDefinition {
-    readonly identifier: NodeIdentifier
-    readonly fields: ReadonlyArray<FieldDefinition>
+    readonly identifier: NodeIdentifier;
+    readonly fields: ReadonlyArray<FieldDefinition>;
 
-    getField(name: string): FieldDefinition | undefined
+    getField(name: string): FieldDefinition | undefined;
 }
 
 /** Definition of a field (name and type) */
 export interface FieldDefinition {
-    readonly name: string,
-    readonly valueType: FieldValueType,
-    readonly isArray: boolean
+    readonly name: string;
+    readonly valueType: FieldValueType;
+    readonly isArray: boolean;
 }
 
 /** Builder that can be used to create a scheme */
 export interface SchemeBuilder {
-    pushAlias(identifier: string, values: ReadonlyArray<NodeIdentifier>): Alias | undefined
-    getAlias(identifier: string): Alias | undefined
-    pushNodeDefinition(identifier: string, callback?: (builder: NodeDefinitionBuilder) => void): boolean
+    pushAlias(identifier: string, values: ReadonlyArray<NodeIdentifier>): Alias | undefined;
+    getAlias(identifier: string): Alias | undefined;
+    pushNodeDefinition(identifier: string, callback?: (builder: NodeDefinitionBuilder) => void): boolean;
 }
 
 /** Builder that can be used to create a node definition */
 export interface NodeDefinitionBuilder {
-    pushField(name: string, valueType: FieldValueType, isArray?: boolean): boolean
+    pushField(name: string, valueType: FieldValueType, isArray?: boolean): boolean;
 }
 
 /**
@@ -149,19 +149,23 @@ class SchemeImpl implements Scheme {
 
     constructor(rootAlias: Alias, aliases: ReadonlyArray<Alias>, nodes: ReadonlyArray<NodeDefinition>) {
         // Verify that root-alias exists in the aliases array.
-        if (!aliases.some(a => a === rootAlias))
+        if (!aliases.some(a => a === rootAlias)) {
             throw new Error("RootAlias must exist in aliases array");
+        }
         // Verify that there are no duplicate aliases.
-        if (Utils.hasDuplicates(aliases.map(a => a.identifier)))
+        if (Utils.hasDuplicates(aliases.map(a => a.identifier))) {
             throw new Error("Aliases must be unique");
+        }
         // Verify that there are no duplicate nodes.
-        if (Utils.hasDuplicates(nodes.map(a => a.identifier)))
+        if (Utils.hasDuplicates(nodes.map(a => a.identifier))) {
             throw new Error("Node identifier must be unique");
+        }
         // Verify that aliases only reference nodes that actually exist.
         if (aliases.length > 0) {
             aliases.map(a => a.values).reduce((a, b) => a.concat(b)).forEach(aliasVal => {
-                if (!nodes.some(nodeDef => nodeDef.identifier === aliasVal))
+                if (!nodes.some(nodeDef => nodeDef.identifier === aliasVal)) {
                     throw new Error(`Alias defines a value '${aliasVal}' that is not a type in the types array`);
+                }
             });
         }
 
@@ -182,12 +186,12 @@ class SchemeImpl implements Scheme {
         return this._nodes;
     }
 
-    getAlias(identifier: string): ReadonlyArray<string> | undefined {
+    public getAlias(identifier: string): ReadonlyArray<string> | undefined {
         const alias = Utils.find(this._aliases, a => a.identifier == identifier);
         return alias === undefined ? undefined : alias.values;
     }
 
-    getNode(identifier: string): NodeDefinition | undefined {
+    public getNode(identifier: string): NodeDefinition | undefined {
         return Utils.find(this._nodes, a => a.identifier == identifier);
     }
 }
@@ -198,13 +202,16 @@ class AliasImpl implements Alias {
 
     constructor(identifier: string, values: ReadonlyArray<NodeIdentifier>) {
         // Verify that this alias has a identifier
-        if (identifier === "")
+        if (identifier === "") {
             throw new Error("Alias must have a identifier");
+        }
         // Verify that the values at least contain 1 entry and no duplicates
-        if (values.length === 0)
+        if (values.length === 0) {
             throw new Error("Alias must have at least one value");
-        if (Utils.hasDuplicates(values))
+        }
+        if (Utils.hasDuplicates(values)) {
             throw new Error("Alias values must be unique");
+        }
 
         this._identifier = identifier;
         this._values = values;
@@ -218,7 +225,7 @@ class AliasImpl implements Alias {
         return this._values;
     }
 
-    containsValue(identifier: NodeIdentifier): boolean {
+    public containsValue(identifier: NodeIdentifier): boolean {
         return this._values.indexOf(identifier) >= 0;
     }
 }
@@ -229,11 +236,13 @@ class NodeDefinitionImpl implements NodeDefinition {
 
     constructor(identifier: string, fields: ReadonlyArray<FieldDefinition>) {
         // Verify that this nodescheme has a identifier
-        if (identifier === "")
+        if (identifier === "") {
             throw new Error("NodeScheme must have an identifier");
+        }
         // Verify that all fields have unique names
-        if (Utils.hasDuplicates(fields))
+        if (Utils.hasDuplicates(fields)) {
             throw new Error("Field names must be unique");
+        }
 
         this._identifier = identifier;
         this._fields = fields;
@@ -247,7 +256,7 @@ class NodeDefinitionImpl implements NodeDefinition {
         return this._fields;
     }
 
-    getField(name: string): FieldDefinition | undefined {
+    public getField(name: string): FieldDefinition | undefined {
         return Utils.find(this._fields, f => f.name === name);
     }
 }
@@ -264,35 +273,40 @@ class SchemeBuilderImpl implements SchemeBuilder {
         this._nodes = [];
     }
 
-    pushAlias(identifier: string, values: ReadonlyArray<NodeIdentifier>): Alias | undefined {
+    public pushAlias(identifier: string, values: ReadonlyArray<NodeIdentifier>): Alias | undefined {
         // New content cannot be pushed after building the scheme
-        if (this._build)
+        if (this._build) {
             return undefined;
+        }
 
         // Aliases have to unique
-        if (this._aliases.some(existingAlias => existingAlias.identifier === identifier))
+        if (this._aliases.some(existingAlias => existingAlias.identifier === identifier)) {
             return undefined;
+        }
 
         const alias = new AliasImpl(identifier, values);
         this._aliases.push(alias);
         return alias;
     }
 
-    getAlias(identifier: string): Alias | undefined {
+    public getAlias(identifier: string): Alias | undefined {
         return Utils.find(this._aliases, a => a.identifier == identifier);
     }
 
-    pushNodeDefinition(identifier: string, callback?: (builder: NodeDefinitionBuilder) => void): boolean {
+    public pushNodeDefinition(identifier: string, callback?: (builder: NodeDefinitionBuilder) => void): boolean {
         // New content cannot be pushed after building the scheme
-        if (this._build)
+        if (this._build) {
             return false;
+        }
 
         // Node definitions have to unique
-        if (this._nodes.some(existingNode => existingNode.identifier === identifier))
+        if (this._nodes.some(existingNode => existingNode.identifier === identifier)) {
             return false;
+        }
 
-        if (callback === undefined)
+        if (callback === undefined) {
             this._nodes.push(new NodeDefinitionImpl(identifier, []));
+        }
         else {
             const builder = new NodeDefinitionBuilderImpl(identifier);
             callback(builder);
@@ -301,11 +315,12 @@ class SchemeBuilderImpl implements SchemeBuilder {
         return true;
     }
 
-    build(): Scheme {
+    public build(): Scheme {
         this._build = true;
         const rootAlias = this.getAlias(this._rootAliasIdentifier);
-        if (rootAlias === undefined)
+        if (rootAlias === undefined) {
             throw new Error(`Root alias '${this._rootAliasIdentifier}' not found in alias set`);
+        }
         return new SchemeImpl(rootAlias, this._aliases, this._nodes);
     }
 }
@@ -320,24 +335,26 @@ class NodeDefinitionBuilderImpl implements NodeDefinitionBuilder {
         this._fields = [];
     }
 
-    pushField(name: string, valueType: FieldValueType, isArray?: boolean): boolean {
+    public pushField(name: string, valueType: FieldValueType, isArray?: boolean): boolean {
         // New content cannot be pushed after building the definition
-        if (this._build)
+        if (this._build) {
             return false;
+        }
 
         // Fields have to unique
-        if (this._fields.some(existingField => existingField.name === name))
+        if (this._fields.some(existingField => existingField.name === name)) {
             return false;
+        }
 
         this._fields.push({
-            name: name,
-            valueType: valueType,
-            isArray: isArray === undefined ? false : isArray
+            name,
+            valueType,
+            isArray: isArray === undefined ? false : isArray,
         });
         return true;
     }
 
-    build(): NodeDefinition {
+    public build(): NodeDefinition {
         this._build = true;
         return new NodeDefinitionImpl(this._identifier, this._fields);
     }

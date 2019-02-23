@@ -7,8 +7,8 @@ import * as Tree from "./tree";
 
 /** Represents an output in the tree (node + field combination). */
 export interface Parent {
-    readonly node: Tree.Node
-    readonly output: Tree.FieldElementIdentifier
+    readonly node: Tree.Node;
+    readonly output: Tree.FieldElementIdentifier;
 }
 
 /**
@@ -20,21 +20,23 @@ export interface Parent {
  * @returns Path from the target to the root.
  */
 export function findPathToRoot(root: Tree.Node, target: Tree.Node): Parent[] {
-    let resultPath: Parent[] = [];
-    if (findLeaf(root, target, resultPath))
+    const resultPath: Parent[] = [];
+    if (findLeaf(root, target, resultPath)) {
         return resultPath;
+    }
     throw new Error("'target' is not a (grand)child of 'root'");
 
     function findLeaf(node: Tree.Node, target: Tree.Node, path: Parent[]): boolean {
-        if (node === target)
+        if (node === target) {
             return true;
+        }
 
         let found = false;
         Tree.forEachDirectChild(node, (child, output) => {
 
             // If this child leads to the target then add this output to the path and return.
             if (findLeaf(child, target, path)) {
-                path.push({ node: node, output: output });
+                path.push({ node, output });
                 found = true;
                 return false; // Short-circuit the foreach.
             }
@@ -56,7 +58,8 @@ export function findPathToRoot(root: Tree.Node, target: Tree.Node): Parent[] {
  */
 export function getParent(root: Tree.Node, node: Tree.Node): Parent | undefined {
     const pathToRoot = findPathToRoot(root, node);
-    if (pathToRoot.length === 0)
+    if (pathToRoot.length === 0) {
         return undefined;
+    }
     return pathToRoot[0];
 }

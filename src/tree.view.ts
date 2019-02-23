@@ -27,34 +27,34 @@ export const nodeFieldHeight = 25;
 /** Immutable object that can be used to find where nodes should be positioned. */
 export interface PositionTree {
     /** Root node for this tree. */
-    readonly root: Tree.Node
+    readonly root: Tree.Node;
     /** All the nodes in the tree. */
-    readonly nodes: ReadonlyArray<Tree.Node>
+    readonly nodes: ReadonlyArray<Tree.Node>;
     /** Total area taken up by this tree. */
-    readonly totalArea: Vec.Size
+    readonly totalArea: Vec.Size;
     /** Offset of the root node, can be used to center something on the tree for example */
-    readonly rootOffset: Vec.Size
+    readonly rootOffset: Vec.Size;
 
     /**
      * Get the size of the given node.
      * @param node Node to get the size for.
      * @returns Vector representing the size of given node.
      */
-    getSize(node: Tree.Node): Vec.Size
+    getSize(node: Tree.Node): Vec.Size;
 
     /**
      * Get the area taken up by the given node and its children.
      * @param node Node to get the area for.
      * @returns Vector representing the area taken up by the node and its children.
      */
-    getArea(node: Tree.Node): Vec.Size
+    getArea(node: Tree.Node): Vec.Size;
 
     /**
      * Get the position of the given node.
      * @param node To get the position for.
      * @returns Vector representing the position of the given node.
      */
-    getPosition(node: Tree.Node): Vec.Position
+    getPosition(node: Tree.Node): Vec.Position;
 }
 
 /**
@@ -101,7 +101,7 @@ export function getFieldHeight(field: Tree.Field): number {
 class PositionTreeImpl implements PositionTree {
     private readonly _root: Tree.Node;
     private readonly _totalArea: Vec.Size;
-    private readonly _nodes: Tree.Node[] = []
+    private readonly _nodes: Tree.Node[] = [];
     private readonly _sizes: Map<Tree.Node, Vec.Size> = new Map();
     private readonly _areas: Map<Tree.Node, Vec.Size> = new Map();
     private readonly _positions: Map<Tree.Node, Vec.Position> = new Map();
@@ -133,24 +133,27 @@ class PositionTreeImpl implements PositionTree {
         return { x: 0, y: -Utils.half(rootArea.y) };
     }
 
-    getSize(node: Tree.Node): Vec.Size {
+    public getSize(node: Tree.Node): Vec.Size {
         const lookup = this._sizes.get(node);
-        if (lookup === undefined)
+        if (lookup === undefined) {
             throw new Error("Node is not known to this view-tree");
+        }
         return lookup;
     }
 
-    getArea(node: Tree.Node): Vec.Size {
+    public getArea(node: Tree.Node): Vec.Size {
         const lookup = this._areas.get(node);
-        if (lookup === undefined)
+        if (lookup === undefined) {
             throw new Error("Node is not known to this view-tree");
+        }
         return lookup;
     }
 
-    getPosition(node: Tree.Node): Vec.Position {
+    public getPosition(node: Tree.Node): Vec.Position {
         const lookup = this._positions.get(node);
-        if (lookup === undefined)
+        if (lookup === undefined) {
             throw new Error("Node is not known to this view-tree");
+        }
         return lookup;
     }
 

@@ -28,15 +28,17 @@ function createObject(node: Tree.Node): Object {
             case "stringArray":
             case "numberArray":
             case "booleanArray":
-                if (field.value.length > 0)
+                if (field.value.length > 0) {
                     obj[field.name] = field.value;
+                }
                 break;
             case "node":
                 obj[field.name] = createObject(field.value);
                 break;
             case "nodeArray":
-                if (field.value.length > 0)
+                if (field.value.length > 0) {
                     obj[field.name] = field.value.map(child => createObject(child));
+                }
                 break;
             default:
                 Utils.assertNever(field);

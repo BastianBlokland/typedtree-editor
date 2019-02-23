@@ -6,23 +6,23 @@
  * - Wait for sequencer completion.
  */
 
-export type SequenceItem = () => Promise<void>
+export type SequenceItem = () => Promise<void>;
 
 export interface SequenceRunner {
     /** Is this runner still running */
-    readonly running: boolean
+    readonly running: boolean;
     /** Is this runner currently waiting for new work items */
-    readonly idle: boolean
+    readonly idle: boolean;
     /** Promise that resolves when the runner becomes idle. */
-    readonly untilIdle: Promise<void>
+    readonly untilIdle: Promise<void>;
     /** Promise that resolves when this runner is stopped */
-    readonly untilEnd: Promise<void>
+    readonly untilEnd: Promise<void>;
 
     /** Enqueue a new sequence item to the runner. */
-    enqueue(item: SequenceItem): void
+    enqueue(item: SequenceItem): void;
 
     /** Stop the runner (Will stop accepting new items and will resolve the 'untilEnd' promise). */
-    stop(): void
+    stop(): void;
 }
 
 /**
@@ -33,7 +33,7 @@ export function createRunner(): SequenceRunner {
     return new SequenceRunnerImpl();
 }
 
-type ResolveItem = (value?: void | PromiseLike<void>) => void
+type ResolveItem = (value?: void | PromiseLike<void>) => void;
 
 class SequenceRunnerImpl implements SequenceRunner {
     private _untilEnd: Promise<void>;
@@ -70,12 +70,12 @@ class SequenceRunnerImpl implements SequenceRunner {
         return this._untilEnd;
     }
 
-    enqueue(item: SequenceItem): void {
+    public enqueue(item: SequenceItem): void {
         this._items.push(item);
         this._resolveNext();
     }
 
-    stop(): void {
+    public stop(): void {
         this._running = false;
         this._resolveNext();
     }
@@ -90,8 +90,9 @@ class SequenceRunnerImpl implements SequenceRunner {
             this._idle = false;
             this.resetUntilIdle();
 
-            while (this._running && this._items.length > 0)
+            while (this._running && this._items.length > 0) {
                 await this._items.shift()!();
+            }
             this.resetUntilNext();
         }
     }

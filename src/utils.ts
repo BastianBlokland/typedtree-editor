@@ -11,8 +11,9 @@
  * @returns New array with the changed element.
  */
 export function withNewElement<T>(array: ReadonlyArray<T>, index: number, data: T): T[] {
-    if (index < 0 || index >= array.length)
+    if (index < 0 || index >= array.length) {
         throw new Error("Given index is outside of the bounds of the array");
+    }
     const result = array.slice();
     result[index] = data;
     return result;
@@ -25,8 +26,9 @@ export function withNewElement<T>(array: ReadonlyArray<T>, index: number, data: 
  * @returns New array without one of the elements.
  */
 export function withoutElement<T>(array: ReadonlyArray<T>, index: number): T[] {
-    if (index < 0 || index >= array.length)
+    if (index < 0 || index >= array.length) {
         throw new Error("Given index is outside of the bounds of the array");
+    }
     const result = array.slice();
     result.splice(index, 1);
     return result;
@@ -40,10 +42,12 @@ export function withoutElement<T>(array: ReadonlyArray<T>, index: number): T[] {
  * @returns New array with the swapped elements.
  */
 export function withSwappedElements<T>(array: ReadonlyArray<T>, indexA: number, indexB: number): T[] {
-    if (indexA < 0 || indexA >= array.length)
-        throw new Error("Given index isA outside of the bounds of the array");
-    if (indexB < 0 || indexB >= array.length)
-        throw new Error("Given index isB outside of the bounds of the array");
+    if (indexA < 0 || indexA >= array.length) {
+        throw new Error("Given indexA outside of the bounds of the array");
+    }
+    if (indexB < 0 || indexB >= array.length) {
+        throw new Error("Given indexB outside of the bounds of the array");
+    }
     const result = array.slice();
     result[indexA] = array[indexB];
     result[indexB] = array[indexA];
@@ -59,8 +63,9 @@ export function withSwappedElements<T>(array: ReadonlyArray<T>, indexA: number, 
 export function find<T>(array: ReadonlyArray<T>, predicate: (elem: T) => boolean): T | undefined {
     /* Can be used instead of the library Array.find as that doesn't work on ie11 */
     for (let index = 0; index < array.length; index++) {
-        if (predicate(array[index]))
+        if (predicate(array[index])) {
             return array[index];
+        }
     }
     return undefined;
 }
@@ -104,8 +109,9 @@ export function hasDuplicates<T>(input: ReadonlyArray<T>): boolean {
  */
 export function findDuplicates<T>(input: ReadonlyArray<T>): T[] {
     return input.reduce((previousValue, currentValue, currentIndex) => {
-        if (input.indexOf(currentValue) !== currentIndex && previousValue.indexOf(currentValue) < 0)
+        if (input.indexOf(currentValue) !== currentIndex && previousValue.indexOf(currentValue) < 0) {
             previousValue.push(currentValue);
+        }
         return previousValue;
     }, new Array<T>());
 }

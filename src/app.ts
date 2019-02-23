@@ -5,13 +5,13 @@
 import * as DomUtils from "./domutils";
 import * as Sequencer from "./sequencer";
 import * as Tree from "./tree";
+import * as TreeDisplay from "./tree.display";
 import * as TreeParser from "./tree.parser";
 import * as TreeSerializer from "./tree.serializer";
-import * as TreeDisplay from "./tree.display";
 import * as TreeScheme from "./treescheme";
+import * as TreeSchemeDisplay from "./treescheme.display";
 import * as TreeSchemeParser from "./treescheme.parser";
 import * as TreeSchemeSerializer from "./treescheme.serializer";
-import * as TreeSchemeDisplay from "./treescheme.display";
 import * as TreeSchemeValidator from "./treescheme.validator";
 
 /** Function to run the main app logic in. */
@@ -21,8 +21,9 @@ export async function run(): Promise<void> {
     window.onkeydown = onDomKeyPress;
     DomUtils.subscribeToClick("toolbox-toggle", toggleToolbox);
     DomUtils.subscribeToClick("focus-button", () => {
-        if (currentTree !== undefined)
+        if (currentTree !== undefined) {
             TreeDisplay.focusTree();
+        }
     });
 
     DomUtils.subscribeToFileInput("openscheme-file", enqueueLoadScheme);
@@ -41,21 +42,21 @@ export async function run(): Promise<void> {
     console.log("Stopped running");
 }
 
-let sequencer: Sequencer.SequenceRunner | undefined = undefined;
+let sequencer: Sequencer.SequenceRunner | undefined;
 
-let currentScheme: TreeScheme.Scheme | undefined = undefined;
-let currentSchemeName: string | undefined = undefined;
+let currentScheme: TreeScheme.Scheme | undefined;
+let currentSchemeName: string | undefined;
 
-let currentTree: Tree.Node | undefined = undefined;
-let currentTreeName: string | undefined = undefined;
+let currentTree: Tree.Node | undefined;
+let currentTreeName: string | undefined;
 
 function enqueueLoadScheme(source: string | File): void {
     const name = typeof source === "string" ? source : source.name;
     sequencer!.enqueue(async () => {
         const result = await TreeSchemeParser.load(source);
-        if (result.kind === "error")
+        if (result.kind === "error") {
             alert(`Failed to load. Error: ${result.errorMessage}`);
-        else {
+        } else {
             console.log(`Successfully loaded scheme: ${name}`);
             setCurrentScheme(result.value, name);
         }
@@ -70,9 +71,9 @@ function enqueueLoadTree(source: string | File): void {
 
         // Download and pars the tree from the given source.
         const result = await TreeParser.load(source);
-        if (result.kind === "error")
+        if (result.kind === "error") {
             alert(`Failed to parse tree. Error: ${result.errorMessage}`);
-        else {
+        } else {
             if (currentScheme === undefined) {
                 alert("Failed to load tree. Error: No scheme loaded");
                 return;
@@ -132,45 +133,49 @@ function setCurrentTree(tree: Tree.Node | undefined, name?: string): void {
     currentTreeName = name;
     DomUtils.setText("tree-title", name === undefined ? "" : name);
     TreeDisplay.setTree(tree, newTree => {
-        if (tree !== undefined)
+        if (tree !== undefined) {
             enqueueUpdateTree(tree, newTree, name);
+        }
     });
 }
 
 function toggleToolbox(): void {
     const toolbox = document.getElementById("toolbox");
-    if (toolbox === null)
+    if (toolbox === null) {
         throw new Error("Unable to find 'toolbox'");
-    if (toolbox.style.visibility === 'hidden')
-        toolbox.style.visibility = 'visible';
-    else
-        toolbox.style.visibility = 'hidden';
+    }
+    if (toolbox.style.visibility === "hidden") {
+        toolbox.style.visibility = "visible";
+    } else {
+        toolbox.style.visibility = "hidden";
+    }
 }
 
 function onDomKeyPress(event: KeyboardEvent): void {
     switch (event.key) {
         case "t": toggleToolbox(); break;
         case "f":
-            if (currentTree !== undefined)
+            if (currentTree !== undefined) {
                 TreeDisplay.focusTree();
+            }
             break;
         case "1":
             if (currentScheme !== undefined) {
                 const str = TreeScheme.toString(currentScheme);
                 alert(str);
                 console.log(str);
-            }
-            else
+            } else {
                 alert("No scheme is currently loaded");
+            }
             break;
         case "2":
             if (currentTree !== undefined) {
                 const str = Tree.toString(currentTree);
                 alert(str);
                 console.log(str);
-            }
-            else
+            } else {
                 alert("No tree is currently loaded");
+            }
             break;
     }
 }

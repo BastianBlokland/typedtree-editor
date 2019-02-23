@@ -7,12 +7,14 @@ import * as TreeScheme from "./treescheme";
 
 /** Initialize the display, needs to be done once. */
 export function initialize(): void {
-    if (schemeDisplayElement != null)
+    if (schemeDisplayElement != null) {
         throw new Error("Already initialized");
+    }
 
     const displayElem = document.getElementById(schemeDisplayElementId);
-    if (displayElem === null)
+    if (displayElem === null) {
         throw new Error(`No dom element found with id: ${schemeDisplayElementId}`);
+    }
     schemeDisplayElement = displayElem;
 }
 
@@ -56,6 +58,7 @@ function createNodeElement(nodeDefinition: TreeScheme.NodeDefinition): HTMLEleme
 }
 
 function assertInitialized(): void {
-    if (schemeDisplayElement === undefined)
+    if (schemeDisplayElement === undefined) {
         throw new Error("Display hasn't been initialized");
+    }
 }

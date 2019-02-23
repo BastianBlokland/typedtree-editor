@@ -2,16 +2,16 @@
  * @file Can be used to validate if a tree matches a tree-scheme.
  */
 
-import * as Utils from "./utils";
-import * as TreeScheme from "./treescheme";
 import * as Tree from "./tree";
+import * as TreeScheme from "./treescheme";
+import * as Utils from "./utils";
 
 /** Result of a validation attempt */
 export type Result = true | Failure;
 
 /** Type indicating that validation failed. */
 export interface Failure {
-    readonly errorMessage: string
+    readonly errorMessage: string;
 }
 
 /**
@@ -26,25 +26,29 @@ export function validate(scheme: TreeScheme.Scheme, tree: Tree.Node): Result {
 
 function validateNode(scheme: TreeScheme.Scheme, alias: TreeScheme.Alias, node: Tree.Node): Result {
     // Validate type.
-    if (!alias.containsValue(node.type))
+    if (!alias.containsValue(node.type)) {
         return createInvalidNodeTypeFailure(alias, node.type);
+    }
 
     // Lookup the node-definition from the scheme.
     // Note: This should not fail because we've already validated the alias.
     const nodeDefinition = scheme.getNode(node.type);
-    if (nodeDefinition === undefined)
+    if (nodeDefinition === undefined) {
         throw new Error("Node type not found in scheme");
+    }
 
     // Validate fields.
     for (let index = 0; index < node.fields.length; index++) {
         const field = node.fields[index];
         const fieldDefinition = nodeDefinition.getField(field.name);
-        if (fieldDefinition === undefined)
+        if (fieldDefinition === undefined) {
             return createInvalidFieldFailure(nodeDefinition, field);
+        }
 
         const result = validateField(scheme, fieldDefinition, field);
-        if (result !== true)
+        if (result !== true) {
             return result;
+        }
     }
     return true;
 }
@@ -56,21 +60,22 @@ function validateField(
 
     // Validate type
     const definitionKind = TreeScheme.getFieldKind(fieldDefinition);
-    if (definitionKind !== field.kind)
+    if (definitionKind !== field.kind) {
         return createInvalidFieldTypeFailure(definitionKind, field);
+    }
 
     // Validate value
     switch (field.kind) {
         case "string": return true;
         case "number": return true;
         case "boolean": return true;
-        case "node": return validateNode(scheme, <TreeScheme.Alias>fieldDefinition.valueType, field.value);
+        case "node": return validateNode(scheme, fieldDefinition.valueType as TreeScheme.Alias, field.value);
         case "stringArray": return true;
         case "numberArray": return true;
         case "booleanArray": return true;
         case "nodeArray":
             const result = field.value.map(node =>
-                validateNode(scheme, <TreeScheme.Alias>fieldDefinition.valueType, node)).
+                validateNode(scheme, fieldDefinition.valueType as TreeScheme.Alias, node)).
                 find(r => r !== true);
             return result === undefined ? true : result;
         default: Utils.assertNever(field);

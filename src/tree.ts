@@ -5,7 +5,7 @@
 import * as Utils from "./utils";
 
 /** Identifier for the node-type */
-export type NodeType = string
+export type NodeType = string;
 
 /** Extracts the type of the value of a given field. */
 export type FieldValueType<T> = T extends Field ? T["value"] : never;
@@ -49,84 +49,84 @@ export type Field =
     StringArrayField |
     NumberArrayField |
     BooleanArrayField |
-    NodeArrayField
+    NodeArrayField;
 
 /** Immutable structure representing a single node in the tree. */
 export interface Node {
-    readonly type: NodeType
-    readonly fields: ReadonlyArray<Field>
-    readonly fieldNames: ReadonlyArray<string>
+    readonly type: NodeType;
+    readonly fields: ReadonlyArray<Field>;
+    readonly fieldNames: ReadonlyArray<string>;
 
-    getField(name: string): Field | undefined
+    getField(name: string): Field | undefined;
     getChild(output: FieldElementIdentifier): Node | undefined;
 }
 
 export interface StringField {
-    readonly kind: "string"
-    readonly name: string
-    readonly value: string
+    readonly kind: "string";
+    readonly name: string;
+    readonly value: string;
 }
 
 export interface NumberField {
-    readonly kind: "number"
-    readonly name: string
-    readonly value: number
+    readonly kind: "number";
+    readonly name: string;
+    readonly value: number;
 }
 
 export interface BooleanField {
-    readonly kind: "boolean"
-    readonly name: string
-    readonly value: boolean
+    readonly kind: "boolean";
+    readonly name: string;
+    readonly value: boolean;
 }
 
 export interface NodeField {
-    readonly kind: "node"
-    readonly name: string
-    readonly value: Node
+    readonly kind: "node";
+    readonly name: string;
+    readonly value: Node;
 }
 
 export interface StringArrayField {
-    readonly kind: "stringArray"
-    readonly name: string
-    readonly value: ReadonlyArray<string>
+    readonly kind: "stringArray";
+    readonly name: string;
+    readonly value: ReadonlyArray<string>;
 }
 
 export interface NumberArrayField {
-    readonly kind: "numberArray"
-    readonly name: string
-    readonly value: ReadonlyArray<number>
+    readonly kind: "numberArray";
+    readonly name: string;
+    readonly value: ReadonlyArray<number>;
 }
 
 export interface BooleanArrayField {
-    readonly kind: "booleanArray"
-    readonly name: string
-    readonly value: ReadonlyArray<boolean>
+    readonly kind: "booleanArray";
+    readonly name: string;
+    readonly value: ReadonlyArray<boolean>;
 }
 
 export interface NodeArrayField {
-    readonly kind: "nodeArray"
-    readonly name: string
-    readonly value: ReadonlyArray<Node>
+    readonly kind: "nodeArray";
+    readonly name: string;
+    readonly value: ReadonlyArray<Node>;
 }
 
 /* Identifier for a single element of a field, for non-arrays the offset will the 0. For arrays the
 offset will be the index into the array. */
 export interface FieldElementIdentifier {
-    readonly fieldName: string
-    readonly offset: number
+    readonly fieldName: string;
+    readonly offset: number;
 }
 
 /** Object that can be used to construct new nodes */
 export interface NodeBuilder {
-    pushStringField(name: string, value: string): boolean
-    pushNumberField(name: string, value: number): boolean
-    pushBooleanField(name: string, value: boolean): boolean
-    pushNodeField(name: string, value: Node): boolean
-    pushStringArrayField(name: string, value: ReadonlyArray<string>): boolean
-    pushNumberArrayField(name: string, value: ReadonlyArray<number>): boolean
-    pushBooleanArrayField(name: string, value: ReadonlyArray<boolean>): boolean
-    pushNodeArrayField(name: string, value: ReadonlyArray<Node>): boolean
-    pushField(field: Field): boolean
+    pushStringField(name: string, value: string): boolean;
+    pushNumberField(name: string, value: number): boolean;
+    pushBooleanField(name: string, value: boolean): boolean;
+    pushNodeField(name: string, value: Node): boolean;
+    pushStringArrayField(name: string, value: ReadonlyArray<string>): boolean;
+    pushNumberArrayField(name: string, value: ReadonlyArray<number>): boolean;
+    pushBooleanArrayField(name: string, value: ReadonlyArray<boolean>): boolean;
+    pushNodeArrayField(name: string, value: ReadonlyArray<Node>): boolean;
+    pushField(field: Field): boolean;
 }
 
 /**
@@ -136,8 +136,9 @@ export interface NodeBuilder {
  * @returns Newly constructed (immutable) node
  */
 export function createNode(type: NodeType, callback?: (builder: NodeBuilder) => void): Node {
-    if (callback === undefined)
+    if (callback === undefined) {
         return new NodeImpl(type, []);
+    }
     const builder = new NodeBuilderImpl(type);
     callback(builder);
     return builder.build();
@@ -173,16 +174,18 @@ export function forEachDirectChild(
         switch (field.kind) {
             case "node":
                 const result = callback(field.value, { fieldName: field.name, offset: 0 });
-                if (typeof result === "boolean" && !result)
+                if (typeof result === "boolean" && !result) {
                     return;
+                }
                 break;
 
             case "nodeArray":
                 for (let arrayIndex = 0; arrayIndex < field.value.length; arrayIndex++) {
                     const node = field.value[arrayIndex];
                     const result = callback(node, { fieldName: field.name, offset: arrayIndex });
-                    if (typeof result === "boolean" && !result)
+                    if (typeof result === "boolean" && !result) {
                         return;
+                    }
                 }
                 break;
         }
@@ -196,7 +199,7 @@ export function forEachDirectChild(
  */
 export function getDirectChildren(node: Node): Node[] {
     const result: Node[] = [];
-    forEachDirectChild(node, child => { result.push(child) });
+    forEachDirectChild(node, child => { result.push(child); });
     return result;
 }
 
@@ -221,7 +224,7 @@ export function getAllChildren(node: Node): Node[] {
  * @param field To get the name for.
  * @returns Name of the field.
  */
-export function getFieldName(field: Field): string { return field.name }
+export function getFieldName(field: Field): string { return field.name; }
 
 /**
  * Create a string representation for a node. (Useful for debugging)
@@ -282,10 +285,12 @@ class NodeImpl implements Node {
     private readonly _fields: ReadonlyArray<Field>;
 
     constructor(type: NodeType, fields: ReadonlyArray<Field>) {
-        if (type === "")
+        if (type === "") {
             throw new Error("Node must has a type");
-        if (Utils.hasDuplicates(fields.map(getFieldName)))
+        }
+        if (Utils.hasDuplicates(fields.map(getFieldName))) {
             throw new Error("Field names must be unique");
+        }
 
         this._type = type;
         this._fields = fields;
@@ -303,17 +308,19 @@ class NodeImpl implements Node {
         return this._fields.map(getFieldName);
     }
 
-    getField(name: string): Field | undefined {
+    public getField(name: string): Field | undefined {
         return Utils.find(this._fields, field => field.name === name);
     }
 
-    getChild(output: FieldElementIdentifier): Node | undefined {
+    public getChild(output: FieldElementIdentifier): Node | undefined {
         const field = this.getField(output.fieldName);
         if (field !== undefined) {
-            if (field.kind === "node" && output.offset === 0)
+            if (field.kind === "node" && output.offset === 0) {
                 return field.value;
-            if (field.kind === "nodeArray")
+            }
+            if (field.kind === "nodeArray") {
                 return field.value[output.offset];
+            }
         }
         return undefined;
     }
@@ -329,60 +336,62 @@ class NodeBuilderImpl implements NodeBuilder {
         this._fields = [];
     }
 
-    pushStringField(name: string, value: string): boolean {
-        const field: Field = { kind: "string", name: name, value: value };
+    public pushStringField(name: string, value: string): boolean {
+        const field: Field = { kind: "string", name, value };
         return this.pushField(field);
     }
 
-    pushNumberField(name: string, value: number): boolean {
-        const field: Field = { kind: "number", name: name, value: value };
+    public pushNumberField(name: string, value: number): boolean {
+        const field: Field = { kind: "number", name, value };
         return this.pushField(field);
     }
 
-    pushBooleanField(name: string, value: boolean): boolean {
-        const field: Field = { kind: "boolean", name: name, value: value };
+    public pushBooleanField(name: string, value: boolean): boolean {
+        const field: Field = { kind: "boolean", name, value };
         return this.pushField(field);
     }
 
-    pushNodeField(name: string, value: Node): boolean {
-        const field: Field = { kind: "node", name: name, value: value };
+    public pushNodeField(name: string, value: Node): boolean {
+        const field: Field = { kind: "node", name, value };
         return this.pushField(field);
     }
 
-    pushStringArrayField(name: string, value: ReadonlyArray<string>): boolean {
-        const field: Field = { kind: "stringArray", name: name, value: value };
+    public pushStringArrayField(name: string, value: ReadonlyArray<string>): boolean {
+        const field: Field = { kind: "stringArray", name, value };
         return this.pushField(field);
     }
 
-    pushNumberArrayField(name: string, value: ReadonlyArray<number>): boolean {
-        const field: Field = { kind: "numberArray", name: name, value: value };
+    public pushNumberArrayField(name: string, value: ReadonlyArray<number>): boolean {
+        const field: Field = { kind: "numberArray", name, value };
         return this.pushField(field);
     }
 
-    pushBooleanArrayField(name: string, value: ReadonlyArray<boolean>): boolean {
-        const field: Field = { kind: "booleanArray", name: name, value: value };
+    public pushBooleanArrayField(name: string, value: ReadonlyArray<boolean>): boolean {
+        const field: Field = { kind: "booleanArray", name, value };
         return this.pushField(field);
     }
 
-    pushNodeArrayField(name: string, value: ReadonlyArray<Node>): boolean {
-        const field: Field = { kind: "nodeArray", name: name, value: value };
+    public pushNodeArrayField(name: string, value: ReadonlyArray<Node>): boolean {
+        const field: Field = { kind: "nodeArray", name, value };
         return this.pushField(field);
     }
 
-    pushField(field: Field): boolean {
+    public pushField(field: Field): boolean {
         // New fields cannot be pushed after building the node
-        if (this._build)
+        if (this._build) {
             return false;
+        }
 
         // Field names have to unique
-        if (this._fields.some(existingField => existingField.name === field.name))
+        if (this._fields.some(existingField => existingField.name === field.name)) {
             return false;
+        }
 
         this._fields.push(field);
         return true;
     }
 
-    build(): Node {
+    public build(): Node {
         this._build = true;
         return new NodeImpl(this._type, this._fields);
     }

@@ -12,27 +12,27 @@ export type Size = Vector2;
 
 /** Vector containing two elements (x & y). */
 export interface Vector2 {
-    readonly x: number
-    readonly y: number
+    readonly x: number;
+    readonly y: number;
 }
 
 /** Vector containing (0, 0). */
-export const zeroVector: Vector2 = { x: 0, y: 0 }
+export const zeroVector: Vector2 = { x: 0, y: 0 };
 
 /** Vector containing (1, 1). */
-export const oneVector: Vector2 = { x: 1, y: 1 }
+export const oneVector: Vector2 = { x: 1, y: 1 };
 
 /** Vector containing (0, 1). */
-export const upVector: Vector2 = { x: 0, y: 1 }
+export const upVector: Vector2 = { x: 0, y: 1 };
 
 /** Vector containing (0, -1). */
-export const downVector: Vector2 = { x: 0, y: -1 }
+export const downVector: Vector2 = { x: 0, y: -1 };
 
 /** Vector containing (-1, 0). */
-export const leftVector: Vector2 = { x: -1, y: 0 }
+export const leftVector: Vector2 = { x: -1, y: 0 };
 
 /** Vector containing (1, 0). */
-export const rightVector: Vector2 = { x: 1, y: 0 }
+export const rightVector: Vector2 = { x: 1, y: 0 };
 
 /**
  * Half the given vector (Halves all components).
@@ -50,8 +50,9 @@ export function half(vector: Vector2): Vector2 {
  * @returns Multiplied vector.
  */
 export function multiply(vector: Vector2, amount: number | Vector2): Vector2 {
-    if (typeof amount === "number")
+    if (typeof amount === "number") {
         return createVector(vector.x * amount, vector.y * amount);
+    }
 
     return createVector(vector.x * amount.x, vector.y * amount.y);
 }
@@ -63,8 +64,9 @@ export function multiply(vector: Vector2, amount: number | Vector2): Vector2 {
  * @returns Divided vector.
  */
 export function divide(vector: Vector2, amount: number | Vector2): Vector2 {
-    if (typeof amount === "number")
+    if (typeof amount === "number") {
         return createVector(vector.x / amount, vector.y / amount);
+    }
 
     return createVector(vector.x / amount.x, vector.y / amount.y);
 }
@@ -76,8 +78,9 @@ export function divide(vector: Vector2, amount: number | Vector2): Vector2 {
  * @returns Added vector.
  */
 export function add(vector: Vector2, amount: number | Vector2): Vector2 {
-    if (typeof amount === "number")
+    if (typeof amount === "number") {
         return createVector(vector.x + amount, vector.y + amount);
+    }
 
     return createVector(vector.x + amount.x, vector.y + amount.y);
 }
@@ -89,8 +92,9 @@ export function add(vector: Vector2, amount: number | Vector2): Vector2 {
  * @returns Subtracted vector.
  */
 export function subtract(vector: Vector2, amount: number | Vector2): Vector2 {
-    if (typeof amount === "number")
+    if (typeof amount === "number") {
         return createVector(vector.x - amount, vector.y - amount);
+    }
 
     return createVector(vector.x - amount.x, vector.y - amount.y);
 }
@@ -122,5 +126,5 @@ export function lerp(vectorA: Vector2, vectorB: Vector2, frac: number): Vector2 
  * @returns Vector from the given components.
  */
 export function createVector(x: number, y: number): Vector2 {
-    return { x: x, y: y };
+    return { x, y };
 }
