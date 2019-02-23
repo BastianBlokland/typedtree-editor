@@ -1,5 +1,7 @@
-# CI pipeline for azure builds
-# https://docs.microsoft.com/en-us/azure/devops/pipelines/languages/javascript
+﻿# --------------------------------------------------------------------------------------------------
+# Azure CI pipeline.
+# More info: https://docs.microsoft.com/en-us/azure/devops/pipelines/languages/javascript
+# --------------------------------------------------------------------------------------------------
 
 pool:
   vmImage: 'Ubuntu 16.04'

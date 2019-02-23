@@ -2,6 +2,10 @@
 set -e
 source ./ci/utils.sh
 
+# --------------------------------------------------------------------------------------------------
+# Run all tests using jest and report results and coverage in various formats.
+# --------------------------------------------------------------------------------------------------
+
 # Verify tooling
 ./ci/verify-tooling.sh
 
