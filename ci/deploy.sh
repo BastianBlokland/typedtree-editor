@@ -1,42 +1,37 @@
 #!/bin/bash
 set -e
+source ./ci/utils.sh
 
-echo "INFO: Starting build"
+info "Starting build"
 
 # Run build
 ./ci/build.sh
 
-echo "INFO: Starting minification"
+info "Starting minification"
 ./node_modules/.bin/uglifyjs --output ./build/bundle.js --compress --mangle -- ./build/bundle.js
 
-echo "INFO: Starting deployment"
+info "Starting deployment"
 
 # Sanity check existance of the azure cli tooling and the connection string
-if [ ! -x "$(command -v az)" ]
-then
-    echo "ERROR: Azure cli 'az' is not installed"
-    exit 1
-fi
+verifyCommand az
 if [ -z "$1" ]
 then
-    echo "ERROR: No identifier provided. Provide as arg1"
-    exit 1
+    fail "No identifier provided. Provide as arg1"
 fi
 if [ -z "$2" ]
 then
-    echo "ERROR: No connection string provided. Provide as arg2"
-    exit 1
+    fail "No connection string provided. Provide as arg2"
 fi
 
 DEST_PATH="typedtree-editor/$1";
 
-echo "INFO: Clearing destination"
+info "Clearing destination"
 az storage blob delete-batch \
     --source \$web \
     --pattern "$DEST_PATH/*" \
     --connection-string "$2"
 
-echo "INFO: Upload to destination"
+info "Upload to destination"
 az storage blob upload-batch \
     --source ./build \
     --destination \$web \
@@ -44,5 +39,5 @@ az storage blob upload-batch \
     --content-cache-control "max-age=60" \
     --connection-string "$2"
 
-echo "INFO: Finished deployment"
+info "Finished deployment"
 exit 0

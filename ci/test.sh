@@ -1,10 +1,11 @@
 #!/bin/bash
 set -e
+source ./ci/utils.sh
 
 # Verify tooling
 ./ci/verify-tooling.sh
 
-echo "INFO: Starting tests"
+info "Starting tests"
 ./node_modules/.bin/jest \
     --reporters=default \
     --reporters=jest-junit \
@@ -13,5 +14,5 @@ echo "INFO: Starting tests"
     --coverageReporters=cobertura \
     --coverageReporters=html
 
-echo "INFO: Finished tests"
+info "Finished tests"
 exit 0

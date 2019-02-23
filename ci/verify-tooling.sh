@@ -1,14 +1,19 @@
 #!/bin/bash
 set -e
+source ./ci/utils.sh
 
-# Require npm
-if [ ! -x "$(command -v npm)" ]
-then
-    echo "ERROR: 'npm' is not installed"
-    exit 1
-else
-    echo "INFO: 'npm' = '$(which npm)'"
-fi
+# Require npm and common unix commands
+verifyCommand npm
+verifyCommand cp
+verifyCommand tail
+verifyCommand tr
+verifyCommand sed
+verifyCommand rm
+verifyCommand rsync
+verifyCommand lsof
+verifyCommand grep
+verifyCommand awk
+verifyCommand xargs
 
 # Update npm if tooling is missing
 checkNpmTooling ()
@@ -26,15 +31,14 @@ checkNpmTooling ()
 
 if checkNpmTooling
 then
-    echo "INFO: Found missing tooling, running 'npm update'"
+    info "Found missing tooling, running 'npm update'"
     npm update
 fi
 
 if checkNpmTooling
 then
-    echo "ERROR: Failed to install npm tooling"
-    exit 1
+    fail "Failed to install npm tooling"
 fi
 
-echo "INFO: Tooling verified"
+info "Tooling verified"
 exit 0
