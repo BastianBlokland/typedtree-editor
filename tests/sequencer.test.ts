@@ -1,3 +1,7 @@
+﻿/**
+ * @file Jest tests for sequencer.ts
+ */
+
 import * as Sequencer from "../src/sequencer";
 import { sleep } from "../src/utils";
 

@@ -1,3 +1,7 @@
+﻿/**
+ * @file Jest tests for tree.serializer.ts
+ */
+
 import * as Utils from "../src/utils";
 import * as Tree from "../src/tree";
 import * as TreeSerializer from "../src/tree.serializer";

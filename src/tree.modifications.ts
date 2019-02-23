@@ -1,3 +1,7 @@
+﻿/**
+ * @file Responsible for constructing new tree's by replacing elements of existing trees.
+ */
+
 import * as Utils from "./utils";
 import * as Tree from "./tree";
 import * as TreePath from "./tree.path";

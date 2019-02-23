@@ -2,6 +2,10 @@
 set -e
 source ./ci/utils.sh
 
+# --------------------------------------------------------------------------------------------------
+# Create distribution, minify and deploy it to a azure blob-storage bucket.
+# --------------------------------------------------------------------------------------------------
+
 info "Starting build"
 
 # Run build

@@ -1,3 +1,7 @@
+﻿/**
+ * @file Jest tests for tree.view.ts
+ */
+
 import * as Vec from "../src/vector";
 import * as Tree from "../src/tree";
 import * as TreeView from "../src/tree.view";

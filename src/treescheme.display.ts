@@ -1,3 +1,7 @@
+﻿/**
+ * @file Responsible for displaying tree-scheme's as dom elements.
+ */
+
 import * as DomUtils from "./domutils";
 import * as TreeScheme from "./treescheme";
 

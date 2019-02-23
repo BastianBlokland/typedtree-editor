@@ -1,3 +1,7 @@
+﻿/**
+ * @file Responsible for running the main app logic.
+ */
+
 import * as DomUtils from "./domutils";
 import * as Sequencer from "./sequencer";
 import * as Tree from "./tree";

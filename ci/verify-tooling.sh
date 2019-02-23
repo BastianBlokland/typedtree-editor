@@ -2,6 +2,10 @@
 set -e
 source ./ci/utils.sh
 
+# --------------------------------------------------------------------------------------------------
+# Verify that all required tooling is available in the current environment.
+# --------------------------------------------------------------------------------------------------
+
 # Require npm and common unix commands
 verifyCommand npm
 verifyCommand cp

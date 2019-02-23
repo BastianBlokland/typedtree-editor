@@ -2,6 +2,15 @@
 set -e
 source ./ci/utils.sh
 
+# --------------------------------------------------------------------------------------------------
+# Watcher that can be used during development to be able to quickly test and interate.
+# Consists of three parts:
+# - Watches for changes in .ts files, compiles them and runs rollup.
+# - Syncs asset directory with the distribution directory so changes in assets can be observed.
+# - Runs a local webserver that automatically refreshes when the distribution directory changes.
+# Keeps running until any input is entered.
+# --------------------------------------------------------------------------------------------------
+
 # Setup a trap to kill all subshells when the main command exits
 trap 'kill 0' SIGINT EXIT
 

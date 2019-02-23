@@ -1,3 +1,7 @@
+﻿/**
+ * @file Responsible for serializing tree's to json.
+ */
+
 import * as Tree from "./tree";
 import * as Utils from "./utils";
 

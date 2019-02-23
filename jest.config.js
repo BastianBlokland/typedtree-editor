@@ -1,3 +1,8 @@
+﻿/**
+ * Configuration file for jest.
+ * https://jestjs.io/docs/en/configuration
+ */
+
 module.exports = {
     transform: { '^.+\\.ts?$': 'ts-jest' },
     testEnvironment: 'node',

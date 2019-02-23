@@ -1,3 +1,7 @@
+﻿/**
+ * @file Entry point, responsible for initialization and starting the app logic.
+ */
+
 import * as SvgDisplay from "./svg.display";
 import * as TreeSchemeDisplay from "./treescheme.display";
 import * as App from "./app";

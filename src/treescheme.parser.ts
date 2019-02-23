@@ -1,3 +1,7 @@
+﻿/**
+ * @file Responsible for parsing tree-scheme's from json.
+ */
+
 import * as TreeScheme from "./treescheme";
 import * as ParserUtils from "./parserutils";
 import { ParseResult, createError, createSuccess } from "./parserutils";

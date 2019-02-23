@@ -1,3 +1,7 @@
+﻿/**
+ * @file Jest tests for treescheme.ts
+ */
+
 import * as TreeScheme from "../src/treescheme";
 
 test("cannotPushDuplicateAlias", () => {

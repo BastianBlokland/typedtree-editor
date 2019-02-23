@@ -1,3 +1,7 @@
+﻿/**
+ * @file Responsible for displaying tree nodes.
+ */
+
 import * as Tree from "./tree";
 import * as TreeModifications from "./tree.modifications";
 import * as TreeView from "./tree.view";

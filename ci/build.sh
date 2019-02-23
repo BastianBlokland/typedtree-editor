@@ -2,6 +2,10 @@
 set -e
 source ./ci/utils.sh
 
+# --------------------------------------------------------------------------------------------------
+# Build the source code and assets into a distribution that can be deployed.
+# --------------------------------------------------------------------------------------------------
+
 # Verify tooling
 ./ci/verify-tooling.sh
 
