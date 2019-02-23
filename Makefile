@@ -1,4 +1,4 @@
-﻿.PHONY: clean build deploy test watch
+﻿.PHONY: build
 default: build
 
 clean:
