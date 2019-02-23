@@ -16,9 +16,10 @@ cp -v -r ./assets/. ./build/
 
 info "Setting Content-Security-Policy"
 # Insert the csp element in all html files that hdefine a 'Content-Security-Policy' comment.
+# Note: Using 'tr' to strip the newlines
 CSP_CONTENT="$(tail -c +4 < ./assets/csp.txt | tr -d '\n')";
 CSP_ELEMENT='<meta http-equiv="Content-Security-Policy" content="'"$CSP_CONTENT"'">'
-sed -i '' "/<!-- Content-Security-Policy -->/a\\
+sed -i '' -e "/<!-- Content-Security-Policy -->/a\\
     \ \ $CSP_ELEMENT
     " ./build/*.html
 
