@@ -1,11 +1,11 @@
-{
+﻿{
   "compilerOptions": {
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "strictNullChecks": true,
     "alwaysStrict": true,
     "forceConsistentCasingInFileNames": true,
-    "target": "es5",
+    "target": "es6",
     "module": "es2015",
     "lib": [
       "dom",
