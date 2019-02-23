@@ -13,27 +13,27 @@ test("findPathToRoot", () => {
                 b.pushNodeArrayField("grandChildren", [
                     Tree.createNode("grandChildA"),
                     Tree.createNode("grandChildB"),
-                    Tree.createNode("grandChildC")
+                    Tree.createNode("grandChildC"),
                 ]);
             }),
             Tree.createNode("childB", b => {
                 b.pushNodeArrayField("grandChildren", [
                     Tree.createNode("grandChildA"),
                     Tree.createNode("grandChildB"),
-                    nodeToTest = Tree.createNode("grandChildC")
+                    nodeToTest = Tree.createNode("grandChildC"),
                 ]);
             }),
             Tree.createNode("childC", b => {
                 b.pushNodeArrayField("grandChildren", [
                     Tree.createNode("grandChildA"),
                     Tree.createNode("grandChildB"),
-                    Tree.createNode("grandChildC")
+                    Tree.createNode("grandChildC"),
                 ]);
-            })
+            }),
         ]);
     });
 
-    let expectedPath: TreePath.Parent[] = [];
+    const expectedPath: TreePath.Parent[] = [];
     expectedPath.unshift({ node: root, output: { fieldName: "children", offset: 1 } });
     expectedPath.unshift({ node: root.getChild({ fieldName: "children", offset: 1 })!, output: { fieldName: "grandChildren", offset: 2 } });
 
@@ -46,7 +46,7 @@ test("getParentFindsDirectParent", () => {
         b.pushNodeArrayField("nodeArrayField", [Tree.createNode("nodeC"), Tree.createNode("nodeD")]);
     });
     Tree.forEachDirectChild(root, (child, output) => {
-        expect(TreePath.getParent(root, child)).toEqual({ node: root, output: output });
+        expect(TreePath.getParent(root, child)).toEqual({ node: root, output });
     });
 });
 

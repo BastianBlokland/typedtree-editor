@@ -11,8 +11,9 @@ test("fieldTypeIsParsedSuccessfully", () => {
     }`;
     const parseResult = Tree̦Parser.parseJson(json);
     expect(parseResult.kind).toBe("success");
-    if (parseResult.kind === "success")
+    if (parseResult.kind === "success") {
         expect(parseResult.value).toEqual(Tree.createNode("test"));
+    }
 });
 
 test("nullFieldsAreFilteredOut", () => {
@@ -22,8 +23,9 @@ test("nullFieldsAreFilteredOut", () => {
     }`;
     const parseResult = Tree̦Parser.parseJson(json);
     expect(parseResult.kind).toBe("success");
-    if (parseResult.kind === "success")
+    if (parseResult.kind === "success") {
         expect(parseResult.value.fields.length).toBe(0);
+    }
 });
 
 test("emptyArraysAreFilteredOut", () => {
@@ -33,16 +35,18 @@ test("emptyArraysAreFilteredOut", () => {
     }`;
     const parseResult = Tree̦Parser.parseJson(json);
     expect(parseResult.kind).toBe("success");
-    if (parseResult.kind === "success")
+    if (parseResult.kind === "success") {
         expect(parseResult.value.fields.length).toBe(0);
+    }
 });
 
 test("fieldTypeDefaultsToAnonymous", () => {
     const json = `{ }`;
     const parseResult = Tree̦Parser.parseJson(json);
     expect(parseResult.kind).toBe("success");
-    if (parseResult.kind === "success")
+    if (parseResult.kind === "success") {
         expect(parseResult.value.type).toBe("Anonymous");
+    }
 });
 
 test("numberIsParsedSuccessfully", () => {
@@ -164,8 +168,8 @@ test("nodeArrayIsParsedSuccessfully", () => {
                 }),
                 Tree.createNode("child2", b => {
                     b.pushStringField("field2", "42");
-                })])
-            })
+                })]);
+            }),
         );
     }
 });
