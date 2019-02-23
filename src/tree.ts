@@ -6,6 +6,9 @@ export type NodeType = string
 /** Extracts the type of the value of a given field. */
 export type FieldValueType<T> = T extends Field ? T["value"] : never;
 
+/** Extracts the kinds of a given field */
+export type FieldValueKind<T> = T extends Field ? T["kind"] : never;
+
 /**
  * Extracts the element type of the value of a given field.
  * This means if you request the element type for a 'stringArray' field you will get the type 'string'.
@@ -29,6 +32,9 @@ export type ArrayField = OnlyArrayField<Field>;
 
 /** Union type of all possible non-array fields. */
 export type NonArrayField = OnlyNonArrayField<Field>;
+
+/** Union type of all the possible field kinds. */
+export type FieldKind = FieldValueKind<Field>;
 
 /** Union type of all possible fields. */
 export type Field =
@@ -119,15 +125,13 @@ export interface NodeBuilder {
     pushField(field: Field): boolean
 }
 
-export type BuildCallback = (builder: NodeBuilder) => void
-
 /**
  * Construct a new node
  * @param type Type of the node to construct
  * @param callback Callback that can be used to add additional data to this node.
- * @returns Newly constructed node
+ * @returns Newly constructed (immutable) node
  */
-export function createNode(type: NodeType, callback: BuildCallback | undefined = undefined): Node {
+export function createNode(type: NodeType, callback?: (builder: NodeBuilder) => void): Node {
     if (callback === undefined)
         return new NodeImpl(type, []);
     const builder = new NodeBuilderImpl(type);
@@ -216,47 +220,57 @@ export function getAllChildren(node: Node): Node[] {
 export function getFieldName(field: Field): string { return field.name }
 
 /**
- * Print the tree to the console (Useful for debugging).
+ * Create a string representation for a node. (Useful for debugging)
+ * @param node Node to create the string representation for.
+ * @returns Newly created string representation of the node.
+ */
+export function toString(node: Node): string {
+    let result = "";
+    printNode(node, undefined, (line: string, indent: number) => {
+        result += `${" ".repeat(indent * 2)}${line}\n`;
+    });
+    return result;
+}
+
+/**
+ * Print a node. (Useful for debugging)
  * @param node Node to print (Including its children).
  * @param indent How for to indent the lines.
+ * @param printLine Method to use for printing the line
  */
-export function printNode(node: Node, indent: number = 0): void {
+export function printNode(node: Node, indent: number = 0, printLine: (line: string, indent: number) => void): void {
     // Print type
-    printText(`Type: ${node.type}`, indent);
+    printLine(`Type: ${node.type}`, indent);
 
     // Print fields
     node.fields.forEach(field => {
         switch (field.kind) {
-            case "string": printText(`${field.name}: ${field.value}`, indent); break;
-            case "number": printText(`${field.name}: ${field.value}`, indent); break;
-            case "boolean": printText(`${field.name}: ${field.value}`, indent); break;
+            case "string": printLine(`-${field.name}: ${field.value}`, indent); break;
+            case "number": printLine(`-${field.name}: ${field.value}`, indent); break;
+            case "boolean": printLine(`-${field.name}: ${field.value}`, indent); break;
             case "node":
-                printText(`${field.name}:`, indent);
-                printNode(field.value, indent + 1);
+                printLine(`-${field.name}:`, indent);
+                printNode(field.value, indent + 1, printLine);
                 break;
             case "stringArray":
-                printText(`${field.name}:`, indent);
-                field.value.forEach(element => { printText(element, indent + 1); });
+                printLine(`-${field.name}:`, indent);
+                field.value.forEach(element => { printLine(element, indent + 1); });
                 break;
             case "numberArray":
-                printText(`${field.name}:`, indent);
-                field.value.forEach(element => { printText(element.toString(), indent + 1); });
+                printLine(`-${field.name}:`, indent);
+                field.value.forEach(element => { printLine(element.toString(), indent + 1); });
                 break;
             case "booleanArray":
-                printText(`${field.name}:`, indent);
-                field.value.forEach(element => { printText(element.toString(), indent + 1); });
+                printLine(`-${field.name}:`, indent);
+                field.value.forEach(element => { printLine(element.toString(), indent + 1); });
                 break;
             case "nodeArray":
-                printText(`${field.name}:`, indent);
-                field.value.forEach(element => { printNode(element, indent + 1); });
+                printLine(`-${field.name}:`, indent);
+                field.value.forEach(element => { printNode(element, indent + 1, printLine); });
                 break;
             default: Utils.assertNever(field);
         }
     });
-
-    function printText(text: string, indent: number) {
-        console.log(`${" ".repeat(indent * 2)}${text}`);
-    }
 }
 
 class NodeImpl implements Node {
@@ -264,7 +278,7 @@ class NodeImpl implements Node {
     private readonly _fields: ReadonlyArray<Field>;
 
     constructor(type: NodeType, fields: ReadonlyArray<Field>) {
-        if (!type || type === "")
+        if (type === "")
             throw new Error("Node must has a type");
         if (Utils.hasDuplicates(fields.map(getFieldName)))
             throw new Error("Field names must be unique");

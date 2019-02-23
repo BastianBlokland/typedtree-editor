@@ -14,6 +14,77 @@ export function saveJsonText(json: string, fileName: string): void {
 }
 
 /**
+ * Create an ordered-list with given elements.
+ * @param items Items to add to the list.
+ * @returns Newly created olist element.
+ */
+export function createOList(
+    ...items: HTMLElement[]): HTMLOListElement {
+
+    return createWithChildren("ol", ...items.map(i => createWithChildren("li", i)));
+}
+
+/**
+ * Create an unordered-list with given elements.
+ * @param items Items to add to the list.
+ * @returns Newly created ulist element.
+ */
+export function createUList(
+    ...items: HTMLElement[]): HTMLUListElement {
+
+    return createWithChildren("ul", ...items.map(i => createWithChildren("li", i)));
+}
+
+/**
+ * Create a new html element and append the given elements as children.
+ * @param tagName Tag of the element to create.
+ * @param children Children to append to the new element.
+ * @returns Newly created html-element.
+ */
+export function createWithChildren<K extends keyof HTMLElementTagNameMap>(
+    tagName: K,
+    ...children: HTMLElement[]): HTMLElementTagNameMap[K] {
+
+    const elem: HTMLElementTagNameMap[K] = document.createElement(tagName);
+    children.forEach(c => elem.appendChild(c));
+    return elem;
+}
+
+/**
+ * Create a new html element with the given text content.
+ * @param tagName Tag of the element to create.
+ * @param textContent Text to add to the element.
+ * @param className Optional classname to give to the element.
+ * @returns Newly created html-element.
+ */
+export function createWithText<K extends keyof HTMLElementTagNameMap>(
+    tagName: K,
+    textContent: string,
+    className?: ClassName): HTMLElementTagNameMap[K] {
+
+    const elem: HTMLElementTagNameMap[K] = document.createElement(tagName);
+    if (className !== undefined)
+        elem.className = className;
+    elem.textContent = textContent;
+    return elem;
+}
+
+/**
+ * Create a new summary html element with the given text content.
+ * Note: There is no typed 'SummaryHTMLElement' so thats why we need this untyped one.
+ * @param textContent Text to add to the summary.
+ * @param className Optional classname to give to the element.
+ * @returns Newly created html-element.
+ */
+export function createSummary(textContent: string, className?: ClassName): HTMLElement {
+    const elem = document.createElement("summary");
+    elem.textContent = textContent;
+    if (className !== undefined)
+        elem.className = className;
+    return elem;
+}
+
+/**
  * Subscribe to dom click.
  * Will throw if the element doesn't exist.
  * @param elementId Id of the element to subscribe to.
@@ -45,6 +116,15 @@ export function subscribeToFileInput(inputId: string, callback: (file: File) => 
 }
 
 /**
+ * Delete all the children of a given node.
+ * @param element Element to delete the children from.
+ */
+export function clearChildren(element: HTMLElement): void {
+    while (element.firstChild)
+        element.removeChild(element.firstChild);
+}
+
+/**
  * Set the text content of an element.
  * * Will throw if the element doesn't exist.
  * @param elementId Id of the element to set the text for.
@@ -59,19 +139,16 @@ export function setText(elementId: string, text: string): void {
 
 /**
  * Create a new input element of type text. Note: This does not get parented anywhere yet.
- * @param className ClassName of the html element.
  * @param text Initial text to show in the input.
  * @param callback Callback that will get fired when the user changes the input.
  * @returns Newly created input element.
  */
 export function createTextInput(
-    className: ClassName,
     text: string,
     callback: (newText: string) => void): HTMLInputElement {
 
     const element = document.createElement("input");
     element.setAttribute("type", "text");
-    element.className = className;
     element.value = text;
     element.onchange = event => {
         callback(element.value);
@@ -81,19 +158,17 @@ export function createTextInput(
 
 /**
  * Create a new input element of type number. Note: This does not get parented anywhere yet.
- * @param className ClassName of the html element.
  * @param number Initial number to show in the input.
  * @param callback Callback that will get fired when the user changes the input.
  * @returns Newly created input element.
  */
 export function createNumberInput(
-    className: ClassName,
     number: number,
     callback: (newNumber: number) => void): HTMLInputElement {
 
     const element = document.createElement("input");
     element.setAttribute("type", "number");
-    element.className = className;
+    element.setAttribute("step", "any");
     element.value = number.toString();
     element.onchange = event => {
         callback(Number(element.value));
@@ -103,21 +178,18 @@ export function createNumberInput(
 
 /**
  * Create a new input element of type checkbox. Note: This does not get parented anywhere yet.
- * @param className ClassName of the html element.
  * @param boolean If the checkbox should be initially checked or not.
  * @param callback Callback that will get fired when the user changes the input.
  * @returns Newly created input element.
  */
 export function createBooleanInput(
-    className: ClassName,
     boolean: boolean,
     callback: (newBoolean: boolean) => void): HTMLInputElement {
 
     const element = document.createElement("input");
     element.setAttribute("type", "checkbox");
     element.checked = boolean;
-    element.className = className;
-    element.onchange = event => {
+    element.onchange = _ => {
         callback(element.checked);
     };
     return element;

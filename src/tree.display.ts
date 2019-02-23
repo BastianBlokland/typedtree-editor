@@ -1,9 +1,9 @@
 ﻿import * as Tree from "./tree";
-import * as TreeModifications from "./treemodifications";
-import * as TreeView from "./treeview";
+import * as TreeModifications from "./tree.modifications";
+import * as TreeView from "./tree.view";
 import * as Utils from "./utils";
 import * as Vec from "./vector";
-import * as Display from "./display";
+import * as SvgDisplay from "./svg.display";
 
 export type treeChangedCallback = (newTree: Tree.Node) => void;
 
@@ -11,22 +11,25 @@ export type treeChangedCallback = (newTree: Tree.Node) => void;
  * Draw the given tree.
  * @param root Root node for the tree to draw.
  */
-export function setTree(root: Tree.Node, changed: treeChangedCallback | undefined = undefined): void {
-    Display.clear();
-    const positionTree = TreeView.createPositionTree(root);
-    positionTree.nodes.forEach(node => {
-        createNode(node, positionTree, newNode => {
-            if (changed !== undefined) {
-                changed(TreeModifications.treeWithReplacedNode(root, node, newNode));
-            }
+export function setTree(root: Tree.Node | undefined, changed: treeChangedCallback | undefined = undefined): void {
+    SvgDisplay.clear();
+
+    if (root !== undefined) {
+        const positionTree = TreeView.createPositionTree(root);
+        positionTree.nodes.forEach(node => {
+            createNode(node, positionTree, newNode => {
+                if (changed !== undefined) {
+                    changed(TreeModifications.treeWithReplacedNode(root, node, newNode));
+                }
+            });
         });
-    });
-    Display.setContentOffset(positionTree.rootOffset);
+        SvgDisplay.setContentOffset(positionTree.rootOffset);
+    }
 }
 
 /** Focus the given tree on the display. */
 export function focusTree(): void {
-    Display.focusContent();
+    SvgDisplay.focusContent();
 }
 
 const nodeHeaderHeight = TreeView.nodeHeaderHeight;
@@ -43,10 +46,10 @@ function createNode(
     changed: nodeChangedCallback): void {
 
     const size = positionTree.getSize(node);
-    const nodeElement = Display.createElement("node", positionTree.getPosition(node));
+    const nodeElement = SvgDisplay.createElement("node", positionTree.getPosition(node));
 
-    nodeElement.addRect("nodeBackground", size, Vec.zeroVector);
-    nodeElement.addText("nodeTypeText", node.type, { x: Utils.half(size.x), y: halfNodeHeightHeight });
+    nodeElement.addRect("node-background", size, Vec.zeroVector);
+    nodeElement.addText("node-type", node.type, { x: Utils.half(size.x), y: halfNodeHeightHeight });
 
     let yOffset = nodeHeaderHeight;
     node.fieldNames.forEach(fieldName => {
@@ -61,7 +64,7 @@ type fieldChangedCallback<T extends Tree.Field> = (newField: T) => void;
 function createField(
     node: Tree.Node,
     fieldName: string,
-    parent: Display.Element,
+    parent: SvgDisplay.Element,
     positionTree: TreeView.PositionTree,
     yOffset: number,
     changed: fieldChangedCallback<Tree.Field>): number {
@@ -74,8 +77,8 @@ function createField(
     const centeredYOffset = yOffset + Utils.half(nodeFieldHeight);
     const nameWidth = Utils.half(fieldSize.x) - 10;
 
-    parent.addRect(`${field.kind}ValueBackground`, fieldSize, { x: 0, y: yOffset });
-    parent.addText("nodeFieldName", `${field.name}:`, { x: 10, y: centeredYOffset });
+    parent.addRect(`${field.kind}-value-background`, fieldSize, { x: 0, y: yOffset });
+    parent.addText("fieldname", `${field.name}:`, { x: 10, y: centeredYOffset });
 
     // Value
     switch (field.kind) {
@@ -114,17 +117,17 @@ function createField(
             we are doing here. */
 
             // Element deletion button
-            parent.addGraphics("fieldValueButton", "arrayDelete", { x: nameWidth, y: yPos }, () => {
+            parent.addGraphics("fieldvalue-button", "arrayDelete", { x: nameWidth, y: yPos }, () => {
                 const newArray = Utils.withoutElement(array, i);
                 changed(TreeModifications.fieldWithValue(field, <Tree.FieldValueType<T>><unknown>newArray));
             });
 
             // Reorder buttons
-            parent.addGraphics("fieldValueButton", "arrayOrderUp", { x: nameWidth + 12, y: yPos - 5 }, () => {
+            parent.addGraphics("fieldvalue-button", "arrayOrderUp", { x: nameWidth + 12, y: yPos - 5 }, () => {
                 const newArray = Utils.withSwappedElements(array, i, (i === 0 ? array.length : i) - 1);
                 changed(TreeModifications.fieldWithValue(field, <Tree.FieldValueType<T>><unknown>newArray));
             });
-            parent.addGraphics("fieldValueButton", "arrayOrderDown", { x: nameWidth + 12, y: yPos + 5 }, () => {
+            parent.addGraphics("fieldvalue-button", "arrayOrderDown", { x: nameWidth + 12, y: yPos + 5 }, () => {
                 const newArray = Utils.withSwappedElements(array, i, (i + 1) % array.length);
                 changed(TreeModifications.fieldWithValue(field, <Tree.FieldValueType<T>><unknown>newArray));
             });
@@ -160,7 +163,7 @@ function createField(
         size: Vec.Size,
         changed: elementChangedCallback<string>): void {
 
-        parent.addEditableText("stringFieldValue", value, pos, size, changed);
+        parent.addEditableText("string-value", value, pos, size, changed);
     }
 
     function createNumberValue(
@@ -169,7 +172,7 @@ function createField(
         size: Vec.Size,
         changed: elementChangedCallback<number>): void {
 
-        parent.addEditableNumber("numberFieldValue", value, pos, size, changed);
+        parent.addEditableNumber("number-value", value, pos, size, changed);
     }
 
     function createBooleanValue(
@@ -178,7 +181,7 @@ function createField(
         size: Vec.Size,
         changed: elementChangedCallback<boolean>): void {
 
-        parent.addEditableBoolean("booleanFieldValue", value, pos, size, changed);
+        parent.addEditableBoolean("boolean-value", value, pos, size, changed);
     }
 
     function createNodeValue(
@@ -190,13 +193,13 @@ function createField(
     }
 }
 
-function addConnection(parent: Display.Element, from: Vec.Position, to: Vec.Position): void {
+function addConnection(parent: SvgDisplay.Element, from: Vec.Position, to: Vec.Position): void {
     parent.addGraphics("nodeOutput", "nodeConnector", from);
 
     const target = Vec.add(to, nodeInputSlotOffset);
     const c1 = { x: Utils.lerp(from.x, target.x, nodeConnectionCurviness), y: from.y };
     const c2 = { x: Utils.lerp(target.x, from.x, nodeConnectionCurviness), y: target.y };
-    parent.addBezier("nodeConnection", from, c1, c2, target);
+    parent.addBezier("connection", from, c1, c2, target);
 }
 
 function getRelativeVector(from: Tree.Node, to: Tree.Node, positionTree: TreeView.PositionTree): Vec.Vector2 {

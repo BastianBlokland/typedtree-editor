@@ -1,5 +1,4 @@
 ﻿import * as Tree from "./tree";
-import * as Utils from "./utils";
 import * as ParserUtils from "./parserutils";
 import { ParseResult, createError, createSuccess } from "./parserutils";
 
@@ -69,7 +68,7 @@ function parseField(name: string, value: any): Tree.Field | undefined {
         case "number": return { kind: "number", name: name, value: value };
         case "boolean": return { kind: "boolean", name: name, value: value };
         case "object": {
-            if (Utils.isArray(value)) {
+            if (ParserUtils.isArray(value)) {
                 const array: any[] = value;
                 if (array.length === 0)
                     return undefined;

@@ -1,0 +1,188 @@
+﻿{
+  "rootAlias": "AI.Item",
+  "aliases": [
+    {
+      "identifier": "AI.Item",
+      "values": [
+        "AI.Items.Selector",
+        "AI.Items.Sequence",
+        "AI.Items.Condition",
+        "AI.Items.MoveToTarget",
+        "AI.Items.CastAbility",
+        "AI.Items.FindTarget",
+        "AI.Items.AttackTarget",
+        "AI.Items.Eat",
+        "AI.Items.PlayRandomAnimation"
+      ]
+    },
+    {
+      "identifier": "AI.Condition",
+      "values": [
+        "AI.Conditions.IsHungry",
+        "AI.Conditions.OutOfHealth",
+        "AI.Conditions.IsAbilityCharged",
+        "AI.Conditions.IsEnemyInRange",
+        "AI.Conditions.HasFood"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "identifier": "AI.Items.Selector",
+      "fields": [
+        {
+          "name": "children",
+          "valueType": "AI.Item",
+          "isArray": true
+        }
+      ]
+    },
+    {
+      "identifier": "AI.Items.Sequence",
+      "fields": [
+        {
+          "name": "children",
+          "valueType": "AI.Item",
+          "isArray": true
+        }
+      ]
+    },
+    {
+      "identifier": "AI.Items.Condition",
+      "fields": [
+        {
+          "name": "conditions",
+          "valueType": "AI.Condition",
+          "isArray": true
+        },
+        {
+          "name": "invert",
+          "valueType": "boolean",
+          "isArray": false
+        },
+        {
+          "name": "child",
+          "valueType": "AI.Item",
+          "isArray": false
+        }
+      ]
+    },
+    {
+      "identifier": "AI.Items.MoveToTarget",
+      "fields": [
+        {
+          "name": "run",
+          "valueType": "boolean",
+          "isArray": false
+        },
+        {
+          "name": "minimumDistance",
+          "valueType": "number",
+          "isArray": false
+        }
+      ]
+    },
+    {
+      "identifier": "AI.Items.CastAbility",
+      "fields": [
+        {
+          "name": "abilityId",
+          "valueType": "number",
+          "isArray": false
+        }
+      ]
+    },
+    {
+      "identifier": "AI.Items.FindTarget",
+      "fields": [
+        {
+          "name": "allowedTargets",
+          "valueType": "string",
+          "isArray": true
+        },
+        {
+          "name": "targetRange",
+          "valueType": "number",
+          "isArray": false
+        },
+        {
+          "name": "includeBosses",
+          "valueType": "boolean",
+          "isArray": false
+        }
+      ]
+    },
+    {
+      "identifier": "AI.Items.AttackTarget",
+      "fields": [
+        {
+          "name": "attackDuration",
+          "valueType": "number",
+          "isArray": false
+        },
+        {
+          "name": "attackDamage",
+          "valueType": "number",
+          "isArray": false
+        }
+      ]
+    },
+    {
+      "identifier": "AI.Items.Eat",
+      "fields": []
+    },
+    {
+      "identifier": "AI.Items.PlayRandomAnimation",
+      "fields": [
+        {
+          "name": "animations",
+          "valueType": "string",
+          "isArray": true
+        },
+        {
+          "name": "animationSpeeds",
+          "valueType": "number",
+          "isArray": true
+        }
+      ]
+    },
+    {
+      "identifier": "AI.Conditions.IsHungry",
+      "fields": []
+    },
+    {
+      "identifier": "AI.Conditions.OutOfHealth",
+      "fields": []
+    },
+    {
+      "identifier": "AI.Conditions.IsAbilityCharged",
+      "fields": [
+        {
+          "name": "abilityId",
+          "valueType": "number",
+          "isArray": false
+        }
+      ]
+    },
+    {
+      "identifier": "AI.Conditions.IsEnemyInRange",
+      "fields": [
+        {
+          "name": "range",
+          "valueType": "number",
+          "isArray": false
+        }
+      ]
+    },
+    {
+      "identifier": "AI.Conditions.HasFood",
+      "fields": [
+        {
+          "name": "includeVegetables",
+          "valueType": "boolean",
+          "isArray": false
+        }
+      ]
+    }
+  ]
+}

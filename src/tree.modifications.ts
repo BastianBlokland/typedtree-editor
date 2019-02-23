@@ -1,6 +1,6 @@
 ﻿import * as Utils from "./utils";
 import * as Tree from "./tree";
-import * as TreePath from "./treepath";
+import * as TreePath from "./tree.path";
 
 /**
  * Create a new field based on a existing field and a new element. If the field is a non-array then

@@ -66,3 +66,66 @@ export function createSuccess<T>(value: T): ParseSuccess<T> {
 export function createError(message: string): ParseError {
     return { kind: "error", errorMessage: message };
 }
+
+/**
+ * Check if given object is a string.
+ * @param obj Object to check.
+ * @returns True if obj is a string otherwise false.
+ */
+export function isString(obj: any): boolean {
+    return obj !== undefined && obj !== null && typeof obj === "string";
+}
+
+/**
+ * Check if given object is a boolean.
+ * @param obj Object to check.
+ * @returns True if obj is a boolean otherwise false.
+ */
+export function isBoolean(obj: any): boolean {
+    return obj !== undefined && obj !== null && typeof obj === "boolean";
+}
+
+/**
+ * Check if given object is an array
+ * @param obj Object to check.
+ * @returns True if the obj is an array otherwise false.
+ */
+export function isArray(obj: any): boolean {
+    return obj !== undefined && obj !== null && Array.isArray(obj);
+}
+
+/**
+ * Validate if an object is a string.
+ * @param obj Input to validate.
+ * @returns A string if obj was a string otherwise undefined.
+ */
+export function validateString(obj: any): string | undefined {
+    if (obj === undefined || obj === null || typeof obj !== "string")
+        return undefined;
+    return obj;
+}
+
+/**
+ * Validate if an object is a boolean.
+ * @param obj Input to validate.
+ * @returns A boolean if obj was a boolean otherwise undefined.
+ */
+export function validateBoolean(obj: any): boolean | undefined {
+    if (obj === undefined || obj === null || typeof obj !== "boolean")
+        return undefined;
+    return obj;
+}
+
+/**
+ * Validate if an object is a string array.
+ * @param obj Input to validate.
+ * @returns String array if the obj was a string array otherwise undefined.
+ */
+export function validateStringArray(obj: any): string[] | undefined {
+    if (!isArray(obj))
+        return undefined;
+    const array = <any[]>obj;
+    if (!array.every(e => typeof e === "string"))
+        return undefined;
+    return <string[]>array;
+}
