@@ -14,6 +14,9 @@ build: clean
 deploy: clean
 	./ci/deploy.sh
 
+lint:
+	./ci/lint.sh
+
 test:
 	./ci/test.sh
 

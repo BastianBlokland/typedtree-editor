@@ -1,6 +1,9 @@
 {
   // TypeScript
   "typescript.tsc.autoDetect": "off",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.tslint": true
+  },
   // Common plugins
   "cSpell.words": [
     "bbox",
