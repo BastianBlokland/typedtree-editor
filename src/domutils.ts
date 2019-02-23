@@ -1,4 +1,4 @@
-﻿import "file-saver";
+import "file-saver";
 
 /** Html class identifier */
 export type ClassName = string;

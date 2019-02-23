@@ -1,4 +1,4 @@
-﻿import * as DomUtils from "./domutils";
+import * as DomUtils from "./domutils";
 import * as TreeScheme from "./treescheme";
 
 /** Initialize the display, needs to be done once. */

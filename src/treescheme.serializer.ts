@@ -1,4 +1,4 @@
-﻿import * as TreeScheme from "./treescheme";
+import * as TreeScheme from "./treescheme";
 
 /**
  * Compose json for the scheme.

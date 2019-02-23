@@ -1,4 +1,4 @@
-﻿import * as TreeScheme from "../src/treescheme";
+import * as TreeScheme from "../src/treescheme";
 import * as Tree̦SchemeParser from "../src/treescheme.parser";
 
 test("basicSchemeIsParsedSuccessfully", () => {

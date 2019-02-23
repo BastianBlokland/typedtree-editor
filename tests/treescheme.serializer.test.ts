@@ -1,4 +1,4 @@
-﻿import * as Utils from "../src/utils";
+import * as Utils from "../src/utils";
 import * as TreeSchemeSerializer from "../src/treescheme.serializer";
 import * as TreeSchemeParser from "../src/treescheme.parser";
 

@@ -40,7 +40,7 @@
     "tsout",
     "typedtree",
     "ulist"
-],
+  ],
   // Search settings
   "search.useIgnoreFiles": false,
   "search.exclude": {},
@@ -52,7 +52,7 @@
     "tsout": true
   },
   "files.insertFinalNewline": true,
-  "files.encoding": "utf8bom",
+  "files.encoding": "utf8",
   "files.autoGuessEncoding": false,
   "files.trimTrailingWhitespace": true,
   "editor.formatOnSave": true,

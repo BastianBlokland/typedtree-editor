@@ -1,4 +1,4 @@
-﻿import * as Utils from "./utils";
+import * as Utils from "./utils";
 
 /** Vector2 that represents a position. */
 export type Position = Vector2;

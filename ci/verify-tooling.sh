@@ -5,7 +5,6 @@ source ./ci/utils.sh
 # Require npm and common unix commands
 verifyCommand npm
 verifyCommand cp
-verifyCommand tail
 verifyCommand tr
 verifyCommand sed
 verifyCommand rm

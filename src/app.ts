@@ -1,4 +1,4 @@
-﻿import * as DomUtils from "./domutils";
+import * as DomUtils from "./domutils";
 import * as Sequencer from "./sequencer";
 import * as Tree from "./tree";
 import * as TreeParser from "./tree.parser";

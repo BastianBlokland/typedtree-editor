@@ -1,4 +1,4 @@
-﻿export type SequenceItem = () => Promise<void>
+export type SequenceItem = () => Promise<void>
 
 export interface SequenceRunner {
     /** Is this runner still running */

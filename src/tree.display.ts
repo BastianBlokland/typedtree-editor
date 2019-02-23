@@ -1,4 +1,4 @@
-﻿import * as Tree from "./tree";
+import * as Tree from "./tree";
 import * as TreeModifications from "./tree.modifications";
 import * as TreeView from "./tree.view";
 import * as Utils from "./utils";

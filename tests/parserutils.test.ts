@@ -1,4 +1,4 @@
-﻿import * as ParserUtils from "../src/parserutils";
+import * as ParserUtils from "../src/parserutils";
 
 test("isString", () => {
     expect(ParserUtils.isString(null)).toBe(false);

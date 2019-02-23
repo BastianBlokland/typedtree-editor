@@ -1,4 +1,4 @@
-﻿/** Result that is returned from a parse operation, can either be a success or an error. */
+/** Result that is returned from a parse operation, can either be a success or an error. */
 export type ParseResult<T> = ParseSuccess<T> | ParseError
 
 /** Type indicating a successful parse. */

@@ -1,4 +1,4 @@
-﻿import * as Utils from "./utils";
+import * as Utils from "./utils";
 import * as Tree from "./tree";
 import * as TreePath from "./tree.path";
 

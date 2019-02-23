@@ -1,4 +1,4 @@
-﻿import * as Tree from "../src/tree";
+import * as Tree from "../src/tree";
 import * as TreePath from "../src/tree.path";
 
 test("findPathToRoot", () => {

@@ -1,4 +1,4 @@
-﻿default-src 'none';
+default-src 'none';
 script-src 'self' https://unpkg.com;
 connect-src 'self';
 style-src 'self';

@@ -1,4 +1,4 @@
-﻿# CI pipeline for azure builds
+# CI pipeline for azure builds
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/languages/javascript
 
 pool:
