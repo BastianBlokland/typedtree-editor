@@ -1,4 +1,4 @@
-﻿# TypedTree-Editor
+# TypedTree-Editor
 Web app to edit typed tree structures (For example a behaviour or decision tree)
 
 `Work In Progress`

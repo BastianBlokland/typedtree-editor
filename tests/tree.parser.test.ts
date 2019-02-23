@@ -1,4 +1,4 @@
-﻿import * as Tree from "../src/tree";
+import * as Tree from "../src/tree";
 import * as Tree̦Parser from "../src/tree.parser";
 
 test("fieldTypeIsParsedSuccessfully", () => {

@@ -1,4 +1,4 @@
-﻿import * as Tree from "../src/tree";
+import * as Tree from "../src/tree";
 import * as TreeModifications from "../src/tree.modifications";
 
 test("fieldWithValueString", () => {

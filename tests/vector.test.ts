@@ -1,4 +1,4 @@
-﻿import * as Vec from "../src/vector";
+import * as Vec from "../src/vector";
 
 test("half", () => {
     expect(Vec.half({ x: 10, y: 5 })).toEqual({ x: 5, y: 2.5 });

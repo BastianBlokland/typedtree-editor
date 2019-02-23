@@ -1,4 +1,4 @@
-﻿import * as Tree from "./tree";
+import * as Tree from "./tree";
 import * as ParserUtils from "./parserutils";
 import { ParseResult, createError, createSuccess } from "./parserutils";
 

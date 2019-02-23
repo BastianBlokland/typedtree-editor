@@ -1,13 +1,14 @@
 #!/bin/bash
 set -e
+source ./ci/utils.sh
 
 # Verify tooling
 ./ci/verify-tooling.sh
 
-echo "INFO: Rolling up scripts"
+info "Rolling up scripts"
 
 # Package .js files
 ./node_modules/.bin/rollup -c
 
-echo "INFO: Finished rolling up scripts"
+info "Finished rolling up scripts"
 exit 0

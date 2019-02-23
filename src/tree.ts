@@ -1,4 +1,4 @@
-﻿import * as Utils from "./utils";
+import * as Utils from "./utils";
 
 /** Identifier for the node-type */
 export type NodeType = string

@@ -1,4 +1,4 @@
-﻿import * as Tree from "./tree";
+import * as Tree from "./tree";
 
 /** Represents an output in the tree (node + field combination). */
 export interface Parent {

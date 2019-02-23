@@ -1,4 +1,4 @@
-﻿import * as Tree from "./tree";
+import * as Tree from "./tree";
 import * as Utils from "./utils";
 
 /**

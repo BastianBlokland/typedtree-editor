@@ -1,4 +1,4 @@
-﻿import * as Sequencer from "../src/sequencer";
+import * as Sequencer from "../src/sequencer";
 import { sleep } from "../src/utils";
 
 test("stopEndsTheUntilEndPromise", () => {
