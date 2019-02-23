@@ -9,8 +9,11 @@ source ./ci/utils.sh
 # Verify tooling
 ./ci/verify-tooling.sh
 
-info "Start linting"
+info "Start linting ./src/"
 ./node_modules/.bin/tslint -c tslint.json 'src/**/*.ts' --format stylish
+
+info "Start linting ./tests/"
+./node_modules/.bin/tslint -c tslint.json 'tests/**/*.ts' --format stylish
 
 info "Linted succesfully"
 exit 0
