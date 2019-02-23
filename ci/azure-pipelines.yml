@@ -8,6 +8,9 @@ variables:
 - group: ci-keys
 
 steps:
+- script: ./ci/verify-tooling.sh
+  displayName: 'Verify tooling'
+
 - script: ./ci/test.sh
   displayName: 'Test'
 
