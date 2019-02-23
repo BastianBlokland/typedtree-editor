@@ -1,3 +1,8 @@
+﻿/**
+ * @file Responsible for searching tree structures. Can be used to find a path between two related
+ * nodes.
+ */
+
 import * as Tree from "./tree";
 
 /** Represents an output in the tree (node + field combination). */

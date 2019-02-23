@@ -1,3 +1,7 @@
+﻿/**
+ * @file 2D vector that can be used to represent positions, offsets and sizes.
+ */
+
 import * as Utils from "./utils";
 
 /** Vector2 that represents a position. */

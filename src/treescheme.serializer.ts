@@ -1,3 +1,7 @@
+﻿/**
+ * @file Responsible for serializing tree-scheme's to json.
+ */
+
 import * as TreeScheme from "./treescheme";
 
 /**

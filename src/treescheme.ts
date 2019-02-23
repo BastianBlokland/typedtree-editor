@@ -1,3 +1,7 @@
+﻿/**
+ * @file Immutable data-model for representing tree scheme's.
+ */
+
 import * as Utils from "./utils";
 import * as Tree from "./tree";
 

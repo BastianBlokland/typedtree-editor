@@ -1,3 +1,7 @@
+﻿/**
+ * @file Immutable data-model for representing tree's.
+ */
+
 import * as Utils from "./utils";
 
 /** Identifier for the node-type */

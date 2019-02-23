@@ -1,3 +1,7 @@
+﻿/**
+ * @file Responsible for creating svg display elements and updating them.
+ */
+
 import * as Utils from "./utils";
 import * as DomUtils from "./domutils";
 import * as Vec from "./vector";

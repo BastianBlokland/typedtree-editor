@@ -1,3 +1,7 @@
+﻿/**
+ * @file Miscellaneous reusable utilities.
+ */
+
 /**
  * Create a new array that contains all the elements from the previous but with the given element
  * replaced.

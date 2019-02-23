@@ -1,3 +1,7 @@
+﻿/**
+ * @file Can be used to validate if a tree matches a tree-scheme.
+ */
+
 import * as Utils from "./utils";
 import * as TreeScheme from "./treescheme";
 import * as Tree from "./tree";

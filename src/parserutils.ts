@@ -1,3 +1,7 @@
+﻿/**
+ * @file Utilities and types for use in parsers.
+ */
+
 /** Result that is returned from a parse operation, can either be a success or an error. */
 export type ParseResult<T> = ParseSuccess<T> | ParseError
 

@@ -1,3 +1,7 @@
+﻿/**
+ * @file Utilities for interacting with the browser dom.
+ */
+
 import "file-saver";
 
 /** Html class identifier */

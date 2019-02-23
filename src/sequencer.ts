@@ -1,3 +1,11 @@
+﻿/**
+ * @file Sequencer can be used to run asynchronous operations in sequence instead of in-parallel.
+ * Usage:
+ * - Create a sequencer
+ * - Enqueue asynchronous operations to the sequencer.
+ * - Wait for sequencer completion.
+ */
+
 export type SequenceItem = () => Promise<void>
 
 export interface SequenceRunner {
