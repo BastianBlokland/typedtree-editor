@@ -1,5 +1,2 @@
-default-src 'none';
+default-src 'self';
 script-src 'self' https://unpkg.com;
-connect-src 'self';
-style-src 'self';
-img-src 'self';
