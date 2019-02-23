@@ -1,4 +1,4 @@
-# TypedTree-Editor
+﻿# TypedTree-Editor
 Web app to edit typed tree structures (For example a behaviour or decision tree)
 
 `Work In Progress`
@@ -23,7 +23,3 @@ Web app to edit typed tree structures (For example a behaviour or decision tree)
 * [uglify-js](https://github.com/mishoo/UglifyJS2)
 * [Npm](https://github.com/npm/cli)
 * [live-server](https://github.com/tapio/live-server)
-
-## Polyfills
-* [bluebird](https://github.com/petkaantonov/bluebird)
-* [fetch-ie8](https://github.com/camsong/fetch-ie8)

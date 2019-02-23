@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file Sequencer can be used to run asynchronous operations in sequence instead of in-parallel.
  * Usage:
  * - Create a sequencer

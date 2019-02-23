@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file Responsible for running the main app logic.
  */
 

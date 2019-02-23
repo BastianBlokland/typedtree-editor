@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file 2D vector that can be used to represent positions, offsets and sizes.
  */
 

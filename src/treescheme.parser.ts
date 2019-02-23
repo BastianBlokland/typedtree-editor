@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file Responsible for parsing tree-scheme's from json.
  */
 

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file Responsible for constructing new tree's by replacing elements of existing trees.
  */
 

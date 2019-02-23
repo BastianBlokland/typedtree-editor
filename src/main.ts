@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file Entry point, responsible for initialization and starting the app logic.
  */
 

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file Immutable data-model for representing tree scheme's.
  */
 

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Configuration file for jest.
  * https://jestjs.io/docs/en/configuration
  */

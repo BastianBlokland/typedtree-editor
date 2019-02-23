@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Configuration file for rollup.
  * https://rollupjs.org/guide/en#configuration-files
  */

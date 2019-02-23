@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file Responsible for displaying tree nodes.
  */
 
