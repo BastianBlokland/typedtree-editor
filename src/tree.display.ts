@@ -51,8 +51,9 @@ function createNode(
 
     const size = positionTree.getSize(node);
     const nodeElement = SvgDisplay.createElement("node", positionTree.getPosition(node));
+    const backgroundClass = node.type === Tree.noneNodeType ? "nonenode-background" : "node-background";
 
-    nodeElement.addRect("node-background", size, Vec.zeroVector);
+    nodeElement.addRect(backgroundClass, size, Vec.zeroVector);
     nodeElement.addText("node-type", node.type, { x: Utils.half(size.x), y: halfNodeHeightHeight });
 
     let yOffset = nodeHeaderHeight;
