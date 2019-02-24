@@ -43,11 +43,43 @@ test("emptyArraysAreNotSerialized", () => {
     }`));
 });
 
-test("anonymousTypeFieldIsNotSerialized", () => {
+test("anonymousTypeFieldsAreNotSerialized", () => {
     const node = Tree.createNode(Tree.anonymousNodeType, b => b.pushStringField("field", "test"));
 
     const composedJson = TreeSerializer.composeJson(node);
     expect(composedJson).toEqual(Utils.formatJson(`{
         "field": "test"
     }`));
+});
+
+test("noneNodesFieldsAreNotSerialized", () => {
+    const node = Tree.createNode("root", b => b.pushNodeField("field", Tree.createNoneNode()));
+
+    const composedJson = TreeSerializer.composeJson(node);
+    expect(composedJson).toEqual(Utils.formatJson(`{
+        "$type": "root"
+    }`));
+});
+
+test("noneNodesAreFilteredOutOfNodeArrayFields", () => {
+    const node = Tree.createNode("root", b => b.pushNodeArrayField("children", [
+        Tree.createNode("test1"),
+        Tree.createNoneNode(),
+        Tree.createNode("test2"),
+    ]));
+
+    const composedJson = TreeSerializer.composeJson(node);
+    expect(composedJson).toEqual(Utils.formatJson(`{
+        "$type": "root",
+        "children": [
+            { "$type": "test1" },
+            { "$type": "test2" }
+        ]
+    }`));
+});
+
+test("rootNodeCannotBeNoneNode", () => {
+    expect(() => {
+        TreeSerializer.composeJson(Tree.createNoneNode());
+    }).toThrowError();
 });
