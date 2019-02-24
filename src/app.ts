@@ -23,7 +23,7 @@ export async function run(): Promise<void> {
     DomUtils.subscribeToClick("toolbox-toggle", toggleToolbox);
     DomUtils.subscribeToClick("focus-button", () => {
         if (currentTree !== undefined) {
-            TreeDisplay.focusTree();
+            TreeDisplay.focusTree(2);
         }
     });
 
@@ -76,7 +76,7 @@ function enqueueNewTree(): void {
 
         console.log(`Successfully created new tree. Scheme: ${currentSchemeName}`);
         setCurrentTree(newRoot, "New tree");
-        TreeDisplay.focusTree();
+        TreeDisplay.focusTree(1);
     });
 }
 
@@ -105,7 +105,7 @@ function enqueueLoadTree(source: string | File): void {
 
             console.log(`Successfully loaded tree: ${name}`);
             setCurrentTree(completeTree, name);
-            TreeDisplay.focusTree();
+            TreeDisplay.focusTree(1);
         }
     });
 }
@@ -174,7 +174,7 @@ function onDomKeyPress(event: KeyboardEvent): void {
         case "t": toggleToolbox(); break;
         case "f":
             if (currentTree !== undefined) {
-                TreeDisplay.focusTree();
+                TreeDisplay.focusTree(2);
             }
             break;
         case "1":

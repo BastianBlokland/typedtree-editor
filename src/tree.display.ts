@@ -32,8 +32,8 @@ export function setTree(root: Tree.INode | undefined, changed: treeChangedCallba
 }
 
 /** Focus the given tree on the display. */
-export function focusTree(): void {
-    SvgDisplay.focusContent();
+export function focusTree(maxScale?: number): void {
+    SvgDisplay.focusContent(maxScale);
 }
 
 const nodeHeaderHeight = TreeView.nodeHeaderHeight;
