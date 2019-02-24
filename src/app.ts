@@ -10,6 +10,7 @@ import * as TreeParser from "./tree.parser";
 import * as TreeSerializer from "./tree.serializer";
 import * as TreeScheme from "./treescheme";
 import * as TreeSchemeDisplay from "./treescheme.display";
+import * as TreeSchemeInstantiator from "./treescheme.instantiator";
 import * as TreeSchemeParser from "./treescheme.parser";
 import * as TreeSchemeSerializer from "./treescheme.serializer";
 import * as TreeSchemeValidator from "./treescheme.validator";
@@ -84,9 +85,10 @@ function enqueueLoadTree(source: string | File): void {
                 alert(`Failed to validate tree. Error: ${validateResult.errorMessage}`);
                 return;
             }
+            const completeTree = TreeSchemeInstantiator.duplicateWithMissingFields(currentScheme, result.value);
 
             console.log(`Successfully loaded tree: ${name}`);
-            setCurrentTree(result.value, name);
+            setCurrentTree(completeTree, name);
             TreeDisplay.focusTree();
         }
     });
