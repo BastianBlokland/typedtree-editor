@@ -10,12 +10,12 @@ import * as Utils from "./utils";
  * @param node Node to create json for.
  * @returns Json representing the given node.
  */
-export function composeJson(node: Tree.Node): string {
+export function composeJson(node: Tree.INode): string {
     const obj = createObject(node);
     return JSON.stringify(obj, undefined, 2);
 }
 
-function createObject(node: Tree.Node): Object {
+function createObject(node: Tree.INode): object {
     const obj: any = {};
     obj.$type = node.type;
     node.fields.forEach(field => {

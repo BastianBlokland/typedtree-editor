@@ -3,16 +3,16 @@
  */
 
 /** Result that is returned from a parse operation, can either be a success or an error. */
-export type ParseResult<T> = ParseSuccess<T> | ParseError;
+export type ParseResult<T> = IParseSuccess<T> | IParseError;
 
 /** Type indicating a successful parse. */
-export interface ParseSuccess<T> {
+export interface IParseSuccess<T> {
     readonly kind: "success";
     readonly value: T;
 }
 
 /** Type indicating that an error ocurred while parsing. */
-export interface ParseError {
+export interface IParseError {
     readonly kind: "error";
     readonly errorMessage: string;
 }
@@ -43,8 +43,7 @@ export function loadTextFromFile(file: File): Promise<ParseResult<string>> {
         fileReader.onload = () => {
             if (fileReader.result !== null && typeof fileReader.result === "string") {
                 resolve(createSuccess(fileReader.result));
-            }
-            else {
+            } else {
                 resolve(createError("File does not contain text"));
             }
         };
@@ -61,7 +60,7 @@ export function loadTextFromFile(file: File): Promise<ParseResult<string>> {
  * @param value Successfully parsed value.
  * @returns ParseResult indicating a successful parse.
  */
-export function createSuccess<T>(value: T): ParseSuccess<T> {
+export function createSuccess<T>(value: T): IParseSuccess<T> {
     return { kind: "success", value };
 }
 
@@ -70,7 +69,7 @@ export function createSuccess<T>(value: T): ParseSuccess<T> {
  * @param message Message to include with the error
  * @returns ParseResult indicating an error.
  */
-export function createError(message: string): ParseError {
+export function createError(message: string): IParseError {
     return { kind: "error", errorMessage: message };
 }
 

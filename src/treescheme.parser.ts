@@ -11,7 +11,7 @@ import * as TreeScheme from "./treescheme";
  * @param source Source to get the json from (Can be a file or a url).
  * @returns Scheme or parse failure.
  */
-export async function load(source: File | string): Promise<ParseResult<TreeScheme.Scheme>> {
+export async function load(source: File | string): Promise<ParseResult<TreeScheme.IScheme>> {
     const loadTextResult = await (typeof source === "string" ?
         ParserUtils.loadTextFromUrl(source) :
         ParserUtils.loadTextFromFile(source));
@@ -27,7 +27,7 @@ export async function load(source: File | string): Promise<ParseResult<TreeSchem
  * @param jsonString Json to pare.
  * @returns Tree or parse failure.
  */
-export function parseJson(jsonString: string): ParseResult<TreeScheme.Scheme> {
+export function parseJson(jsonString: string): ParseResult<TreeScheme.IScheme> {
     let jsonObj: any;
     try {
         jsonObj = JSON.parse(jsonString);
@@ -42,7 +42,7 @@ export function parseJson(jsonString: string): ParseResult<TreeScheme.Scheme> {
     }
 }
 
-function parseScheme(obj: any): TreeScheme.Scheme {
+function parseScheme(obj: any): TreeScheme.IScheme {
     if (obj === undefined || obj === null || typeof obj !== "object") {
         throw new Error("Invalid input obj");
     }
@@ -58,7 +58,7 @@ function parseScheme(obj: any): TreeScheme.Scheme {
     });
 }
 
-function parseAliases(schemeBuilder: TreeScheme.SchemeBuilder, obj: any): void {
+function parseAliases(schemeBuilder: TreeScheme.ISchemeBuilder, obj: any): void {
     if (!ParserUtils.isArray(obj.aliases)) {
         return;
     }
@@ -84,7 +84,7 @@ function parseAliases(schemeBuilder: TreeScheme.SchemeBuilder, obj: any): void {
     });
 }
 
-function parseNodes(schemeBuilder: TreeScheme.SchemeBuilder, obj: any): void {
+function parseNodes(schemeBuilder: TreeScheme.ISchemeBuilder, obj: any): void {
     if (!ParserUtils.isArray(obj.nodes)) {
         return;
     }
@@ -120,7 +120,7 @@ function parseNodes(schemeBuilder: TreeScheme.SchemeBuilder, obj: any): void {
     });
 }
 
-function parseValueType(schemeBuilder: TreeScheme.SchemeBuilder, obj: any): TreeScheme.FieldValueType {
+function parseValueType(schemeBuilder: TreeScheme.ISchemeBuilder, obj: any): TreeScheme.FieldValueType {
     const str = ParserUtils.validateString(obj);
     if (str === undefined) {
         throw new Error("Invalid value type");

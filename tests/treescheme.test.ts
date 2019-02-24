@@ -64,7 +64,7 @@ test("aliasesCanBeFound", () => {
 });
 
 test("aliasesContainsWorksAsExpected", () => {
-    let alias: TreeScheme.Alias | undefined;
+    let alias: TreeScheme.IAlias | undefined;
     TreeScheme.createScheme("Alias1", b => {
         alias = b.pushAlias("Alias1", ["Node1", "Node2"]);
         b.pushNodeDefinition("Node1");
@@ -76,7 +76,7 @@ test("aliasesContainsWorksAsExpected", () => {
 });
 
 test("fieldCanReferenceAnAlias", () => {
-    let alias: TreeScheme.Alias | undefined;
+    let alias: TreeScheme.IAlias | undefined;
     const scheme = TreeScheme.createScheme("Alias1", b => {
         alias = b.pushAlias("Alias1", ["Node1", "Node2"]);
         b.pushNodeDefinition("Node1");

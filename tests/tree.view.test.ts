@@ -17,7 +17,7 @@ test("allChildNodeExists", () => {
 test("allNodesHaveSizes", () => {
     const testTree = createTestTree();
     const positionTree = TreeView.createPositionTree(testTree);
-    Tree.getAllChildren(testTree).forEach(child => {
+    Tree.getAllChildren(testTree).forEach(_ => {
         expect(positionTree.getSize(testTree)).not.toBe(Vec.zeroVector);
     });
 });
@@ -25,7 +25,7 @@ test("allNodesHaveSizes", () => {
 test("allNodesHaveAreas", () => {
     const testTree = createTestTree();
     const positionTree = TreeView.createPositionTree(testTree);
-    Tree.getAllChildren(testTree).forEach(child => {
+    Tree.getAllChildren(testTree).forEach(_ => {
         expect(positionTree.getArea(testTree)).not.toBe(Vec.zeroVector);
     });
 });
@@ -33,7 +33,7 @@ test("allNodesHaveAreas", () => {
 test("allNodesHavePositions", () => {
     const testTree = createTestTree();
     const positionTree = TreeView.createPositionTree(testTree);
-    Tree.getAllChildren(testTree).forEach(child => {
+    Tree.getAllChildren(testTree).forEach(_ => {
         expect(positionTree.getPosition(testTree)).not.toBe(Vec.zeroVector);
     });
 });
@@ -56,7 +56,7 @@ test("singleNodeHasExpectedArea", () => {
     expect(positionTree.getArea(testTree)).toEqual(positionTree.getSize(testTree));
 });
 
-function createTestTree(): Tree.Node {
+function createTestTree(): Tree.INode {
     return Tree.createNode("node1", b => {
         b.pushNodeArrayField("field1", [
             Tree.createNode("node2", b => {

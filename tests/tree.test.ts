@@ -14,8 +14,7 @@ test("cannotPushDuplicateField", () => {
     const field = result.getField("testField");
     if (field !== undefined && field.kind === "boolean") {
         expect(field.value).toBeTruthy();
-    }
-    else {
+    } else {
         throw new Error("Field not found");
     }
 });
@@ -69,7 +68,7 @@ test("fieldTypes", () => {
     expect(fieldValues).toEqual(["nodeArray", "node"]);
 });
 
-function createTestTree(): Tree.Node {
+function createTestTree(): Tree.INode {
     return Tree.createNode("node1", b => {
         b.pushNodeArrayField("field1", [
             Tree.createNode("node2", b => {

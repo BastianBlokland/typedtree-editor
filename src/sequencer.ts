@@ -8,7 +8,7 @@
 
 export type SequenceItem = () => Promise<void>;
 
-export interface SequenceRunner {
+export interface ISequenceRunner {
     /** Is this runner still running */
     readonly running: boolean;
     /** Is this runner currently waiting for new work items */
@@ -29,13 +29,13 @@ export interface SequenceRunner {
  * Construct a new sequence runner
  * @returns new runner
  */
-export function createRunner(): SequenceRunner {
+export function createRunner(): ISequenceRunner {
     return new SequenceRunnerImpl();
 }
 
 type ResolveItem = (value?: void | PromiseLike<void>) => void;
 
-class SequenceRunnerImpl implements SequenceRunner {
+class SequenceRunnerImpl implements ISequenceRunner {
     private _untilEnd: Promise<void>;
 
     private _untilNext: Promise<void>;

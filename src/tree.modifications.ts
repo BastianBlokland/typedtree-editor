@@ -22,10 +22,15 @@ export function fieldWithElement<T extends Tree.Field>(
         case "numberArray":
         case "booleanArray":
         case "nodeArray":
+
             // Unfortunately the type system cannot follow what we are doing here so some casts are required.
             const arrayField = field as Tree.OnlyArrayField<T>;
-            const newValue = Utils.withNewElement(arrayField.value, offset, element as Tree.FieldElementType<Tree.Field>);
-            return { ...field, value: newValue } as T;
+            const value = Utils.withNewElement(
+                arrayField.value,
+                offset,
+                element as Tree.FieldElementType<Tree.Field>);
+
+            return { ...field, value } as T;
     }
 
     return fieldWithValue(field, element as Tree.FieldValueType<T>);
@@ -48,13 +53,12 @@ export function fieldWithValue<T extends Tree.Field>(field: T, value: Tree.Field
  * @param field New field.
  * @returns New node with updated field.
  */
-export function nodeWithField(node: Tree.Node, field: Tree.Field): Tree.Node {
+export function nodeWithField(node: Tree.INode, field: Tree.Field): Tree.INode {
     return Tree.createNode(node.type, b => {
         node.fields.forEach(orgField => {
             if (orgField.name === field.name) {
                 b.pushField(field);
-            }
-            else {
+            } else {
                 b.pushField(orgField);
             }
         });
@@ -68,7 +72,7 @@ export function nodeWithField(node: Tree.Node, field: Tree.Field): Tree.Node {
  * @param newNode Node to replace target with.
  * @returns New root node for a new tree with a replaced node.
  */
-export function treeWithReplacedNode(root: Tree.Node, target: Tree.Node, newNode: Tree.Node): Tree.Node {
+export function treeWithReplacedNode(root: Tree.INode, target: Tree.INode, newNode: Tree.INode): Tree.INode {
     const pathToRoot = TreePath.findPathToRoot(root, target);
     let node = newNode;
     pathToRoot.forEach(parent => {
@@ -77,7 +81,7 @@ export function treeWithReplacedNode(root: Tree.Node, target: Tree.Node, newNode
     return node;
 }
 
-function fieldWithNewNode(origin: Tree.Node, output: Tree.FieldElementIdentifier, target: Tree.Node): Tree.Field {
+function fieldWithNewNode(origin: Tree.INode, output: Tree.IFieldElementIdentifier, target: Tree.INode): Tree.Field {
     const orgField = origin.getField(output.fieldName);
     if (orgField === undefined || (orgField.kind !== "node" && orgField.kind !== "nodeArray")) {
         throw new Error(`Invalid field ${output.fieldName} (Missing or incorrect type)`);

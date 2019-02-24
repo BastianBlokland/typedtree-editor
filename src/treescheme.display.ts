@@ -18,7 +18,7 @@ export function initialize(): void {
     schemeDisplayElement = displayElem;
 }
 
-export function setScheme(scheme: TreeScheme.Scheme): void {
+export function setScheme(scheme: TreeScheme.IScheme): void {
     assertInitialized();
     DomUtils.clearChildren(schemeDisplayElement!);
 
@@ -37,14 +37,14 @@ export function setScheme(scheme: TreeScheme.Scheme): void {
 const schemeDisplayElementId = "scheme-display";
 let schemeDisplayElement: HTMLElement | undefined;
 
-function createAliasElement(alias: TreeScheme.Alias): HTMLElement {
+function createAliasElement(alias: TreeScheme.IAlias): HTMLElement {
     return DomUtils.createWithChildren("details",
         DomUtils.createSummary(alias.identifier, "identifier"),
         DomUtils.createUList(...alias.values.map(f => DomUtils.createWithText("span", f, "identifier"))));
 }
 
-function createNodeElement(nodeDefinition: TreeScheme.NodeDefinition): HTMLElement {
-    if (nodeDefinition.fields.length == 0) {
+function createNodeElement(nodeDefinition: TreeScheme.INodeDefinition): HTMLElement {
+    if (nodeDefinition.fields.length === 0) {
         return DomUtils.createWithText("span", nodeDefinition.identifier, "identifier");
     }
     return DomUtils.createWithChildren("details",

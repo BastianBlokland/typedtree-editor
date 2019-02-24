@@ -6,7 +6,7 @@ import * as Tree from "../src/tree";
 import * as TreePath from "../src/tree.path";
 
 test("findPathToRoot", () => {
-    let nodeToTest: Tree.Node | undefined;
+    let nodeToTest: Tree.INode | undefined;
     const root = Tree.createNode("nodeA", b => {
         b.pushNodeArrayField("children", [
             Tree.createNode("childA", b => {
@@ -33,9 +33,15 @@ test("findPathToRoot", () => {
         ]);
     });
 
-    const expectedPath: TreePath.Parent[] = [];
-    expectedPath.unshift({ node: root, output: { fieldName: "children", offset: 1 } });
-    expectedPath.unshift({ node: root.getChild({ fieldName: "children", offset: 1 })!, output: { fieldName: "grandChildren", offset: 2 } });
+    const expectedPath: TreePath.IParent[] = [];
+    expectedPath.unshift({
+        node: root,
+        output: { fieldName: "children", offset: 1 },
+    });
+    expectedPath.unshift({
+        node: root.getChild({ fieldName: "children", offset: 1 })!,
+        output: { fieldName: "grandChildren", offset: 2 },
+    });
 
     expect(TreePath.findPathToRoot(root, nodeToTest!)).toEqual(expectedPath);
 });

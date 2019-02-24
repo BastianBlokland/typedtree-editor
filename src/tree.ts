@@ -42,90 +42,90 @@ export type FieldKind = FieldValueKind<Field>;
 
 /** Union type of all possible fields. */
 export type Field =
-    StringField |
-    NumberField |
-    BooleanField |
-    NodeField |
-    StringArrayField |
-    NumberArrayField |
-    BooleanArrayField |
-    NodeArrayField;
+    IStringField |
+    INumberField |
+    IBooleanField |
+    INodeField |
+    IStringArrayField |
+    INumberArrayField |
+    IBooleanArrayField |
+    INodeArrayField;
 
 /** Immutable structure representing a single node in the tree. */
-export interface Node {
+export interface INode {
     readonly type: NodeType;
     readonly fields: ReadonlyArray<Field>;
     readonly fieldNames: ReadonlyArray<string>;
 
     getField(name: string): Field | undefined;
-    getChild(output: FieldElementIdentifier): Node | undefined;
+    getChild(output: IFieldElementIdentifier): INode | undefined;
 }
 
-export interface StringField {
+export interface IStringField {
     readonly kind: "string";
     readonly name: string;
     readonly value: string;
 }
 
-export interface NumberField {
+export interface INumberField {
     readonly kind: "number";
     readonly name: string;
     readonly value: number;
 }
 
-export interface BooleanField {
+export interface IBooleanField {
     readonly kind: "boolean";
     readonly name: string;
     readonly value: boolean;
 }
 
-export interface NodeField {
+export interface INodeField {
     readonly kind: "node";
     readonly name: string;
-    readonly value: Node;
+    readonly value: INode;
 }
 
-export interface StringArrayField {
+export interface IStringArrayField {
     readonly kind: "stringArray";
     readonly name: string;
     readonly value: ReadonlyArray<string>;
 }
 
-export interface NumberArrayField {
+export interface INumberArrayField {
     readonly kind: "numberArray";
     readonly name: string;
     readonly value: ReadonlyArray<number>;
 }
 
-export interface BooleanArrayField {
+export interface IBooleanArrayField {
     readonly kind: "booleanArray";
     readonly name: string;
     readonly value: ReadonlyArray<boolean>;
 }
 
-export interface NodeArrayField {
+export interface INodeArrayField {
     readonly kind: "nodeArray";
     readonly name: string;
-    readonly value: ReadonlyArray<Node>;
+    readonly value: ReadonlyArray<INode>;
 }
 
 /* Identifier for a single element of a field, for non-arrays the offset will the 0. For arrays the
 offset will be the index into the array. */
-export interface FieldElementIdentifier {
+export interface IFieldElementIdentifier {
     readonly fieldName: string;
     readonly offset: number;
 }
 
 /** Object that can be used to construct new nodes */
-export interface NodeBuilder {
+export interface INodeBuilder {
     pushStringField(name: string, value: string): boolean;
     pushNumberField(name: string, value: number): boolean;
     pushBooleanField(name: string, value: boolean): boolean;
-    pushNodeField(name: string, value: Node): boolean;
+    pushNodeField(name: string, value: INode): boolean;
     pushStringArrayField(name: string, value: ReadonlyArray<string>): boolean;
     pushNumberArrayField(name: string, value: ReadonlyArray<number>): boolean;
     pushBooleanArrayField(name: string, value: ReadonlyArray<boolean>): boolean;
-    pushNodeArrayField(name: string, value: ReadonlyArray<Node>): boolean;
+    pushNodeArrayField(name: string, value: ReadonlyArray<INode>): boolean;
     pushField(field: Field): boolean;
 }
 
@@ -135,7 +135,7 @@ export interface NodeBuilder {
  * @param callback Callback that can be used to add additional data to this node.
  * @returns Newly constructed (immutable) node
  */
-export function createNode(type: NodeType, callback?: (builder: NodeBuilder) => void): Node {
+export function createNode(type: NodeType, callback?: (builder: INodeBuilder) => void): INode {
     if (callback === undefined) {
         return new NodeImpl(type, []);
     }
@@ -149,7 +149,7 @@ export function createNode(type: NodeType, callback?: (builder: NodeBuilder) => 
  * @param node Root to start counting from.
  * @returns Number of nodes in this tree.
  */
-export function getNodeCount(node: Node): number {
+export function getNodeCount(node: INode): number {
     let count = 1;
     forEachDirectChild(node, child => {
         count += getNodeCount(child);
@@ -165,8 +165,8 @@ export function getNodeCount(node: Node): number {
  * will continue.
  */
 export function forEachDirectChild(
-    node: Node,
-    callback: (node: Node, element: FieldElementIdentifier) => boolean | void): void {
+    node: INode,
+    callback: (node: INode, element: IFieldElementIdentifier) => boolean | void): void {
 
     for (let fieldIndex = 0; fieldIndex < node.fields.length; fieldIndex++) {
         const field = node.fields[fieldIndex];
@@ -197,8 +197,8 @@ export function forEachDirectChild(
  * @param node Node to get the direct children for.
  * @returns Array containing all the direct children of the given node.
  */
-export function getDirectChildren(node: Node): Node[] {
-    const result: Node[] = [];
+export function getDirectChildren(node: INode): INode[] {
+    const result: INode[] = [];
     forEachDirectChild(node, child => { result.push(child); });
     return result;
 }
@@ -208,12 +208,12 @@ export function getDirectChildren(node: Node): Node[] {
  * @param node Node to get the children for.
  * @returns Array containing all the children of the given node.
  */
-export function getAllChildren(node: Node): Node[] {
-    const result: Node[] = [];
+export function getAllChildren(node: INode): INode[] {
+    const result: INode[] = [];
     forEachDirectChild(node, child => addAllChildren(child, result));
     return result;
 
-    function addAllChildren(node: Node, result: Node[]) {
+    function addAllChildren(node: INode, result: INode[]) {
         result.push(node);
         forEachDirectChild(node, child => addAllChildren(child, result));
     }
@@ -231,7 +231,7 @@ export function getFieldName(field: Field): string { return field.name; }
  * @param node Node to create the string representation for.
  * @returns Newly created string representation of the node.
  */
-export function toString(node: Node): string {
+export function toString(node: INode): string {
     let result = "";
     printNode(node, undefined, (line: string, indent: number) => {
         result += `${" ".repeat(indent * 2)}${line}\n`;
@@ -245,7 +245,7 @@ export function toString(node: Node): string {
  * @param indent How for to indent the lines.
  * @param printLine Method to use for printing the line
  */
-export function printNode(node: Node, indent: number = 0, printLine: (line: string, indent: number) => void): void {
+export function printNode(node: INode, indent: number = 0, printLine: (line: string, indent: number) => void): void {
     // Print type
     printLine(`Type: ${node.type}`, indent);
 
@@ -280,7 +280,7 @@ export function printNode(node: Node, indent: number = 0, printLine: (line: stri
     });
 }
 
-class NodeImpl implements Node {
+class NodeImpl implements INode {
     private readonly _type: NodeType;
     private readonly _fields: ReadonlyArray<Field>;
 
@@ -312,7 +312,7 @@ class NodeImpl implements Node {
         return Utils.find(this._fields, field => field.name === name);
     }
 
-    public getChild(output: FieldElementIdentifier): Node | undefined {
+    public getChild(output: IFieldElementIdentifier): INode | undefined {
         const field = this.getField(output.fieldName);
         if (field !== undefined) {
             if (field.kind === "node" && output.offset === 0) {
@@ -326,7 +326,7 @@ class NodeImpl implements Node {
     }
 }
 
-class NodeBuilderImpl implements NodeBuilder {
+class NodeBuilderImpl implements INodeBuilder {
     private readonly _type: NodeType;
     private _fields: Field[];
     private _build: boolean;
@@ -351,7 +351,7 @@ class NodeBuilderImpl implements NodeBuilder {
         return this.pushField(field);
     }
 
-    public pushNodeField(name: string, value: Node): boolean {
+    public pushNodeField(name: string, value: INode): boolean {
         const field: Field = { kind: "node", name, value };
         return this.pushField(field);
     }
@@ -371,7 +371,7 @@ class NodeBuilderImpl implements NodeBuilder {
         return this.pushField(field);
     }
 
-    public pushNodeArrayField(name: string, value: ReadonlyArray<Node>): boolean {
+    public pushNodeArrayField(name: string, value: ReadonlyArray<INode>): boolean {
         const field: Field = { kind: "nodeArray", name, value };
         return this.pushField(field);
     }
@@ -391,7 +391,7 @@ class NodeBuilderImpl implements NodeBuilder {
         return true;
     }
 
-    public build(): Node {
+    public build(): INode {
         this._build = true;
         return new NodeImpl(this._type, this._fields);
     }

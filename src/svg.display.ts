@@ -11,25 +11,31 @@ import * as Vec from "./vector";
 declare const SVG: typeof SvgJs;
 
 /** Display element that content can be added to. */
-export interface Element {
+export interface IElement {
     /** Html class identifier for this element */
     readonly className: string;
-    /** Position of this element.
-     * Note: This does NOT need to match screen pixels as the canvas can be zoomed. */
+    /**
+     * Position of this element.
+     * Note: This does NOT need to match screen pixels as the canvas can be zoomed.
+     */
     readonly position: Vec.Position;
 
     /** Add a child element */
-    addElement(className: ClassName, position: Vec.Position): Element;
+    addElement(className: ClassName, position: Vec.Position): IElement;
 
     /** Add a rectangle graphic to this element. */
     addRect(className: ClassName, size: Vec.Size, position: Vec.Position): void;
 
-    /** Add a text graphic to this element.
-     * Note: Position is vertically centered. */
+    /**
+     * Add a text graphic to this element.
+     * Note: Position is vertically centered.
+     */
     addText(className: ClassName, text: string, position: Vec.Position): void;
 
-    /** Add a editable text graphic to this element.
-     * Note: Position is vertically centered. */
+    /**
+     * Add a editable text graphic to this element.
+     * Note: Position is vertically centered.
+     */
     addEditableText(
         className: ClassName,
         value: string,
@@ -37,8 +43,10 @@ export interface Element {
         size: Vec.Size,
         callback: (newValue: string) => void): void;
 
-    /** Add a editable number graphic to this element.
-     * Note: Position is vertically centered. */
+    /**
+     * Add a editable number graphic to this element.
+     * Note: Position is vertically centered.
+     */
     addEditableNumber(
         className: ClassName,
         value: number,
@@ -46,8 +54,10 @@ export interface Element {
         size: Vec.Size,
         callback: (newValue: number) => void): void;
 
-    /** Add a editable boolean graphic to this element.
-     * Note: Position is vertically centered. */
+    /**
+     * Add a editable boolean graphic to this element.
+     * Note: Position is vertically centered.
+     */
     addEditableBoolean(
         className: ClassName,
         value: boolean,
@@ -145,7 +155,7 @@ export function initialize(): void {
  * @param  position Position to place the element at.
  * @returns Element
  */
-export function createElement(className: ClassName, position: Vec.Position): Element {
+export function createElement(className: ClassName, position: Vec.Position): IElement {
     assertInitialized();
     return new GroupElement(svgRoot!, className, position);
 }
@@ -188,7 +198,7 @@ const graphicsFilePath = "graphics.svg";
 const minScale = 0.05;
 const maxScale = 3;
 const scrollScaleSpeed = 0.001;
-const displayMargin: Vec.Vector2 = { x: 75, y: 75 };
+const displayMargin: Vec.IVector2 = { x: 75, y: 75 };
 const halfDisplayMargin = Vec.half(displayMargin);
 
 let svgDocument: SvgJs.Doc | undefined;
@@ -199,7 +209,7 @@ let scale = 1;
 let dragging = false;
 let dragOffset = Vec.zeroVector;
 
-class GroupElement implements Element {
+class GroupElement implements IElement {
     private readonly _svgGroup: SvgJs.G;
     private readonly _className: ClassName;
     private readonly _position: Vec.Position;
@@ -218,7 +228,7 @@ class GroupElement implements Element {
         return this._position;
     }
 
-    public addElement(className: ClassName, position: Vec.Position): Element {
+    public addElement(className: ClassName, position: Vec.Position): IElement {
         return new GroupElement(this._svgGroup, className, position);
     }
 
@@ -311,7 +321,13 @@ class GroupElement implements Element {
             addClass(className);
     }
 
-    public addBezier(className: ClassName, from: Vec.Position, c1: Vec.Position, c2: Vec.Position, to: Vec.Position): void {
+    public addBezier(
+        className: ClassName,
+        from: Vec.Position,
+        c1: Vec.Position,
+        c2: Vec.Position,
+        to: Vec.Position): void {
+
         this._svgGroup.path(`M${from.x},${from.y} C${c1.x},${c1.y} ${c2.x},${c2.y} ${to.x},${to.y}`).
             addClass(className);
     }
@@ -333,14 +349,14 @@ class GroupElement implements Element {
 }
 
 /** Get the size of the current window */
-function getDisplaySize(): Vec.Vector2 {
+function getDisplaySize(): Vec.IVector2 {
     assertInitialized();
     const bounds = svgDocument!.rbox();
     return { x: bounds.width, y: bounds.height };
 }
 
 /** Get the total size of the current content */
-function getContentSize(): Vec.Vector2 {
+function getContentSize(): Vec.IVector2 {
     assertInitialized();
     const contentSize = svgRoot!.bbox();
     return { x: contentSize.width, y: contentSize.height };
@@ -360,7 +376,7 @@ function setScale(newScale: number): void {
  * Set the new global offset (Can be used to pan the content).
  * @param newOffset New global offset.
  */
-function setOffset(newOffset: Vec.Vector2): void {
+function setOffset(newOffset: Vec.IVector2): void {
     assertInitialized();
     viewOffset = newOffset;
     updateRootTransform();

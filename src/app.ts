@@ -42,12 +42,12 @@ export async function run(): Promise<void> {
     console.log("Stopped running");
 }
 
-let sequencer: Sequencer.SequenceRunner | undefined;
+let sequencer: Sequencer.ISequenceRunner | undefined;
 
-let currentScheme: TreeScheme.Scheme | undefined;
+let currentScheme: TreeScheme.IScheme | undefined;
 let currentSchemeName: string | undefined;
 
-let currentTree: Tree.Node | undefined;
+let currentTree: Tree.INode | undefined;
 let currentTreeName: string | undefined;
 
 function enqueueLoadScheme(source: string | File): void {
@@ -110,7 +110,7 @@ function enqueueSaveTree(): void {
     });
 }
 
-function enqueueUpdateTree(oldTree: Tree.Node, newTree?: Tree.Node, name?: string): void {
+function enqueueUpdateTree(oldTree: Tree.INode, newTree?: Tree.INode, name?: string): void {
     sequencer!.enqueue(async () => {
         if (oldTree === currentTree) {
             setCurrentTree(newTree, name);
@@ -118,7 +118,7 @@ function enqueueUpdateTree(oldTree: Tree.Node, newTree?: Tree.Node, name?: strin
     });
 }
 
-function setCurrentScheme(scheme: TreeScheme.Scheme, name: string): void {
+function setCurrentScheme(scheme: TreeScheme.IScheme, name: string): void {
     currentScheme = scheme;
     currentSchemeName = name;
     TreeSchemeDisplay.setScheme(currentScheme);
@@ -128,7 +128,7 @@ function setCurrentScheme(scheme: TreeScheme.Scheme, name: string): void {
     setCurrentTree(undefined, undefined);
 }
 
-function setCurrentTree(tree: Tree.Node | undefined, name?: string): void {
+function setCurrentTree(tree: Tree.INode | undefined, name?: string): void {
     currentTree = tree;
     currentTreeName = name;
     DomUtils.setText("tree-title", name === undefined ? "" : name);

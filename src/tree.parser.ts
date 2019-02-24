@@ -11,7 +11,7 @@ import * as Tree from "./tree";
  * @param source Source to get the json from (Can be a file or a url).
  * @returns Tree or parse failure.
  */
-export async function load(source: File | string): Promise<ParseResult<Tree.Node>> {
+export async function load(source: File | string): Promise<ParseResult<Tree.INode>> {
     const loadTextResult = await (typeof source === "string" ?
         ParserUtils.loadTextFromUrl(source) :
         ParserUtils.loadTextFromFile(source));
@@ -27,7 +27,7 @@ export async function load(source: File | string): Promise<ParseResult<Tree.Node
  * @param jsonString Json to pare.
  * @returns Tree or parse failure.
  */
-export function parseJson(jsonString: string): ParseResult<Tree.Node> {
+export function parseJson(jsonString: string): ParseResult<Tree.INode> {
     let jsonObj: any;
     try {
         jsonObj = JSON.parse(jsonString);
@@ -44,7 +44,7 @@ export function parseJson(jsonString: string): ParseResult<Tree.Node> {
 
 const anonymousNodeType: Tree.NodeType = "Anonymous";
 
-function parseNode(obj: any): Tree.Node {
+function parseNode(obj: any): Tree.INode {
     if (obj === undefined || obj === null || typeof obj !== "object") {
         throw new Error("Invalid input obj");
     }
@@ -88,7 +88,7 @@ function parseField(name: string, value: any): Tree.Field | undefined {
                     case "number": return { kind: "numberArray", name, value: array };
                     case "boolean": return { kind: "booleanArray", name, value: array };
                     case "object": {
-                        const nodeArray: Tree.Node[] = array.map(n => parseNode(n));
+                        const nodeArray: Tree.INode[] = array.map(n => parseNode(n));
                         return { kind: "nodeArray", name, value: nodeArray };
                     }
                     default: throw new Error(`Unexpected array element type: ${arrayType}`);
