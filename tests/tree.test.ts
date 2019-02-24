@@ -68,6 +68,14 @@ test("fieldTypes", () => {
     expect(fieldValues).toEqual(["nodeArray", "node"]);
 });
 
+test("noneNodesCannotHaveFields", () => {
+    expect(() => {
+        Tree.createNode(Tree.noneNodeType, b => {
+            b.pushStringField("field", "test");
+        });
+    }).toThrowError();
+});
+
 function createTestTree(): Tree.INode {
     return Tree.createNode("node1", b => {
         b.pushNodeArrayField("field1", [

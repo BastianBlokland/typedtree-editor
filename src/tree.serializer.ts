@@ -16,8 +16,14 @@ export function composeJson(node: Tree.INode): string {
 }
 
 function createObject(node: Tree.INode): object {
+    if (node.type === Tree.noneNodeType) {
+        throw new Error(`Nodes of type ${node.type} cannot be serialized`);
+    }
+
     const obj: any = {};
-    obj.$type = node.type;
+    if (node.type !== Tree.anonymousNodeType) {
+        obj.$type = node.type;
+    }
     node.fields.forEach(field => {
         switch (field.kind) {
             case "string":
@@ -33,11 +39,15 @@ function createObject(node: Tree.INode): object {
                 }
                 break;
             case "node":
-                obj[field.name] = createObject(field.value);
+                if (field.value.type !== Tree.noneNodeType) {
+                    obj[field.name] = createObject(field.value);
+                }
                 break;
             case "nodeArray":
                 if (field.value.length > 0) {
-                    obj[field.name] = field.value.map(child => createObject(child));
+                    obj[field.name] = field.value.
+                        filter(child => child.type !== Tree.noneNodeType).
+                        map(child => createObject(child));
                 }
                 break;
             default:

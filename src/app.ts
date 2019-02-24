@@ -10,6 +10,7 @@ import * as TreeParser from "./tree.parser";
 import * as TreeSerializer from "./tree.serializer";
 import * as TreeScheme from "./treescheme";
 import * as TreeSchemeDisplay from "./treescheme.display";
+import * as TreeSchemeInstantiator from "./treescheme.instantiator";
 import * as TreeSchemeParser from "./treescheme.parser";
 import * as TreeSchemeSerializer from "./treescheme.serializer";
 import * as TreeSchemeValidator from "./treescheme.validator";
@@ -22,13 +23,14 @@ export async function run(): Promise<void> {
     DomUtils.subscribeToClick("toolbox-toggle", toggleToolbox);
     DomUtils.subscribeToClick("focus-button", () => {
         if (currentTree !== undefined) {
-            TreeDisplay.focusTree();
+            TreeDisplay.focusTree(2);
         }
     });
 
     DomUtils.subscribeToFileInput("openscheme-file", enqueueLoadScheme);
     DomUtils.subscribeToClick("savescheme-button", enqueueSaveScheme);
 
+    DomUtils.subscribeToClick("newtree-button", enqueueNewTree);
     DomUtils.subscribeToFileInput("opentree-file", enqueueLoadTree);
     DomUtils.subscribeToClick("savetree-button", enqueueSaveTree);
 
@@ -63,6 +65,21 @@ function enqueueLoadScheme(source: string | File): void {
     });
 }
 
+function enqueueNewTree(): void {
+    sequencer!.enqueue(async () => {
+        if (currentScheme === undefined) {
+            alert("Failed to create a new tree. Error: No scheme loaded");
+            return;
+        }
+        const defaultRoot = TreeScheme.getDefaultDefinition(currentScheme, currentScheme.rootAlias);
+        const newRoot = TreeSchemeInstantiator.instantiateDefaultNode(defaultRoot);
+
+        console.log(`Successfully created new tree. Scheme: ${currentSchemeName}`);
+        setCurrentTree(newRoot, "New tree");
+        TreeDisplay.focusTree(1);
+    });
+}
+
 function enqueueLoadTree(source: string | File): void {
     const name = typeof source === "string" ? source : source.name;
     sequencer!.enqueue(async () => {
@@ -84,10 +101,11 @@ function enqueueLoadTree(source: string | File): void {
                 alert(`Failed to validate tree. Error: ${validateResult.errorMessage}`);
                 return;
             }
+            const completeTree = TreeSchemeInstantiator.duplicateWithMissingFields(currentScheme, result.value);
 
             console.log(`Successfully loaded tree: ${name}`);
-            setCurrentTree(result.value, name);
-            TreeDisplay.focusTree();
+            setCurrentTree(completeTree, name);
+            TreeDisplay.focusTree(1);
         }
     });
 }
@@ -156,7 +174,7 @@ function onDomKeyPress(event: KeyboardEvent): void {
         case "t": toggleToolbox(); break;
         case "f":
             if (currentTree !== undefined) {
-                TreeDisplay.focusTree();
+                TreeDisplay.focusTree(2);
             }
             break;
         case "1":

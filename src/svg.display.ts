@@ -169,13 +169,17 @@ export function setContentOffset(offset: Vec.Position): void {
 }
 
 /** Focus on the current content (Will be centered and scaled to fit). */
-export function focusContent(): void {
+export function focusContent(maxScale?: number): void {
     assertInitialized();
     const displaySize = Vec.subtract(getDisplaySize(), displayMargin);
     const contentSize = getContentSize();
 
     // Calculate new scale
-    setScale(Math.min(displaySize.x / contentSize.x, displaySize.y / contentSize.y));
+    let targetScale = Math.min(displaySize.x / contentSize.x, displaySize.y / contentSize.y);
+    if (maxScale !== undefined) {
+        targetScale = Math.min(targetScale, maxScale);
+    }
+    setScale(targetScale);
 
     // Calculate offset to center the content
     const scaledContentSize = Vec.multiply(contentSize, scale);

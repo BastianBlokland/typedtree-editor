@@ -4,6 +4,18 @@
 
 import * as Utils from "./utils";
 
+/**
+ * Reserved node-type for anonymous nodes
+ * Anonymous type is inserted when no type info is known for a node.
+ */
+export const anonymousNodeType: string = "<anonymous>";
+
+/**
+ * Reserved node-type for none nodes
+ * None-nodes are used as defaults and are not exported, also none-nodes cannot have fields.
+ */
+export const noneNodeType: string = "<none>";
+
 /** Identifier for the node-type */
 export type NodeType = string;
 
@@ -142,6 +154,15 @@ export function createNode(type: NodeType, callback?: (builder: INodeBuilder) =>
     const builder = new NodeBuilderImpl(type);
     callback(builder);
     return builder.build();
+}
+
+/**
+ * Construct a none-node. None-nodes can be used as default values and cannot have any fields or
+ * be exported.
+ * @returns Newly constructed (immutable) none-node.
+ */
+export function createNoneNode(): INode {
+    return new NodeImpl(noneNodeType, []);
 }
 
 /**
@@ -287,6 +308,9 @@ class NodeImpl implements INode {
     constructor(type: NodeType, fields: ReadonlyArray<Field>) {
         if (type === "") {
             throw new Error("Node must has a type");
+        }
+        if (type === noneNodeType && fields.length > 0) {
+            throw new Error(`Node of type ${type} cannot have any fields`);
         }
         if (Utils.hasDuplicates(fields.map(getFieldName))) {
             throw new Error("Field names must be unique");

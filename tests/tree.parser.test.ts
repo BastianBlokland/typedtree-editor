@@ -45,8 +45,24 @@ test("fieldTypeDefaultsToAnonymous", () => {
     const parseResult = Tree̦Parser.parseJson(json);
     expect(parseResult.kind).toBe("success");
     if (parseResult.kind === "success") {
-        expect(parseResult.value.type).toBe("Anonymous");
+        expect(parseResult.value.type).toBe(Tree.anonymousNodeType);
     }
+});
+
+test("fieldTypeCannotStartWithLessThen", () => {
+    const json = `{
+        "$type": "<test"
+    }`;
+    const parseResult = Tree̦Parser.parseJson(json);
+    expect(parseResult.kind).toBe("error");
+});
+
+test("fieldTypeCannotEndWithGreaterThen", () => {
+    const json = `{
+        "$type": "test>"
+    }`;
+    const parseResult = Tree̦Parser.parseJson(json);
+    expect(parseResult.kind).toBe("error");
 });
 
 test("numberIsParsedSuccessfully", () => {
