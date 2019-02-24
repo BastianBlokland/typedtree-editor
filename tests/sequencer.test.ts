@@ -13,18 +13,18 @@ test("stopEndsTheUntilEndPromise", () => {
     sequencer.stop();
     return sequencer.untilEnd.then(() => {
         expect(sequencer.running).toBe(false);
-    })
+    });
 });
 
 test("allItemsGetExecuted", () => {
     const sequencer = Sequencer.createRunner();
     let counter = 0;
 
-    sequencer.enqueue(async () => { counter++ });
-    sequencer.enqueue(async () => { counter++ });
-    sequencer.enqueue(async () => { counter++ });
-    sequencer.enqueue(async () => { counter++ });
-    sequencer.enqueue(async () => { counter++ });
+    sequencer.enqueue(async () => { counter++; });
+    sequencer.enqueue(async () => { counter++; });
+    sequencer.enqueue(async () => { counter++; });
+    sequencer.enqueue(async () => { counter++; });
+    sequencer.enqueue(async () => { counter++; });
 
     return sleep(5).then(() => expect(counter).toBe(5));
 });

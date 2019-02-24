@@ -7,16 +7,18 @@ import * as TreeScheme from "./treescheme";
 
 /** Initialize the display, needs to be done once. */
 export function initialize(): void {
-    if (schemeDisplayElement != null)
+    if (schemeDisplayElement != null) {
         throw new Error("Already initialized");
+    }
 
     const displayElem = document.getElementById(schemeDisplayElementId);
-    if (displayElem === null)
+    if (displayElem === null) {
         throw new Error(`No dom element found with id: ${schemeDisplayElementId}`);
+    }
     schemeDisplayElement = displayElem;
 }
 
-export function setScheme(scheme: TreeScheme.Scheme): void {
+export function setScheme(scheme: TreeScheme.IScheme): void {
     assertInitialized();
     DomUtils.clearChildren(schemeDisplayElement!);
 
@@ -35,14 +37,14 @@ export function setScheme(scheme: TreeScheme.Scheme): void {
 const schemeDisplayElementId = "scheme-display";
 let schemeDisplayElement: HTMLElement | undefined;
 
-function createAliasElement(alias: TreeScheme.Alias): HTMLElement {
+function createAliasElement(alias: TreeScheme.IAlias): HTMLElement {
     return DomUtils.createWithChildren("details",
         DomUtils.createSummary(alias.identifier, "identifier"),
         DomUtils.createUList(...alias.values.map(f => DomUtils.createWithText("span", f, "identifier"))));
 }
 
-function createNodeElement(nodeDefinition: TreeScheme.NodeDefinition): HTMLElement {
-    if (nodeDefinition.fields.length == 0) {
+function createNodeElement(nodeDefinition: TreeScheme.INodeDefinition): HTMLElement {
+    if (nodeDefinition.fields.length === 0) {
         return DomUtils.createWithText("span", nodeDefinition.identifier, "identifier");
     }
     return DomUtils.createWithChildren("details",
@@ -56,6 +58,7 @@ function createNodeElement(nodeDefinition: TreeScheme.NodeDefinition): HTMLEleme
 }
 
 function assertInitialized(): void {
-    if (schemeDisplayElement === undefined)
+    if (schemeDisplayElement === undefined) {
         throw new Error("Display hasn't been initialized");
+    }
 }

@@ -1,11 +1,15 @@
 {
   // TypeScript
   "typescript.tsc.autoDetect": "off",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.tslint": true
+  },
   // Common plugins
   "cSpell.words": [
     "bbox",
     "callout",
     "classname",
+    "codecov",
     "crossorigin",
     "domutils",
     "fieldname",
@@ -40,7 +44,7 @@
     "tsout",
     "typedtree",
     "ulist"
-  ],
+],
   // Search settings
   "search.useIgnoreFiles": false,
   "search.exclude": {},

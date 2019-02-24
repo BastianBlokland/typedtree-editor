@@ -17,6 +17,7 @@ Web app to edit typed tree structures (For example a behaviour or decision tree)
 ## Technologies
 * [svg.js](https://github.com/svgdotjs/svg.js)
 * [TypeScript](https://github.com/Microsoft/TypeScript)
+* [TsLint](https://github.com/palantir/tslint)
 * [Rollup](https://github.com/rollup/rollup)
 * [Jest](https://github.com/facebook/jest)
 * [FileSaver](https://github.com/eligrey/FileSaver.js)

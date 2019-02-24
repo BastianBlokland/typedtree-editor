@@ -2,20 +2,20 @@
  * @file Responsible for displaying tree nodes.
  */
 
+import * as SvgDisplay from "./svg.display";
 import * as Tree from "./tree";
 import * as TreeModifications from "./tree.modifications";
 import * as TreeView from "./tree.view";
 import * as Utils from "./utils";
 import * as Vec from "./vector";
-import * as SvgDisplay from "./svg.display";
 
-export type treeChangedCallback = (newTree: Tree.Node) => void;
+export type treeChangedCallback = (newTree: Tree.INode) => void;
 
 /**
  * Draw the given tree.
  * @param root Root node for the tree to draw.
  */
-export function setTree(root: Tree.Node | undefined, changed: treeChangedCallback | undefined = undefined): void {
+export function setTree(root: Tree.INode | undefined, changed: treeChangedCallback | undefined): void {
     SvgDisplay.clear();
 
     if (root !== undefined) {
@@ -39,14 +39,14 @@ export function focusTree(): void {
 const nodeHeaderHeight = TreeView.nodeHeaderHeight;
 const halfNodeHeightHeight = Utils.half(nodeHeaderHeight);
 const nodeFieldHeight = TreeView.nodeFieldHeight;
-const nodeInputSlotOffset: Vec.Vector2 = { x: 0, y: 12.5 };
+const nodeInputSlotOffset: Vec.IVector2 = { x: 0, y: 12.5 };
 const nodeConnectionCurviness = .7;
 
-type nodeChangedCallback = (newNode: Tree.Node) => void;
+type nodeChangedCallback = (newNode: Tree.INode) => void;
 
 function createNode(
-    node: Tree.Node,
-    positionTree: TreeView.PositionTree,
+    node: Tree.INode,
+    positionTree: TreeView.IPositionTree,
     changed: nodeChangedCallback): void {
 
     const size = positionTree.getSize(node);
@@ -66,16 +66,17 @@ function createNode(
 type fieldChangedCallback<T extends Tree.Field> = (newField: T) => void;
 
 function createField(
-    node: Tree.Node,
+    node: Tree.INode,
     fieldName: string,
-    parent: SvgDisplay.Element,
-    positionTree: TreeView.PositionTree,
+    parent: SvgDisplay.IElement,
+    positionTree: TreeView.IPositionTree,
     yOffset: number,
     changed: fieldChangedCallback<Tree.Field>): number {
 
     const field = node.getField(fieldName);
-    if (field === undefined)
+    if (field === undefined) {
         return 0;
+    }
 
     const fieldSize = { x: positionTree.getSize(node).x, y: TreeView.getFieldHeight(field) };
     const centeredYOffset = yOffset + Utils.half(nodeFieldHeight);
@@ -103,7 +104,7 @@ function createField(
         changed: fieldChangedCallback<T>): void {
 
         createElementValue(field.value, 0, 0, newElement => {
-            changed(TreeModifications.fieldWithValue(field, <Tree.FieldValueType<T>>newElement));
+            changed(TreeModifications.fieldWithValue(field, newElement as Tree.FieldValueType<T>));
         });
     }
 
@@ -111,7 +112,7 @@ function createField(
         field: T,
         changed: fieldChangedCallback<T>): void {
 
-        const array = <ReadonlyArray<Tree.FieldElementType<T>>>field.value;
+        const array = field.value as ReadonlyArray<Tree.FieldElementType<T>>;
         for (let i = 0; i < field.value.length; i++) {
             const element = array[i];
             const yOffset = i * nodeFieldHeight;
@@ -123,17 +124,17 @@ function createField(
             // Element deletion button
             parent.addGraphics("fieldvalue-button", "arrayDelete", { x: nameWidth, y: yPos }, () => {
                 const newArray = Utils.withoutElement(array, i);
-                changed(TreeModifications.fieldWithValue(field, <Tree.FieldValueType<T>><unknown>newArray));
+                changed(TreeModifications.fieldWithValue(field, newArray as unknown as Tree.FieldValueType<T>));
             });
 
             // Reorder buttons
             parent.addGraphics("fieldvalue-button", "arrayOrderUp", { x: nameWidth + 12, y: yPos - 5 }, () => {
                 const newArray = Utils.withSwappedElements(array, i, (i === 0 ? array.length : i) - 1);
-                changed(TreeModifications.fieldWithValue(field, <Tree.FieldValueType<T>><unknown>newArray));
+                changed(TreeModifications.fieldWithValue(field, newArray as unknown as Tree.FieldValueType<T>));
             });
             parent.addGraphics("fieldvalue-button", "arrayOrderDown", { x: nameWidth + 12, y: yPos + 5 }, () => {
                 const newArray = Utils.withSwappedElements(array, i, (i + 1) % array.length);
-                changed(TreeModifications.fieldWithValue(field, <Tree.FieldValueType<T>><unknown>newArray));
+                changed(TreeModifications.fieldWithValue(field, newArray as unknown as Tree.FieldValueType<T>));
             });
 
             // Element value
@@ -154,10 +155,10 @@ function createField(
         const pos: Vec.Position = { x: nameWidth + xOffset, y: centeredYOffset + yOffset };
         const size: Vec.Size = { x: fieldSize.x - pos.x, y: nodeFieldHeight };
         switch (typeof element) {
-            case "string": createStringValue(element, pos, size, <elementChangedCallback<string>>changed); break;
-            case "number": createNumberValue(element, pos, size, <elementChangedCallback<number>>changed); break;
-            case "boolean": createBooleanValue(element, pos, size, <elementChangedCallback<boolean>>changed); break;
-            default: createNodeValue(<Tree.Node>element, pos, size); break;
+            case "string": createStringValue(element, pos, size, changed as elementChangedCallback<string>); break;
+            case "number": createNumberValue(element, pos, size, changed as elementChangedCallback<number>); break;
+            case "boolean": createBooleanValue(element, pos, size, changed as elementChangedCallback<boolean>); break;
+            default: createNodeValue(element as Tree.INode, pos, size); break;
         }
     }
 
@@ -189,7 +190,7 @@ function createField(
     }
 
     function createNodeValue(
-        value: Tree.Node,
+        value: Tree.INode,
         pos: Vec.Position,
         size: Vec.Size): void {
 
@@ -197,7 +198,7 @@ function createField(
     }
 }
 
-function addConnection(parent: SvgDisplay.Element, from: Vec.Position, to: Vec.Position): void {
+function addConnection(parent: SvgDisplay.IElement, from: Vec.Position, to: Vec.Position): void {
     parent.addGraphics("nodeOutput", "nodeConnector", from);
 
     const target = Vec.add(to, nodeInputSlotOffset);
@@ -206,6 +207,6 @@ function addConnection(parent: SvgDisplay.Element, from: Vec.Position, to: Vec.P
     parent.addBezier("connection", from, c1, c2, target);
 }
 
-function getRelativeVector(from: Tree.Node, to: Tree.Node, positionTree: TreeView.PositionTree): Vec.Vector2 {
+function getRelativeVector(from: Tree.INode, to: Tree.INode, positionTree: TreeView.IPositionTree): Vec.IVector2 {
     return Vec.subtract(positionTree.getPosition(to), positionTree.getPosition(from));
 }

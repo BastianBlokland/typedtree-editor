@@ -2,84 +2,97 @@
  * @file Responsible for creating svg display elements and updating them.
  */
 
-import * as Utils from "./utils";
-import * as DomUtils from "./domutils";
-import * as Vec from "./vector";
 import * as SvgJs from "svg.js";
+import * as DomUtils from "./domutils";
 import { ClassName } from "./domutils";
+import * as Utils from "./utils";
+import * as Vec from "./vector";
 
 declare const SVG: typeof SvgJs;
 
 /** Display element that content can be added to. */
-export interface Element {
+export interface IElement {
     /** Html class identifier for this element */
-    readonly className: string
-    /** Position of this element.
-     * Note: This does NOT need to match screen pixels as the canvas can be zoomed. */
-    readonly position: Vec.Position
+    readonly className: string;
+    /**
+     * Position of this element.
+     * Note: This does NOT need to match screen pixels as the canvas can be zoomed.
+     */
+    readonly position: Vec.Position;
 
     /** Add a child element */
-    addElement(className: ClassName, position: Vec.Position): Element
+    addElement(className: ClassName, position: Vec.Position): IElement;
 
     /** Add a rectangle graphic to this element. */
-    addRect(className: ClassName, size: Vec.Size, position: Vec.Position): void
+    addRect(className: ClassName, size: Vec.Size, position: Vec.Position): void;
 
-    /** Add a text graphic to this element.
-     * Note: Position is vertically centered. */
-    addText(className: ClassName, text: string, position: Vec.Position): void
+    /**
+     * Add a text graphic to this element.
+     * Note: Position is vertically centered.
+     */
+    addText(className: ClassName, text: string, position: Vec.Position): void;
 
-    /** Add a editable text graphic to this element.
-     * Note: Position is vertically centered. */
+    /**
+     * Add a editable text graphic to this element.
+     * Note: Position is vertically centered.
+     */
     addEditableText(
         className: ClassName,
         value: string,
         position: Vec.Position,
         size: Vec.Size,
-        callback: (newValue: string) => void): void
+        callback: (newValue: string) => void): void;
 
-    /** Add a editable number graphic to this element.
-     * Note: Position is vertically centered. */
+    /**
+     * Add a editable number graphic to this element.
+     * Note: Position is vertically centered.
+     */
     addEditableNumber(
         className: ClassName,
         value: number,
         position: Vec.Position,
         size: Vec.Size,
-        callback: (newValue: number) => void): void
+        callback: (newValue: number) => void): void;
 
-    /** Add a editable boolean graphic to this element.
-     * Note: Position is vertically centered. */
+    /**
+     * Add a editable boolean graphic to this element.
+     * Note: Position is vertically centered.
+     */
     addEditableBoolean(
         className: ClassName,
         value: boolean,
         position: Vec.Position,
         size: Vec.Size,
-        callback: (newValue: boolean) => void): void
+        callback: (newValue: boolean) => void): void;
 
     /** Add a line graphic to this element. */
-    addLine(className: ClassName, from: Vec.Position, to: Vec.Position): void
+    addLine(className: ClassName, from: Vec.Position, to: Vec.Position): void;
 
     /** Add a bezier graphic to this element. */
-    addBezier(className: ClassName, from: Vec.Position, c1: Vec.Position, c2: Vec.Position, to: Vec.Position): void
+    addBezier(className: ClassName, from: Vec.Position, c1: Vec.Position, c2: Vec.Position, to: Vec.Position): void;
 
     /** Add a external graphic to this element. */
     addGraphics(
         className: ClassName,
         graphicsId: string,
         position: Vec.Position,
-        clickCallback?: (() => void)): void
+        clickCallback?: (() => void)): void;
 }
 
 /** Initialize the display, needs to be done once. */
 export function initialize(): void {
-    if (svgDocument != null || svgRoot != null)
+    if (svgDocument != null || svgRoot != null) {
         throw new Error("Already initialized");
+    }
 
     const rootSvgDom = document.getElementById(rootSvgDomElementId);
-    if (rootSvgDom === null)
+    if (rootSvgDom === null) {
         throw new Error(`No dom element found with id: ${rootSvgDomElementId}`);
+    }
 
-    if (!SVG.supported)
+    if (!SVG.supported) {
         throw new Error("Svg not supported");
+    }
 
     // Create document
     svgDocument = SVG(rootSvgDomElementId);
@@ -89,16 +102,18 @@ export function initialize(): void {
     const inputBlocker = document.getElementById(inputBlockerDomElementId);
     rootSvgDom.ondragstart = _ => false; // Disable native dragging as it interferes with ours.
     rootSvgDom.onmousedown = event => {
-        if (document.activeElement !== null && document.activeElement.tagName === "INPUT")
+        if (document.activeElement !== null && document.activeElement.tagName === "INPUT") {
             return;
+        }
         dragOffset = Vec.subtract(viewOffset, { x: event.clientX, y: event.clientY });
         dragging = true;
 
     };
     window.onmouseup = () => {
         dragging = false;
-        if (inputBlocker !== null)
+        if (inputBlocker !== null) {
             inputBlocker.className = "order-back";
+        }
     };
     window.onmousemove = event => {
         if (document.activeElement !== null && document.activeElement.tagName === "INPUT") {
@@ -106,18 +121,20 @@ export function initialize(): void {
             return;
         }
         if (dragging) {
-            if (inputBlocker !== null)
+            if (inputBlocker !== null) {
                 inputBlocker.className = "order-front";
+            }
             setOffset(Vec.add(dragOffset, { x: event.clientX, y: event.clientY }));
         }
     };
     rootSvgDom.onwheel = event => {
-        if (document.activeElement !== null && document.activeElement.tagName === "INPUT")
+        if (document.activeElement !== null && document.activeElement.tagName === "INPUT") {
             return;
+        }
 
         // Get data from the event
-        const scrollDelta = -(<WheelEvent>event).deltaY * scrollScaleSpeed;
-        const pointerPos: Vec.Position = { x: (<WheelEvent>event).pageX, y: (<WheelEvent>event).pageY };
+        const scrollDelta = -(event as WheelEvent).deltaY * scrollScaleSpeed;
+        const pointerPos: Vec.Position = { x: (event as WheelEvent).pageX, y: (event as WheelEvent).pageY };
 
         // Calculate new-scale and offset to zoom-in to where the user was pointing
         const newScale = clampScale(scale + scrollDelta);
@@ -138,7 +155,7 @@ export function initialize(): void {
  * @param  position Position to place the element at.
  * @returns Element
  */
-export function createElement(className: ClassName, position: Vec.Position): Element {
+export function createElement(className: ClassName, position: Vec.Position): IElement {
     assertInitialized();
     return new GroupElement(svgRoot!, className, position);
 }
@@ -181,7 +198,7 @@ const graphicsFilePath = "graphics.svg";
 const minScale = 0.05;
 const maxScale = 3;
 const scrollScaleSpeed = 0.001;
-const displayMargin: Vec.Vector2 = { x: 75, y: 75 };
+const displayMargin: Vec.IVector2 = { x: 75, y: 75 };
 const halfDisplayMargin = Vec.half(displayMargin);
 
 let svgDocument: SvgJs.Doc | undefined;
@@ -192,7 +209,7 @@ let scale = 1;
 let dragging = false;
 let dragOffset = Vec.zeroVector;
 
-class GroupElement implements Element {
+class GroupElement implements IElement {
     private readonly _svgGroup: SvgJs.G;
     private readonly _className: ClassName;
     private readonly _position: Vec.Position;
@@ -211,18 +228,18 @@ class GroupElement implements Element {
         return this._position;
     }
 
-    addElement(className: ClassName, position: Vec.Position): Element {
+    public addElement(className: ClassName, position: Vec.Position): IElement {
         return new GroupElement(this._svgGroup, className, position);
     }
 
-    addRect(className: ClassName, size: Vec.Size, position: Vec.Position): void {
+    public addRect(className: ClassName, size: Vec.Size, position: Vec.Position): void {
         this._svgGroup.rect(size.x, size.y).
             x(position.x).
             y(position.y).
             addClass(className);
     }
 
-    addText(className: ClassName, text: string, position: Vec.Position): void {
+    public addText(className: ClassName, text: string, position: Vec.Position): void {
         this._svgGroup.group().
             x(position.x).
             y(position.y).
@@ -236,7 +253,7 @@ class GroupElement implements Element {
             addClass("noselect");
     }
 
-    addEditableText(
+    public addEditableText(
         className: ClassName,
         value: string,
         position: Vec.Position,
@@ -257,7 +274,7 @@ class GroupElement implements Element {
             node.appendChild(inputElement);
     }
 
-    addEditableNumber(
+    public addEditableNumber(
         className: ClassName,
         value: number,
         position: Vec.Position,
@@ -278,7 +295,7 @@ class GroupElement implements Element {
             node.appendChild(inputElement);
     }
 
-    addEditableBoolean(
+    public addEditableBoolean(
         className: ClassName,
         value: boolean,
         position: Vec.Position,
@@ -299,17 +316,23 @@ class GroupElement implements Element {
             node.appendChild(inputElement);
     }
 
-    addLine(className: ClassName, from: Vec.Position, to: Vec.Position): void {
+    public addLine(className: ClassName, from: Vec.Position, to: Vec.Position): void {
         this._svgGroup.line(from.x, from.y, to.x, to.y).
             addClass(className);
     }
 
-    addBezier(className: ClassName, from: Vec.Position, c1: Vec.Position, c2: Vec.Position, to: Vec.Position): void {
+    public addBezier(
+        className: ClassName,
+        from: Vec.Position,
+        c1: Vec.Position,
+        c2: Vec.Position,
+        to: Vec.Position): void {
+
         this._svgGroup.path(`M${from.x},${from.y} C${c1.x},${c1.y} ${c2.x},${c2.y} ${to.x},${to.y}`).
             addClass(className);
     }
 
-    addGraphics(
+    public addGraphics(
         className: ClassName,
         graphicsId: string,
         position: Vec.Position,
@@ -319,20 +342,21 @@ class GroupElement implements Element {
             addClass(className).
             x(position.x).
             y(position.y);
-        if (clickCallback !== undefined)
+        if (clickCallback !== undefined) {
             elem.click(clickCallback);
+        }
     }
 }
 
 /** Get the size of the current window */
-function getDisplaySize(): Vec.Vector2 {
+function getDisplaySize(): Vec.IVector2 {
     assertInitialized();
     const bounds = svgDocument!.rbox();
     return { x: bounds.width, y: bounds.height };
 }
 
 /** Get the total size of the current content */
-function getContentSize(): Vec.Vector2 {
+function getContentSize(): Vec.IVector2 {
     assertInitialized();
     const contentSize = svgRoot!.bbox();
     return { x: contentSize.width, y: contentSize.height };
@@ -352,7 +376,7 @@ function setScale(newScale: number): void {
  * Set the new global offset (Can be used to pan the content).
  * @param newOffset New global offset.
  */
-function setOffset(newOffset: Vec.Vector2): void {
+function setOffset(newOffset: Vec.IVector2): void {
     assertInitialized();
     viewOffset = newOffset;
     updateRootTransform();
@@ -367,6 +391,7 @@ function clampScale(newScale: number): number {
 }
 
 function assertInitialized(): void {
-    if (svgDocument === undefined || svgRoot === undefined)
+    if (svgDocument === undefined || svgRoot === undefined) {
         throw new Error("Display hasn't been initialized");
+    }
 }

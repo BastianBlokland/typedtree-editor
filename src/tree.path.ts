@@ -6,9 +6,9 @@
 import * as Tree from "./tree";
 
 /** Represents an output in the tree (node + field combination). */
-export interface Parent {
-    readonly node: Tree.Node
-    readonly output: Tree.FieldElementIdentifier
+export interface IParent {
+    readonly node: Tree.INode;
+    readonly output: Tree.IFieldElementIdentifier;
 }
 
 /**
@@ -19,22 +19,24 @@ export interface Parent {
  * @param target Target to walk to.
  * @returns Path from the target to the root.
  */
-export function findPathToRoot(root: Tree.Node, target: Tree.Node): Parent[] {
-    let resultPath: Parent[] = [];
-    if (findLeaf(root, target, resultPath))
+export function findPathToRoot(root: Tree.INode, target: Tree.INode): IParent[] {
+    const resultPath: IParent[] = [];
+    if (findLeaf(root, target, resultPath)) {
         return resultPath;
+    }
     throw new Error("'target' is not a (grand)child of 'root'");
 
-    function findLeaf(node: Tree.Node, target: Tree.Node, path: Parent[]): boolean {
-        if (node === target)
+    function findLeaf(node: Tree.INode, target: Tree.INode, path: IParent[]): boolean {
+        if (node === target) {
             return true;
+        }
 
         let found = false;
         Tree.forEachDirectChild(node, (child, output) => {
 
             // If this child leads to the target then add this output to the path and return.
             if (findLeaf(child, target, path)) {
-                path.push({ node: node, output: output });
+                path.push({ node, output });
                 found = true;
                 return false; // Short-circuit the foreach.
             }
@@ -54,9 +56,10 @@ export function findPathToRoot(root: Tree.Node, target: Tree.Node): Parent[] {
  * @param node Node to find the parent for.
  * @returns Parent if one is found or undefined if no parent is found.
  */
-export function getParent(root: Tree.Node, node: Tree.Node): Parent | undefined {
+export function getParent(root: Tree.INode, node: Tree.INode): IParent | undefined {
     const pathToRoot = findPathToRoot(root, node);
-    if (pathToRoot.length === 0)
+    if (pathToRoot.length === 0) {
         return undefined;
+    }
     return pathToRoot[0];
 }

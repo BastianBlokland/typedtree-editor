@@ -10,7 +10,7 @@ test("cannotPushDuplicateAlias", () => {
         expect(b.pushAlias("testAlias", ["Node2"])).toBeFalsy();
         b.pushNodeDefinition("Node1");
         b.pushNodeDefinition("Node2");
-    })
+    });
 
     expect(scheme.aliases.length).toBe(1);
     expect(scheme.getAlias("testAlias")).toEqual(["Node1"]);
@@ -21,7 +21,7 @@ test("cannotPushDuplicateNodes", () => {
         b.pushAlias("testAlias", ["Node1"]);
         b.pushNodeDefinition("Node1");
         expect(b.pushNodeDefinition("Node1")).toBeFalsy();
-    })
+    });
 
     expect(scheme.nodes.length).toBe(1);
 });
@@ -33,7 +33,7 @@ test("cannotPushNodeWithDuplicateFields", () => {
             b.pushField("field1", "string");
             expect(b.pushField("field1", "boolean")).toBeFalsy();
         });
-    })
+    });
 
     expect(scheme.getNode("Node1")!.fields.length).toBe(1);
     expect(scheme.getNode("Node1")!.getField("field1")!.valueType).toBe("string");
@@ -64,7 +64,7 @@ test("aliasesCanBeFound", () => {
 });
 
 test("aliasesContainsWorksAsExpected", () => {
-    let alias: TreeScheme.Alias | undefined = undefined;
+    let alias: TreeScheme.IAlias | undefined;
     TreeScheme.createScheme("Alias1", b => {
         alias = b.pushAlias("Alias1", ["Node1", "Node2"]);
         b.pushNodeDefinition("Node1");
@@ -76,7 +76,7 @@ test("aliasesContainsWorksAsExpected", () => {
 });
 
 test("fieldCanReferenceAnAlias", () => {
-    let alias: TreeScheme.Alias | undefined = undefined;
+    let alias: TreeScheme.IAlias | undefined;
     const scheme = TreeScheme.createScheme("Alias1", b => {
         alias = b.pushAlias("Alias1", ["Node1", "Node2"]);
         b.pushNodeDefinition("Node1");
@@ -100,12 +100,12 @@ test("fieldsCanBeFound", () => {
     expect(scheme.getNode("Node1")!.getField("field1")).toEqual({
         name: "field1",
         valueType: "boolean",
-        isArray: false
+        isArray: false,
     });
     expect(scheme.getNode("Node1")!.getField("field2")).toEqual({
         name: "field2",
         valueType: "string",
-        isArray: true
+        isArray: true,
     });
 });
 

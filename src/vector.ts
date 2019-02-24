@@ -5,41 +5,41 @@
 import * as Utils from "./utils";
 
 /** Vector2 that represents a position. */
-export type Position = Vector2;
+export type Position = IVector2;
 
 /** Vector2 that represents a size. */
-export type Size = Vector2;
+export type Size = IVector2;
 
 /** Vector containing two elements (x & y). */
-export interface Vector2 {
-    readonly x: number
-    readonly y: number
+export interface IVector2 {
+    readonly x: number;
+    readonly y: number;
 }
 
 /** Vector containing (0, 0). */
-export const zeroVector: Vector2 = { x: 0, y: 0 }
+export const zeroVector: IVector2 = { x: 0, y: 0 };
 
 /** Vector containing (1, 1). */
-export const oneVector: Vector2 = { x: 1, y: 1 }
+export const oneVector: IVector2 = { x: 1, y: 1 };
 
 /** Vector containing (0, 1). */
-export const upVector: Vector2 = { x: 0, y: 1 }
+export const upVector: IVector2 = { x: 0, y: 1 };
 
 /** Vector containing (0, -1). */
-export const downVector: Vector2 = { x: 0, y: -1 }
+export const downVector: IVector2 = { x: 0, y: -1 };
 
 /** Vector containing (-1, 0). */
-export const leftVector: Vector2 = { x: -1, y: 0 }
+export const leftVector: IVector2 = { x: -1, y: 0 };
 
 /** Vector containing (1, 0). */
-export const rightVector: Vector2 = { x: 1, y: 0 }
+export const rightVector: IVector2 = { x: 1, y: 0 };
 
 /**
  * Half the given vector (Halves all components).
  * @param vector Vector to half.
  * @returns Half of the given vector.
  */
-export function half(vector: Vector2): Vector2 {
+export function half(vector: IVector2): IVector2 {
     return multiply(vector, .5);
 }
 
@@ -49,9 +49,10 @@ export function half(vector: Vector2): Vector2 {
  * @param amount Amount to multiply by.
  * @returns Multiplied vector.
  */
-export function multiply(vector: Vector2, amount: number | Vector2): Vector2 {
-    if (typeof amount === "number")
+export function multiply(vector: IVector2, amount: number | IVector2): IVector2 {
+    if (typeof amount === "number") {
         return createVector(vector.x * amount, vector.y * amount);
+    }
 
     return createVector(vector.x * amount.x, vector.y * amount.y);
 }
@@ -62,9 +63,10 @@ export function multiply(vector: Vector2, amount: number | Vector2): Vector2 {
  * @param amount Amount to divide by.
  * @returns Divided vector.
  */
-export function divide(vector: Vector2, amount: number | Vector2): Vector2 {
-    if (typeof amount === "number")
+export function divide(vector: IVector2, amount: number | IVector2): IVector2 {
+    if (typeof amount === "number") {
         return createVector(vector.x / amount, vector.y / amount);
+    }
 
     return createVector(vector.x / amount.x, vector.y / amount.y);
 }
@@ -75,9 +77,10 @@ export function divide(vector: Vector2, amount: number | Vector2): Vector2 {
  * @param amount Amount to add.
  * @returns Added vector.
  */
-export function add(vector: Vector2, amount: number | Vector2): Vector2 {
-    if (typeof amount === "number")
+export function add(vector: IVector2, amount: number | IVector2): IVector2 {
+    if (typeof amount === "number") {
         return createVector(vector.x + amount, vector.y + amount);
+    }
 
     return createVector(vector.x + amount.x, vector.y + amount.y);
 }
@@ -88,9 +91,10 @@ export function add(vector: Vector2, amount: number | Vector2): Vector2 {
  * @param amount Amount to subtract.
  * @returns Subtracted vector.
  */
-export function subtract(vector: Vector2, amount: number | Vector2): Vector2 {
-    if (typeof amount === "number")
+export function subtract(vector: IVector2, amount: number | IVector2): IVector2 {
+    if (typeof amount === "number") {
         return createVector(vector.x - amount, vector.y - amount);
+    }
 
     return createVector(vector.x - amount.x, vector.y - amount.y);
 }
@@ -100,7 +104,7 @@ export function subtract(vector: Vector2, amount: number | Vector2): Vector2 {
  * @param vector Vector to invert.
  * @returns Inverted vector.
  */
-export function invert(vector: Vector2): Vector2 {
+export function invert(vector: IVector2): IVector2 {
     return createVector(-vector.x, -vector.y);
 }
 
@@ -111,7 +115,7 @@ export function invert(vector: Vector2): Vector2 {
  * @param t Progress between a and b (0 = a, 1 = b).
  * @returns Interpolated vector.
  */
-export function lerp(vectorA: Vector2, vectorB: Vector2, frac: number): Vector2 {
+export function lerp(vectorA: IVector2, vectorB: IVector2, frac: number): IVector2 {
     return createVector(Utils.lerp(vectorA.x, vectorB.x, frac), Utils.lerp(vectorA.y, vectorB.y, frac));
 }
 
@@ -121,6 +125,6 @@ export function lerp(vectorA: Vector2, vectorB: Vector2, frac: number): Vector2 
  * @param y Y component.
  * @returns Vector from the given components.
  */
-export function createVector(x: number, y: number): Vector2 {
-    return { x: x, y: y };
+export function createVector(x: number, y: number): IVector2 {
+    return { x, y };
 }

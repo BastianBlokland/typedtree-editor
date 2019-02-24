@@ -1,3 +1,25 @@
 {
-  "extends": "tslint:recommended"
+  "defaultSeverity": "error",
+  "extends": [
+    "tslint:recommended"
+  ],
+  "jsRules": {},
+  "rules": {
+    "arrow-parens": [
+      true,
+      "ban-single-arg-parens"
+    ],
+    "no-console": false,
+    "variable-name": [
+      true,
+      "ban-keywords",
+      "check-format",
+      "allow-leading-underscore"
+    ],
+    "no-shadowed-variable": false,
+    "prefer-for-of": false,
+    "max-classes-per-file": false,
+    "object-literal-sort-keys": false
+  },
+  "rulesDirectory": []
 }

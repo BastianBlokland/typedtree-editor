@@ -13,6 +13,9 @@ steps:
 - script: ./ci/verify-tooling.sh
   displayName: 'Verify tooling'
 
+- script: ./ci/lint.sh
+  displayName: 'Lint'
+
 - script: ./ci/test.sh
   displayName: 'Test'
 

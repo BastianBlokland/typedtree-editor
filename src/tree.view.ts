@@ -25,36 +25,36 @@ export const nodeVerticalSpacing = 25;
 export const nodeFieldHeight = 25;
 
 /** Immutable object that can be used to find where nodes should be positioned. */
-export interface PositionTree {
+export interface IPositionTree {
     /** Root node for this tree. */
-    readonly root: Tree.Node
+    readonly root: Tree.INode;
     /** All the nodes in the tree. */
-    readonly nodes: ReadonlyArray<Tree.Node>
+    readonly nodes: ReadonlyArray<Tree.INode>;
     /** Total area taken up by this tree. */
-    readonly totalArea: Vec.Size
+    readonly totalArea: Vec.Size;
     /** Offset of the root node, can be used to center something on the tree for example */
-    readonly rootOffset: Vec.Size
+    readonly rootOffset: Vec.Size;
 
     /**
      * Get the size of the given node.
      * @param node Node to get the size for.
      * @returns Vector representing the size of given node.
      */
-    getSize(node: Tree.Node): Vec.Size
+    getSize(node: Tree.INode): Vec.Size;
 
     /**
      * Get the area taken up by the given node and its children.
      * @param node Node to get the area for.
      * @returns Vector representing the area taken up by the node and its children.
      */
-    getArea(node: Tree.Node): Vec.Size
+    getArea(node: Tree.INode): Vec.Size;
 
     /**
      * Get the position of the given node.
      * @param node To get the position for.
      * @returns Vector representing the position of the given node.
      */
-    getPosition(node: Tree.Node): Vec.Position
+    getPosition(node: Tree.INode): Vec.Position;
 }
 
 /**
@@ -62,7 +62,7 @@ export interface PositionTree {
  * @param root Root node for the tree to make a position-tree for.
  * @returns Position-tree object for the given root.
  */
-export function createPositionTree(root: Tree.Node): PositionTree {
+export function createPositionTree(root: Tree.INode): IPositionTree {
     return new PositionTreeImpl(root);
 }
 
@@ -71,7 +71,7 @@ export function createPositionTree(root: Tree.Node): PositionTree {
  * @param node Node to get the height for.
  * @returns Number representing the height of the given node.
  */
-export function getNodeHeight(node: Tree.Node): number {
+export function getNodeHeight(node: Tree.INode): number {
     return nodeHeaderHeight + node.fields.map(getFieldHeight).reduce(Utils.add, 0);
 }
 
@@ -98,15 +98,15 @@ export function getFieldHeight(field: Tree.Field): number {
     }
 }
 
-class PositionTreeImpl implements PositionTree {
-    private readonly _root: Tree.Node;
+class PositionTreeImpl implements IPositionTree {
+    private readonly _root: Tree.INode;
     private readonly _totalArea: Vec.Size;
-    private readonly _nodes: Tree.Node[] = []
-    private readonly _sizes: Map<Tree.Node, Vec.Size> = new Map();
-    private readonly _areas: Map<Tree.Node, Vec.Size> = new Map();
-    private readonly _positions: Map<Tree.Node, Vec.Position> = new Map();
+    private readonly _nodes: Tree.INode[] = [];
+    private readonly _sizes: Map<Tree.INode, Vec.Size> = new Map();
+    private readonly _areas: Map<Tree.INode, Vec.Size> = new Map();
+    private readonly _positions: Map<Tree.INode, Vec.Position> = new Map();
 
-    constructor(root: Tree.Node) {
+    constructor(root: Tree.INode) {
         this._root = root;
         this._nodes = Tree.getAllChildren(root);
         this._nodes.unshift(root); // Add 'root' as the first node
@@ -116,11 +116,11 @@ class PositionTreeImpl implements PositionTree {
         this.addPositions(root, this.rootOffset);
     }
 
-    get root(): Tree.Node {
+    get root(): Tree.INode {
         return this._root;
     }
 
-    get nodes(): ReadonlyArray<Tree.Node> {
+    get nodes(): ReadonlyArray<Tree.INode> {
         return this._nodes;
     }
 
@@ -133,34 +133,37 @@ class PositionTreeImpl implements PositionTree {
         return { x: 0, y: -Utils.half(rootArea.y) };
     }
 
-    getSize(node: Tree.Node): Vec.Size {
+    public getSize(node: Tree.INode): Vec.Size {
         const lookup = this._sizes.get(node);
-        if (lookup === undefined)
+        if (lookup === undefined) {
             throw new Error("Node is not known to this view-tree");
+        }
         return lookup;
     }
 
-    getArea(node: Tree.Node): Vec.Size {
+    public getArea(node: Tree.INode): Vec.Size {
         const lookup = this._areas.get(node);
-        if (lookup === undefined)
+        if (lookup === undefined) {
             throw new Error("Node is not known to this view-tree");
+        }
         return lookup;
     }
 
-    getPosition(node: Tree.Node): Vec.Position {
+    public getPosition(node: Tree.INode): Vec.Position {
         const lookup = this._positions.get(node);
-        if (lookup === undefined)
+        if (lookup === undefined) {
             throw new Error("Node is not known to this view-tree");
+        }
         return lookup;
     }
 
-    private addSizes(node: Tree.Node): void {
+    private addSizes(node: Tree.INode): void {
         const size = { x: nodeWidth, y: getNodeHeight(node) };
         this._sizes.set(node, size);
         Tree.forEachDirectChild(node, child => this.addSizes(child));
     }
 
-    private addAreas(node: Tree.Node): Vec.Size {
+    private addAreas(node: Tree.INode): Vec.Size {
         const size = this.getSize(node);
 
         const directChildren = Tree.getDirectChildren(node);
@@ -182,7 +185,7 @@ class PositionTreeImpl implements PositionTree {
         return area;
     }
 
-    private addPositions(node: Tree.Node, referencePos: Vec.Position): void {
+    private addPositions(node: Tree.INode, referencePos: Vec.Position): void {
         const size = this.getSize(node);
         const area = this.getArea(node);
         const position = { x: referencePos.x, y: referencePos.y + Utils.half(area.y) - Utils.half(size.y) };

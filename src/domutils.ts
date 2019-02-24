@@ -67,8 +67,9 @@ export function createWithText<K extends keyof HTMLElementTagNameMap>(
     className?: ClassName): HTMLElementTagNameMap[K] {
 
     const elem: HTMLElementTagNameMap[K] = document.createElement(tagName);
-    if (className !== undefined)
+    if (className !== undefined) {
         elem.className = className;
+    }
     elem.textContent = textContent;
     return elem;
 }
@@ -83,8 +84,9 @@ export function createWithText<K extends keyof HTMLElementTagNameMap>(
 export function createSummary(textContent: string, className?: ClassName): HTMLElement {
     const elem = document.createElement("summary");
     elem.textContent = textContent;
-    if (className !== undefined)
+    if (className !== undefined) {
         elem.className = className;
+    }
     return elem;
 }
 
@@ -96,8 +98,9 @@ export function createSummary(textContent: string, className?: ClassName): HTMLE
  */
 export function subscribeToClick(elementId: string, callback: () => void): void {
     const element = document.getElementById(elementId);
-    if (element === null)
+    if (element === null) {
         throw new Error(`Element with id: ${elementId} not found`);
+    }
     element.onclick = callback;
 }
 
@@ -109,12 +112,14 @@ export function subscribeToClick(elementId: string, callback: () => void): void 
  */
 export function subscribeToFileInput(inputId: string, callback: (file: File) => void): void {
     const element = document.getElementById(inputId);
-    if (element === null)
+    if (element === null) {
         throw new Error(`Element with id: ${inputId} not found`);
-    const inputElement = <HTMLInputElement>element;
+    }
+    const inputElement = element as HTMLInputElement;
     element.onchange = _ => {
-        if (inputElement.files !== null && inputElement.files.length > 0)
+        if (inputElement.files !== null && inputElement.files.length > 0) {
             callback(inputElement.files[0]);
+        }
         inputElement.value = "";
     };
 }
@@ -124,8 +129,9 @@ export function subscribeToFileInput(inputId: string, callback: (file: File) => 
  * @param element Element to delete the children from.
  */
 export function clearChildren(element: HTMLElement): void {
-    while (element.firstChild)
+    while (element.firstChild) {
         element.removeChild(element.firstChild);
+    }
 }
 
 /**
@@ -136,8 +142,9 @@ export function clearChildren(element: HTMLElement): void {
  */
 export function setText(elementId: string, text: string): void {
     const element = document.getElementById(elementId);
-    if (element === null)
+    if (element === null) {
         throw new Error(`Element with id: ${elementId} not found`);
+    }
     element.textContent = text;
 }
 
@@ -162,18 +169,18 @@ export function createTextInput(
 
 /**
  * Create a new input element of type number. Note: This does not get parented anywhere yet.
- * @param number Initial number to show in the input.
+ * @param num Initial number to show in the input.
  * @param callback Callback that will get fired when the user changes the input.
  * @returns Newly created input element.
  */
 export function createNumberInput(
-    number: number,
+    num: number,
     callback: (newNumber: number) => void): HTMLInputElement {
 
     const element = document.createElement("input");
     element.setAttribute("type", "number");
     element.setAttribute("step", "any");
-    element.value = number.toString();
+    element.value = num.toString();
     element.onchange = event => {
         callback(Number(element.value));
     };
@@ -182,17 +189,17 @@ export function createNumberInput(
 
 /**
  * Create a new input element of type checkbox. Note: This does not get parented anywhere yet.
- * @param boolean If the checkbox should be initially checked or not.
+ * @param bool If the checkbox should be initially checked or not.
  * @param callback Callback that will get fired when the user changes the input.
  * @returns Newly created input element.
  */
 export function createBooleanInput(
-    boolean: boolean,
+    bool: boolean,
     callback: (newBoolean: boolean) => void): HTMLInputElement {
 
     const element = document.createElement("input");
     element.setAttribute("type", "checkbox");
-    element.checked = boolean;
+    element.checked = bool;
     element.onchange = _ => {
         callback(element.checked);
     };

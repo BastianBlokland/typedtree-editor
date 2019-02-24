@@ -9,12 +9,12 @@ import * as TreeScheme from "./treescheme";
  * @param scheme Scheme to create json for.
  * @returns Json representing the given scheme.
  */
-export function composeJson(scheme: TreeScheme.Scheme): string {
+export function composeJson(scheme: TreeScheme.IScheme): string {
     const obj = createSchemeObject(scheme);
     return JSON.stringify(obj, undefined, 2);
 }
 
-function createSchemeObject(scheme: TreeScheme.Scheme): Object {
+function createSchemeObject(scheme: TreeScheme.IScheme): object {
     const obj: any = {};
     obj.rootAlias = scheme.rootAlias.identifier;
     obj.aliases = scheme.aliases.map(createAliasObject);
@@ -22,21 +22,21 @@ function createSchemeObject(scheme: TreeScheme.Scheme): Object {
     return obj;
 }
 
-function createAliasObject(alias: TreeScheme.Alias): Object {
+function createAliasObject(alias: TreeScheme.IAlias): object {
     const obj: any = {};
     obj.identifier = alias.identifier;
     obj.values = alias.values;
     return obj;
 }
 
-function createNodeObject(node: TreeScheme.NodeDefinition): Object {
+function createNodeObject(node: TreeScheme.INodeDefinition): object {
     const obj: any = {};
     obj.identifier = node.identifier;
     obj.fields = node.fields.map(createFieldObject);
     return obj;
 }
 
-function createFieldObject(field: TreeScheme.FieldDefinition): Object {
+function createFieldObject(field: TreeScheme.IFieldDefinition): object {
     const obj: any = {};
     obj.name = field.name;
     obj.valueType = createValueTypeString(field.valueType);
