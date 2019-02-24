@@ -36,7 +36,7 @@ checkNpmTooling ()
 
 if checkNpmTooling
 then
-    info "Found missing tooling, running 'npm update'"
+    warn "Found missing tooling, running 'npm update'"
     npm update
 fi
 
