@@ -22,3 +22,6 @@ test:
 
 watch:
 	./ci/watch.sh
+
+upgrade-dependencies:
+	./ci/upgrade-dependencies.sh
