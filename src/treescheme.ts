@@ -76,6 +76,23 @@ export function createScheme(rootAliasIdentifier: string, callback: (builder: IS
 }
 
 /**
+ * Gets a default (the first) definition for an alias.
+ * @param scheme Scheme that the alias is part of.
+ * @param alias Alias to get the default definition for.
+ * @returns Default definition for the alias.
+ */
+export function getDefaultDefinition(scheme: IScheme, alias: IAlias): INodeDefinition {
+    if (alias.values.length === 0) {
+        throw new Error("No values have been defined for alias");
+    }
+    const firstDefinition = scheme.getNode(alias.values[0]);
+    if (firstDefinition === undefined) {
+        throw new Error("Unable to find definition");
+    }
+    return firstDefinition;
+}
+
+/**
  * Create a pretty looking string (for example 'string[]') from a field type. (Usefully for debugging)
  * @param valueType Type of the field.
  * @param isArray Is this field an array.

@@ -133,3 +133,12 @@ test("fieldKindMatchesExpectedOutput", () => {
     expect(TreeScheme.getFieldKind(node!.getField("field7")!)).toBe("node");
     expect(TreeScheme.getFieldKind(node!.getField("field8")!)).toBe("nodeArray");
 });
+
+test("aliasDefaultReturnsAsExpected", () => {
+    const scheme = TreeScheme.createScheme("Alias1", b => {
+        b.pushAlias("Alias1", ["Node1", "Node2"]);
+        b.pushNodeDefinition("Node1");
+        b.pushNodeDefinition("Node2");
+    });
+    expect(TreeScheme.getDefaultDefinition(scheme, scheme.rootAlias).identifier).toBe("Node1");
+});

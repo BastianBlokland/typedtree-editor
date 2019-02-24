@@ -30,6 +30,7 @@ export async function run(): Promise<void> {
     DomUtils.subscribeToFileInput("openscheme-file", enqueueLoadScheme);
     DomUtils.subscribeToClick("savescheme-button", enqueueSaveScheme);
 
+    DomUtils.subscribeToClick("newtree-button", enqueueNewTree);
     DomUtils.subscribeToFileInput("opentree-file", enqueueLoadTree);
     DomUtils.subscribeToClick("savetree-button", enqueueSaveTree);
 
@@ -61,6 +62,21 @@ function enqueueLoadScheme(source: string | File): void {
             console.log(`Successfully loaded scheme: ${name}`);
             setCurrentScheme(result.value, name);
         }
+    });
+}
+
+function enqueueNewTree(): void {
+    sequencer!.enqueue(async () => {
+        if (currentScheme === undefined) {
+            alert("Failed to create a new tree. Error: No scheme loaded");
+            return;
+        }
+        const defaultRoot = TreeScheme.getDefaultDefinition(currentScheme, currentScheme.rootAlias);
+        const newRoot = TreeSchemeInstantiator.instantiateDefaultNode(defaultRoot);
+
+        console.log(`Successfully created new tree. Scheme: ${currentSchemeName}`);
+        setCurrentTree(newRoot, "New tree");
+        TreeDisplay.focusTree();
     });
 }
 
