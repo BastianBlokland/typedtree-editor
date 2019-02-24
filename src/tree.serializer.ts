@@ -17,7 +17,9 @@ export function composeJson(node: Tree.INode): string {
 
 function createObject(node: Tree.INode): object {
     const obj: any = {};
-    obj.$type = node.type;
+    if (node.type !== Tree.anonymousNodeType) {
+        obj.$type = node.type;
+    }
     node.fields.forEach(field => {
         switch (field.kind) {
             case "string":

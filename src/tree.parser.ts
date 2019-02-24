@@ -42,8 +42,6 @@ export function parseJson(jsonString: string): ParseResult<Tree.INode> {
     }
 }
 
-const anonymousNodeType: Tree.NodeType = "Anonymous";
-
 function parseNode(obj: any): Tree.INode {
     if (obj === undefined || obj === null || typeof obj !== "object") {
         throw new Error("Invalid input obj");
@@ -51,7 +49,11 @@ function parseNode(obj: any): Tree.INode {
 
     let type: any = obj.$type;
     if (type === undefined || type === null || typeof type !== "string") {
-        type = anonymousNodeType;
+        type = Tree.anonymousNodeType;
+    } else {
+        if (type.startsWith("<") || type.endsWith(">")) {
+            throw new Error(`Type ${type} cannot start with '<' or end with '>', these are reserved`);
+        }
     }
 
     return Tree.createNode(type, b => {

@@ -4,6 +4,9 @@
 
 import * as Utils from "./utils";
 
+/** reserved node-type for anonymous nodes */
+export const anonymousNodeType: string = "<anonymous>";
+
 /** Identifier for the node-type */
 export type NodeType = string;
 

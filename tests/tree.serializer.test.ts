@@ -34,11 +34,20 @@ test("savedJsonIsIdenticalToReadJson", () => {
     }
 });
 
-test("emptyArraysAreNotExported", () => {
+test("emptyArraysAreNotSerialized", () => {
     const node = Tree.createNode("root", b => b.pushNumberArrayField("field", []));
 
     const composedJson = TreeSerializer.composeJson(node);
     expect(composedJson).toEqual(Utils.formatJson(`{
         "$type": "root"
+    }`));
+});
+
+test("anonymousTypeFieldIsNotSerialized", () => {
+    const node = Tree.createNode(Tree.anonymousNodeType, b => b.pushStringField("field", "test"));
+
+    const composedJson = TreeSerializer.composeJson(node);
+    expect(composedJson).toEqual(Utils.formatJson(`{
+        "field": "test"
     }`));
 });
