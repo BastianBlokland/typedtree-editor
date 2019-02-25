@@ -6,6 +6,7 @@
   },
   // Common plugins
   "cSpell.words": [
+    "dropdown",
     "bbox",
     "callout",
     "classname",
@@ -47,7 +48,7 @@
     "tsout",
     "typedtree",
     "ulist"
-],
+  ],
   // Search settings
   "search.useIgnoreFiles": false,
   "search.exclude": {},

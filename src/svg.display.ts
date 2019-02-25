@@ -14,6 +14,7 @@ declare const SVG: typeof SvgJs;
 export interface IElement {
     /** Html class identifier for this element */
     readonly className: string;
+
     /**
      * Position of this element.
      * Note: This does NOT need to match screen pixels as the canvas can be zoomed.
@@ -64,6 +65,18 @@ export interface IElement {
         position: Vec.Position,
         size: Vec.Size,
         callback: (newValue: boolean) => void): void;
+
+    /**
+     * Add a editable dropdown graphic to this element.
+     * Note: Position is vertically centered.
+     */
+    addDropdown(
+        className: ClassName,
+        currentIndex: number,
+        options: string[],
+        position: Vec.Position,
+        size: Vec.Size,
+        callback: (newIndex: number) => void): void;
 
     /** Add a line graphic to this element. */
     addLine(className: ClassName, from: Vec.Position, to: Vec.Position): void;
@@ -250,7 +263,6 @@ class GroupElement implements IElement {
             text(b => {
                 /* NOTE: Using dy offset here to center vertically, reason why we not just use:
                 'dominant-baseline' is that its not supported on edge */
-
                 b.tspan(text).dy("0.6ex");
             }).
             addClass(className).
@@ -266,16 +278,7 @@ class GroupElement implements IElement {
 
         const inputElement = DomUtils.createTextInput(value, callback);
         inputElement.className = className;
-
-        this._svgGroup.group().
-            element("foreignObject").
-            x(position.x).
-            /* HACK: Ugly +2 here because i can't figure out why it seems to draw slightly too high on
-            most browsers */
-            y(position.y - Utils.half(size.y) + 2).
-            width(size.x).
-            height(size.y).
-            node.appendChild(inputElement);
+        this.addForeignObject(position, size, inputElement);
     }
 
     public addEditableNumber(
@@ -287,16 +290,7 @@ class GroupElement implements IElement {
 
         const inputElement = DomUtils.createNumberInput(value, callback);
         inputElement.className = className;
-
-        this._svgGroup.group().
-            element("foreignObject").
-            x(position.x).
-            /* HACK: Ugly +2 here because i can't figure out why it seems to draw slightly too high on
-            most browsers */
-            y(position.y - Utils.half(size.y) + 2).
-            width(size.x).
-            height(size.y).
-            node.appendChild(inputElement);
+        this.addForeignObject(position, size, inputElement);
     }
 
     public addEditableBoolean(
@@ -308,16 +302,20 @@ class GroupElement implements IElement {
 
         const inputElement = DomUtils.createBooleanInput(value, callback);
         inputElement.className = className;
+        this.addForeignObject(position, size, inputElement);
+    }
 
-        this._svgGroup.group().
-            element("foreignObject").
-            x(position.x).
-            /* HACK: Ugly +2 here because i can't figure out why it seems to draw slightly too high on
-            most browsers */
-            y(position.y - Utils.half(size.y) + 2).
-            width(size.x).
-            height(size.y).
-            node.appendChild(inputElement);
+    public addDropdown(
+        className: ClassName,
+        currentIndex: number,
+        options: string[],
+        position: Vec.Position,
+        size: Vec.Size,
+        callback: (newIndex: number) => void): void {
+
+        const selectElement = DomUtils.createSelectInput(currentIndex, options, callback);
+        selectElement.className = className;
+        this.addForeignObject(position, size, selectElement);
     }
 
     public addLine(className: ClassName, from: Vec.Position, to: Vec.Position): void {
@@ -349,6 +347,16 @@ class GroupElement implements IElement {
         if (clickCallback !== undefined) {
             elem.click(clickCallback);
         }
+    }
+
+    private addForeignObject(position: Vec.Position, size: Vec.Size, htmlElement: HTMLElement): void {
+        this._svgGroup.group().
+            element("foreignObject").
+            x(position.x).
+            y(position.y - Utils.half(size.y)).
+            width(size.x).
+            height(size.y).
+            node.appendChild(htmlElement);
     }
 }
 

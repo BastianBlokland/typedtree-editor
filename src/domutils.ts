@@ -205,3 +205,27 @@ export function createBooleanInput(
     };
     return element;
 }
+
+/**
+ * Create a new select element. Note: This does not get parented anywhere yet.
+ * @param currentIndex Current active index.
+ * @param options Possible options for the select.
+ * @param callback Callback that will get fired when the user selects a different item.
+ * @returns Newly created select element.
+ */
+export function createSelectInput(
+    currentIndex: number,
+    options: string[],
+    callback: (newIndex: number) => void): HTMLSelectElement {
+
+    if (currentIndex < 0 || currentIndex >= options.length) {
+        throw new Error(
+            `Index ${currentIndex} is out of bounds of the options. (options length: ${options.length})`);
+    }
+    const element = createWithChildren("select", ...options.map(o => createWithText("option", o)));
+    element.selectedIndex = currentIndex;
+    element.onchange = _ => {
+        callback(element.selectedIndex);
+    };
+    return element;
+}

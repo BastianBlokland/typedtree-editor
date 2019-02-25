@@ -9,11 +9,13 @@ import * as TreeView from "./tree.view";
 import * as Utils from "./utils";
 import * as Vec from "./vector";
 
+/** Callback for when a tree is changed, returns a new immutable tree. */
 export type treeChangedCallback = (newTree: Tree.INode) => void;
 
 /**
  * Draw the given tree.
  * @param root Root node for the tree to draw.
+ * @param changed Callback that is invoked when the user changes the tree.
  */
 export function setTree(root: Tree.INode | undefined, changed: treeChangedCallback | undefined): void {
     SvgDisplay.clear();
@@ -37,7 +39,7 @@ export function focusTree(maxScale?: number): void {
 }
 
 const nodeHeaderHeight = TreeView.nodeHeaderHeight;
-const halfNodeHeightHeight = Utils.half(nodeHeaderHeight);
+const halfNodeHeaderHeight = Utils.half(nodeHeaderHeight);
 const nodeFieldHeight = TreeView.nodeFieldHeight;
 const nodeInputSlotOffset: Vec.IVector2 = { x: 0, y: 12.5 };
 const nodeConnectionCurviness = .7;
@@ -54,7 +56,7 @@ function createNode(
     const backgroundClass = node.type === Tree.noneNodeType ? "nonenode-background" : "node-background";
 
     nodeElement.addRect(backgroundClass, size, Vec.zeroVector);
-    nodeElement.addText("node-type", node.type, { x: Utils.half(size.x), y: halfNodeHeightHeight });
+    nodeElement.addText("node-type", node.type, { x: Utils.half(size.x), y: halfNodeHeaderHeight });
 
     let yOffset = nodeHeaderHeight;
     node.fieldNames.forEach(fieldName => {
