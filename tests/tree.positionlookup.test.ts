@@ -1,14 +1,14 @@
 /**
- * @file Jest tests for tree.view.ts
+ * @file Jest tests for tree.positionlookup.ts
  */
 
 import * as Tree from "../src/tree";
-import * as TreeView from "../src/tree.positionlookup";
+import * as TreePositionLookup from "../src/tree.positionlookup";
 import * as Vec from "../src/vector";
 
 test("allChildNodeExists", () => {
     const testTree = createTestTree();
-    const positionLookup = TreeView.createPositionLookup(testTree);
+    const positionLookup = TreePositionLookup.createPositionLookup(testTree);
     Tree.getAllChildren(testTree).forEach(child => {
         expect(positionLookup.nodes).toContain(child);
     });
@@ -16,7 +16,7 @@ test("allChildNodeExists", () => {
 
 test("allNodesHaveSizes", () => {
     const testTree = createTestTree();
-    const positionLookup = TreeView.createPositionLookup(testTree);
+    const positionLookup = TreePositionLookup.createPositionLookup(testTree);
     Tree.getAllChildren(testTree).forEach(_ => {
         expect(positionLookup.getSize(testTree)).not.toBe(Vec.zeroVector);
     });
@@ -24,7 +24,7 @@ test("allNodesHaveSizes", () => {
 
 test("allNodesHaveAreas", () => {
     const testTree = createTestTree();
-    const positionLookup = TreeView.createPositionLookup(testTree);
+    const positionLookup = TreePositionLookup.createPositionLookup(testTree);
     Tree.getAllChildren(testTree).forEach(_ => {
         expect(positionLookup.getArea(testTree)).not.toBe(Vec.zeroVector);
     });
@@ -32,7 +32,7 @@ test("allNodesHaveAreas", () => {
 
 test("allNodesHavePositions", () => {
     const testTree = createTestTree();
-    const positionLookup = TreeView.createPositionLookup(testTree);
+    const positionLookup = TreePositionLookup.createPositionLookup(testTree);
     Tree.getAllChildren(testTree).forEach(_ => {
         expect(positionLookup.getPosition(testTree)).not.toBe(Vec.zeroVector);
     });
@@ -40,19 +40,20 @@ test("allNodesHavePositions", () => {
 
 test("singleNodeHasExpectedPosition", () => {
     const testTree = Tree.createNode("root");
-    const positionLookup = TreeView.createPositionLookup(testTree);
+    const positionLookup = TreePositionLookup.createPositionLookup(testTree);
     expect(positionLookup.getPosition(testTree)).toEqual(positionLookup.rootOffset);
 });
 
 test("singleNodeHasExpectedSize", () => {
     const testTree = Tree.createNode("root");
-    const positionLookup = TreeView.createPositionLookup(testTree);
-    expect(positionLookup.getSize(testTree)).toEqual({ x: TreeView.nodeWidth, y: TreeView.getNodeHeight(testTree) });
+    const positionLookup = TreePositionLookup.createPositionLookup(testTree);
+    expect(positionLookup.getSize(testTree)).
+        toEqual({ x: TreePositionLookup.nodeWidth, y: TreePositionLookup.getNodeHeight(testTree) });
 });
 
 test("singleNodeHasExpectedArea", () => {
     const testTree = Tree.createNode("root");
-    const positionLookup = TreeView.createPositionLookup(testTree);
+    const positionLookup = TreePositionLookup.createPositionLookup(testTree);
     expect(positionLookup.getArea(testTree)).toEqual(positionLookup.getSize(testTree));
 });
 
