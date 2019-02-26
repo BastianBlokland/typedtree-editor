@@ -5,7 +5,7 @@
 import * as SvgDisplay from "./svg.display";
 import * as Tree from "./tree";
 import * as TreeModifications from "./tree.modifications";
-import * as TreeView from "./tree.positionlookup";
+import * as TreePositionLookup from "./tree.positionlookup";
 import * as Utils from "./utils";
 import * as Vec from "./vector";
 
@@ -21,7 +21,7 @@ export function setTree(root: Tree.INode | undefined, changed: treeChangedCallba
     SvgDisplay.clear();
 
     if (root !== undefined) {
-        const positionLookup = TreeView.createPositionLookup(root);
+        const positionLookup = TreePositionLookup.createPositionLookup(root);
         positionLookup.nodes.forEach(node => {
             createNode(node, positionLookup, newNode => {
                 if (changed !== undefined) {
@@ -38,9 +38,9 @@ export function focusTree(maxScale?: number): void {
     SvgDisplay.focusContent(maxScale);
 }
 
-const nodeHeaderHeight = TreeView.nodeHeaderHeight;
+const nodeHeaderHeight = TreePositionLookup.nodeHeaderHeight;
 const halfNodeHeaderHeight = Utils.half(nodeHeaderHeight);
-const nodeFieldHeight = TreeView.nodeFieldHeight;
+const nodeFieldHeight = TreePositionLookup.nodeFieldHeight;
 const nodeInputSlotOffset: Vec.IVector2 = { x: 0, y: 12.5 };
 const nodeConnectionCurviness = .7;
 
@@ -48,7 +48,7 @@ type nodeChangedCallback = (newNode: Tree.INode) => void;
 
 function createNode(
     node: Tree.INode,
-    positionLookup: TreeView.IPositionLookup,
+    positionLookup: TreePositionLookup.IPositionLookup,
     changed: nodeChangedCallback): void {
 
     const size = positionLookup.getSize(node);
@@ -72,7 +72,7 @@ function createField(
     node: Tree.INode,
     fieldName: string,
     parent: SvgDisplay.IElement,
-    positionLookup: TreeView.IPositionLookup,
+    positionLookup: TreePositionLookup.IPositionLookup,
     yOffset: number,
     changed: fieldChangedCallback<Tree.Field>): number {
 
@@ -81,7 +81,7 @@ function createField(
         return 0;
     }
 
-    const fieldSize = { x: positionLookup.getSize(node).x, y: TreeView.getFieldHeight(field) };
+    const fieldSize = { x: positionLookup.getSize(node).x, y: TreePositionLookup.getFieldHeight(field) };
     const centeredYOffset = yOffset + Utils.half(nodeFieldHeight);
     const nameWidth = Utils.half(fieldSize.x) - 10;
 
@@ -210,6 +210,10 @@ function addConnection(parent: SvgDisplay.IElement, from: Vec.Position, to: Vec.
     parent.addBezier("connection", from, c1, c2, target);
 }
 
-function getRelativeVector(from: Tree.INode, to: Tree.INode, positionLookup: TreeView.IPositionLookup): Vec.IVector2 {
+function getRelativeVector(
+    from: Tree.INode,
+    to: Tree.INode,
+    positionLookup: TreePositionLookup.IPositionLookup): Vec.IVector2 {
+
     return Vec.subtract(positionLookup.getPosition(to), positionLookup.getPosition(from));
 }
