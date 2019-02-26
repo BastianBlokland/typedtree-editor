@@ -110,6 +110,22 @@ export function getPrettyFieldValueType(valueType: FieldValueType, isArray: bool
 }
 
 /**
+ * Check if the given 'fieldValueType' is an Alias type.
+ * @param fieldValueType FieldValueType to check.
+ * @returns True if the field value is a Alias, otherwise False.
+ */
+export function isAliasType(fieldValueType: FieldValueType): boolean {
+    switch (fieldValueType) {
+        case "string":
+        case "number":
+        case "boolean":
+            return false;
+        default:
+            return true;
+    }
+}
+
+/**
  * Get a FieldKind from a field-definition.
  * @param field Definition of a field to get the field-kind for.
  * @returns FieldKind that corresponds for the given field-definition.

@@ -134,6 +134,23 @@ test("fieldKindMatchesExpectedOutput", () => {
     expect(TreeScheme.getFieldKind(node!.getField("field8")!)).toBe("nodeArray");
 });
 
+test("aliasFieldsAreIdentifiedCorrectly", () => {
+    const scheme = TreeScheme.createScheme("Alias1", b => {
+        const alias = b.pushAlias("Alias1", ["Node1"]);
+        b.pushNodeDefinition("Node1", b => {
+            b.pushField("field1", "string");
+            b.pushField("field2", "boolean");
+            b.pushField("field3", "number");
+            b.pushField("field4", alias!);
+        });
+    });
+    const node = scheme.getNode("Node1");
+    expect(TreeScheme.isAliasType(node!.getField("field1")!.valueType)).toBe(false);
+    expect(TreeScheme.isAliasType(node!.getField("field2")!.valueType)).toBe(false);
+    expect(TreeScheme.isAliasType(node!.getField("field3")!.valueType)).toBe(false);
+    expect(TreeScheme.isAliasType(node!.getField("field4")!.valueType)).toBe(true);
+});
+
 test("aliasDefaultReturnsAsExpected", () => {
     const scheme = TreeScheme.createScheme("Alias1", b => {
         b.pushAlias("Alias1", ["Node1", "Node2"]);
