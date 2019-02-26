@@ -5,7 +5,7 @@
 import * as SvgDisplay from "./svg.display";
 import * as Tree from "./tree";
 import * as TreeModifications from "./tree.modifications";
-import * as TreeView from "./tree.view";
+import * as TreeView from "./tree.positionlookup";
 import * as Utils from "./utils";
 import * as Vec from "./vector";
 
@@ -21,15 +21,15 @@ export function setTree(root: Tree.INode | undefined, changed: treeChangedCallba
     SvgDisplay.clear();
 
     if (root !== undefined) {
-        const positionTree = TreeView.createPositionTree(root);
-        positionTree.nodes.forEach(node => {
-            createNode(node, positionTree, newNode => {
+        const positionLookup = TreeView.createPositionLookup(root);
+        positionLookup.nodes.forEach(node => {
+            createNode(node, positionLookup, newNode => {
                 if (changed !== undefined) {
                     changed(TreeModifications.treeWithReplacedNode(root, node, newNode));
                 }
             });
         });
-        SvgDisplay.setContentOffset(positionTree.rootOffset);
+        SvgDisplay.setContentOffset(positionLookup.rootOffset);
     }
 }
 
@@ -48,11 +48,11 @@ type nodeChangedCallback = (newNode: Tree.INode) => void;
 
 function createNode(
     node: Tree.INode,
-    positionTree: TreeView.IPositionTree,
+    positionLookup: TreeView.IPositionLookup,
     changed: nodeChangedCallback): void {
 
-    const size = positionTree.getSize(node);
-    const nodeElement = SvgDisplay.createElement("node", positionTree.getPosition(node));
+    const size = positionLookup.getSize(node);
+    const nodeElement = SvgDisplay.createElement("node", positionLookup.getPosition(node));
     const backgroundClass = node.type === Tree.noneNodeType ? "nonenode-background" : "node-background";
 
     nodeElement.addRect(backgroundClass, size, Vec.zeroVector);
@@ -60,7 +60,7 @@ function createNode(
 
     let yOffset = nodeHeaderHeight;
     node.fieldNames.forEach(fieldName => {
-        yOffset += createField(node, fieldName, nodeElement, positionTree, yOffset, newField => {
+        yOffset += createField(node, fieldName, nodeElement, positionLookup, yOffset, newField => {
             changed(TreeModifications.nodeWithField(node, newField));
         });
     });
@@ -72,7 +72,7 @@ function createField(
     node: Tree.INode,
     fieldName: string,
     parent: SvgDisplay.IElement,
-    positionTree: TreeView.IPositionTree,
+    positionLookup: TreeView.IPositionLookup,
     yOffset: number,
     changed: fieldChangedCallback<Tree.Field>): number {
 
@@ -81,7 +81,7 @@ function createField(
         return 0;
     }
 
-    const fieldSize = { x: positionTree.getSize(node).x, y: TreeView.getFieldHeight(field) };
+    const fieldSize = { x: positionLookup.getSize(node).x, y: TreeView.getFieldHeight(field) };
     const centeredYOffset = yOffset + Utils.half(nodeFieldHeight);
     const nameWidth = Utils.half(fieldSize.x) - 10;
 
@@ -197,7 +197,7 @@ function createField(
         pos: Vec.Position,
         size: Vec.Size): void {
 
-        addConnection(parent, { x: fieldSize.x - 12, y: pos.y }, getRelativeVector(node, value, positionTree));
+        addConnection(parent, { x: fieldSize.x - 12, y: pos.y }, getRelativeVector(node, value, positionLookup));
     }
 }
 
@@ -210,6 +210,6 @@ function addConnection(parent: SvgDisplay.IElement, from: Vec.Position, to: Vec.
     parent.addBezier("connection", from, c1, c2, target);
 }
 
-function getRelativeVector(from: Tree.INode, to: Tree.INode, positionTree: TreeView.IPositionTree): Vec.IVector2 {
-    return Vec.subtract(positionTree.getPosition(to), positionTree.getPosition(from));
+function getRelativeVector(from: Tree.INode, to: Tree.INode, positionLookup: TreeView.IPositionLookup): Vec.IVector2 {
+    return Vec.subtract(positionLookup.getPosition(to), positionLookup.getPosition(from));
 }
