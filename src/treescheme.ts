@@ -8,9 +8,6 @@ import * as Utils from "./utils";
 /** Possible types a field can have */
 export type FieldValueType = "string" | "number" | "boolean" | IAlias;
 
-/** Identifier for a node */
-export type NodeIdentifier = string;
-
 /**
  * Tree scheme.
  * Consists out of aliases and nodes.
@@ -25,20 +22,20 @@ export interface IScheme {
     readonly nodes: ReadonlyArray<INodeDefinition>;
 
     getAlias(identifier: string): ReadonlyArray<string> | undefined;
-    getNode(identifier: string): INodeDefinition | undefined;
+    getNode(nodeType: Tree.NodeType): INodeDefinition | undefined;
 }
 
 /** Named group of nodes */
 export interface IAlias {
     readonly identifier: string;
-    readonly values: ReadonlyArray<NodeIdentifier>;
+    readonly values: ReadonlyArray<Tree.NodeType>;
 
-    containsValue(identifier: NodeIdentifier): boolean;
+    containsValue(identifier: Tree.NodeType): boolean;
 }
 
 /** Definition of a node (what kind of fields it has) */
 export interface INodeDefinition {
-    readonly identifier: NodeIdentifier;
+    readonly nodeType: Tree.NodeType;
     readonly fields: ReadonlyArray<IFieldDefinition>;
 
     getField(name: string): IFieldDefinition | undefined;
@@ -53,9 +50,9 @@ export interface IFieldDefinition {
 
 /** Builder that can be used to create a scheme */
 export interface ISchemeBuilder {
-    pushAlias(identifier: string, values: ReadonlyArray<NodeIdentifier>): IAlias | undefined;
+    pushAlias(identifier: string, values: ReadonlyArray<Tree.NodeType>): IAlias | undefined;
     getAlias(identifier: string): IAlias | undefined;
-    pushNodeDefinition(identifier: string, callback?: (builder: INodeDefinitionBuilder) => void): boolean;
+    pushNodeDefinition(nodeType: Tree.NodeType, callback?: (builder: INodeDefinitionBuilder) => void): boolean;
 }
 
 /** Builder that can be used to create a node definition */
@@ -174,7 +171,7 @@ export function printScheme(
     // Node definitions
     printLine(`Nodes: (${scheme.nodes.length})`, indent);
     scheme.nodes.forEach(n => {
-        printLine(`-${n.identifier} (${n.fields.length})`, indent + 1);
+        printLine(`-${n.nodeType} (${n.fields.length})`, indent + 1);
         n.fields.forEach(f => {
             printLine(`${f.name} (${getPrettyFieldValueType(f.valueType, f.isArray)})`, indent + 2);
         });
@@ -196,13 +193,13 @@ class SchemeImpl implements IScheme {
             throw new Error("Aliases must be unique");
         }
         // Verify that there are no duplicate nodes.
-        if (Utils.hasDuplicates(nodes.map(a => a.identifier))) {
-            throw new Error("Node identifier must be unique");
+        if (Utils.hasDuplicates(nodes.map(a => a.nodeType))) {
+            throw new Error("Nodetype must be unique");
         }
         // Verify that aliases only reference nodes that actually exist.
         if (aliases.length > 0) {
             aliases.map(a => a.values).reduce((a, b) => a.concat(b)).forEach(aliasVal => {
-                if (!nodes.some(nodeDef => nodeDef.identifier === aliasVal)) {
+                if (!nodes.some(nodeDef => nodeDef.nodeType === aliasVal)) {
                     throw new Error(`Alias defines a value '${aliasVal}' that is not a type in the types array`);
                 }
             });
@@ -230,16 +227,16 @@ class SchemeImpl implements IScheme {
         return alias === undefined ? undefined : alias.values;
     }
 
-    public getNode(identifier: string): INodeDefinition | undefined {
-        return Utils.find(this._nodes, a => a.identifier === identifier);
+    public getNode(nodeType: string): INodeDefinition | undefined {
+        return Utils.find(this._nodes, a => a.nodeType === nodeType);
     }
 }
 
 class AliasImpl implements IAlias {
     private readonly _identifier: string;
-    private readonly _values: ReadonlyArray<NodeIdentifier>;
+    private readonly _values: ReadonlyArray<Tree.NodeType>;
 
-    constructor(identifier: string, values: ReadonlyArray<NodeIdentifier>) {
+    constructor(identifier: string, values: ReadonlyArray<Tree.NodeType>) {
         // Verify that this alias has a identifier
         if (identifier === "") {
             throw new Error("Alias must have a identifier");
@@ -260,35 +257,35 @@ class AliasImpl implements IAlias {
         return this._identifier;
     }
 
-    get values(): ReadonlyArray<NodeIdentifier> {
+    get values(): ReadonlyArray<Tree.NodeType> {
         return this._values;
     }
 
-    public containsValue(identifier: NodeIdentifier): boolean {
-        return this._values.indexOf(identifier) >= 0;
+    public containsValue(nodeType: Tree.NodeType): boolean {
+        return this._values.indexOf(nodeType) >= 0;
     }
 }
 
 class NodeDefinitionImpl implements INodeDefinition {
-    private readonly _identifier: string;
+    private readonly _nodeType: Tree.NodeType;
     private readonly _fields: ReadonlyArray<IFieldDefinition>;
 
-    constructor(identifier: string, fields: ReadonlyArray<IFieldDefinition>) {
-        // Verify that this nodescheme has a identifier
-        if (identifier === "") {
-            throw new Error("NodeScheme must have an identifier");
+    constructor(nodeType: Tree.NodeType, fields: ReadonlyArray<IFieldDefinition>) {
+        // Verify that this nodescheme has a nodetype
+        if (nodeType === "") {
+            throw new Error("NodeDefinition must have an type");
         }
         // Verify that all fields have unique names
         if (Utils.hasDuplicates(fields)) {
             throw new Error("Field names must be unique");
         }
 
-        this._identifier = identifier;
+        this._nodeType = nodeType;
         this._fields = fields;
     }
 
-    get identifier(): string {
-        return this._identifier;
+    get nodeType(): string {
+        return this._nodeType;
     }
 
     get fields(): ReadonlyArray<IFieldDefinition> {
@@ -312,7 +309,7 @@ class SchemeBuilderImpl implements ISchemeBuilder {
         this._nodes = [];
     }
 
-    public pushAlias(identifier: string, values: ReadonlyArray<NodeIdentifier>): IAlias | undefined {
+    public pushAlias(identifier: string, values: ReadonlyArray<Tree.NodeType>): IAlias | undefined {
         // New content cannot be pushed after building the scheme
         if (this._build) {
             return undefined;
@@ -332,21 +329,24 @@ class SchemeBuilderImpl implements ISchemeBuilder {
         return Utils.find(this._aliases, a => a.identifier === identifier);
     }
 
-    public pushNodeDefinition(identifier: string, callback?: (builder: INodeDefinitionBuilder) => void): boolean {
+    public pushNodeDefinition(
+        nodeType: Tree.NodeType,
+        callback?: (builder: INodeDefinitionBuilder) => void): boolean {
+
         // New content cannot be pushed after building the scheme
         if (this._build) {
             return false;
         }
 
         // Node definitions have to unique
-        if (this._nodes.some(existingNode => existingNode.identifier === identifier)) {
+        if (this._nodes.some(existingNode => existingNode.nodeType === nodeType)) {
             return false;
         }
 
         if (callback === undefined) {
-            this._nodes.push(new NodeDefinitionImpl(identifier, []));
+            this._nodes.push(new NodeDefinitionImpl(nodeType, []));
         } else {
-            const builder = new NodeDefinitionBuilderImpl(identifier);
+            const builder = new NodeDefinitionBuilderImpl(nodeType);
             callback(builder);
             this._nodes.push(builder.build());
         }
@@ -364,12 +364,12 @@ class SchemeBuilderImpl implements ISchemeBuilder {
 }
 
 class NodeDefinitionBuilderImpl implements INodeDefinitionBuilder {
-    private readonly _identifier: string;
+    private readonly _nodeType: Tree.NodeType;
     private _fields: IFieldDefinition[];
     private _build: boolean;
 
-    constructor(identifier: string) {
-        this._identifier = identifier;
+    constructor(nodeType: Tree.NodeType) {
+        this._nodeType = nodeType;
         this._fields = [];
     }
 
@@ -394,6 +394,6 @@ class NodeDefinitionBuilderImpl implements INodeDefinitionBuilder {
 
     public build(): INodeDefinition {
         this._build = true;
-        return new NodeDefinitionImpl(this._identifier, this._fields);
+        return new NodeDefinitionImpl(this._nodeType, this._fields);
     }
 }

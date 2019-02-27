@@ -157,5 +157,5 @@ test("aliasDefaultReturnsAsExpected", () => {
         b.pushNodeDefinition("Node1");
         b.pushNodeDefinition("Node2");
     });
-    expect(TreeScheme.getDefaultDefinition(scheme, scheme.rootAlias).identifier).toBe("Node1");
+    expect(TreeScheme.getDefaultDefinition(scheme, scheme.rootAlias).nodeType).toBe("Node1");
 });

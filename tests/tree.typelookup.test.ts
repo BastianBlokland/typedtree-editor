@@ -33,7 +33,7 @@ test("allNodeDefinitionsCanBeFound", () => {
     const typeLookup = TreeTypeLookup.createTypeLookup(testScheme, testTree);
 
     Tree.getAllChildren(testTree).forEach(node => {
-        expect(typeLookup.getDefinition(node).identifier).toEqual(node.type);
+        expect(typeLookup.getDefinition(node).nodeType).toEqual(node.type);
     });
 });
 

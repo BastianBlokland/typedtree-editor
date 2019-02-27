@@ -28,7 +28,7 @@ export function duplicateWithMissingFields(scheme: TreeScheme.IScheme, tree: Tre
         if (definition === undefined) {
             throw new Error(`Unable to find definition for node-type: ${node.type}`);
         }
-        return Tree.createNode(definition.identifier, b => {
+        return Tree.createNode(definition.nodeType, b => {
             // Copy fields from the original if it has them, otherwise create defaults.
             definition.fields.forEach(f => {
                 const orgField = node.getField(f.name);
@@ -60,7 +60,7 @@ export function duplicateWithMissingFields(scheme: TreeScheme.IScheme, tree: Tre
  * @returns Newly created node.
  */
 export function instantiateDefaultNode(nodeDefinition: TreeScheme.INodeDefinition): Tree.INode {
-    return Tree.createNode(nodeDefinition.identifier, b => {
+    return Tree.createNode(nodeDefinition.nodeType, b => {
         nodeDefinition.fields.forEach(f => {
             const field = instantiateDefaultField(f);
             b.pushField(field);

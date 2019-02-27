@@ -92,12 +92,12 @@ function parseNodes(schemeBuilder: TreeScheme.ISchemeBuilder, obj: any): void {
     (obj.nodes as any[]).forEach(nodeObj => {
 
         // Parse identifier
-        const identifier = ParserUtils.validateString(nodeObj.identifier);
-        if (identifier === undefined) {
-            throw new Error(`Identifier '${identifier}' of node is invalid`);
+        const nodeType = ParserUtils.validateString(nodeObj.nodeType);
+        if (nodeType === undefined) {
+            throw new Error(`NodeType '${nodeType}' of node is invalid`);
         }
 
-        schemeBuilder.pushNodeDefinition(identifier, nodeBuilder => {
+        schemeBuilder.pushNodeDefinition(nodeType, nodeBuilder => {
 
             // Parse fields
             if (!ParserUtils.isArray(nodeObj.fields)) {
@@ -106,14 +106,14 @@ function parseNodes(schemeBuilder: TreeScheme.ISchemeBuilder, obj: any): void {
             (nodeObj.fields as any[]).forEach(fieldObj => {
                 const name = ParserUtils.validateString(fieldObj.name);
                 if (name === undefined) {
-                    throw new Error(`Node '${identifier}' has field that is missing a name`);
+                    throw new Error(`Node '${nodeType}' has field that is missing a name`);
                 }
 
                 const valueType = parseValueType(schemeBuilder, fieldObj.valueType);
                 const isArray = ParserUtils.isBoolean(fieldObj.isArray) ? fieldObj.isArray as boolean : false;
 
                 if (!nodeBuilder.pushField(name, valueType, isArray)) {
-                    throw new Error(`Unable to push field '${name}' on node '${identifier}', is it a duplicate?`);
+                    throw new Error(`Unable to push field '${name}' on node '${nodeType}', is it a duplicate?`);
                 }
             });
         });

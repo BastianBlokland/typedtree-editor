@@ -31,7 +31,7 @@ function createAliasObject(alias: TreeScheme.IAlias): object {
 
 function createNodeObject(node: TreeScheme.INodeDefinition): object {
     const obj: any = {};
-    obj.identifier = node.identifier;
+    obj.nodeType = node.nodeType;
     obj.fields = node.fields.map(createFieldObject);
     return obj;
 }
