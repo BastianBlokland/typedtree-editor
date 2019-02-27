@@ -214,6 +214,7 @@ export function focusContent(maxScale?: number): void {
 export function clear(): void {
     assertInitialized();
     svgRoot!.clear();
+    dragging = false;
 }
 
 const rootSvgDomElementId = "svg-display";
