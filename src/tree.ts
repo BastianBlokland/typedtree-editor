@@ -4,20 +4,20 @@
 
 import * as Utils from "./utils";
 
+/** Identifier for the node-type */
+export type NodeType = string;
+
 /**
  * Reserved node-type for anonymous nodes
  * Anonymous type is inserted when no type info is known for a node.
  */
-export const anonymousNodeType: string = "<anonymous>";
+export const anonymousNodeType: NodeType = "<anonymous>";
 
 /**
  * Reserved node-type for none nodes
  * None-nodes are used as defaults and are not exported, also none-nodes cannot have fields.
  */
-export const noneNodeType: string = "<none>";
-
-/** Identifier for the node-type */
-export type NodeType = string;
+export const noneNodeType: NodeType = "<none>";
 
 /** Extracts the type of the value of a given field. */
 export type FieldValueType<T> = T extends Field ? T["value"] : never;

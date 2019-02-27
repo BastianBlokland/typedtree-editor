@@ -8,6 +8,7 @@ import * as TreeModifications from "./tree.modifications";
 import * as TreePositionLookup from "./tree.positionlookup";
 import * as TreeTypeLookup from "./tree.typelookup";
 import * as TreeScheme from "./treescheme";
+import * as TreeSchemeInstantiator from "./treescheme.instantiator";
 import * as Utils from "./utils";
 import * as Vec from "./vector";
 
@@ -60,8 +61,8 @@ function createNode(
     positionLookup: TreePositionLookup.IPositionLookup,
     changed: nodeChangedCallback): void {
 
-    const alias = typeLookup.getAlias(node);
-    const currentAliasIndex = alias.values.findIndex(a => a === node.type);
+    const typeOptions = getTypeOptions(typeLookup, node);
+    const typeOptionsIndex = typeOptions.findIndex(a => a === node.type);
     const size = positionLookup.getSize(node);
     const nodeElement = SvgDisplay.createElement("node", positionLookup.getPosition(node));
     const backgroundClass = node.type === Tree.noneNodeType ? "nonenode-background" : "node-background";
@@ -69,11 +70,15 @@ function createNode(
     nodeElement.addRect(backgroundClass, size, Vec.zeroVector);
     nodeElement.addDropdown(
         "node-type",
-        currentAliasIndex,
-        alias.values,
+        typeOptionsIndex,
+        typeOptions,
         { x: 0, y: halfNodeHeaderHeight },
         { x: size.x, y: nodeHeaderHeight - 5 },
-        () => { });
+        newIndex => {
+            const newNodeType = typeOptions[newIndex];
+            const newNode = TreeSchemeInstantiator.instantiateDefaultNodeType(typeLookup.scheme, newNodeType!);
+            changed(newNode);
+        });
 
     let yOffset = nodeHeaderHeight;
     node.fieldNames.forEach(fieldName => {
@@ -233,4 +238,12 @@ function getRelativeVector(
     positionLookup: TreePositionLookup.IPositionLookup): Vec.IVector2 {
 
     return Vec.subtract(positionLookup.getPosition(to), positionLookup.getPosition(from));
+}
+
+function getTypeOptions(typeLookup: TreeTypeLookup.ITypeLookup, node: Tree.INode): Tree.NodeType[] {
+    const alias = typeLookup.getAlias(node);
+    const result = alias.values.slice();
+    // Add the none-type
+    result.unshift(Tree.noneNodeType);
+    return result;
 }
