@@ -215,7 +215,7 @@ export function createBooleanInput(
  */
 export function createSelectInput(
     currentIndex: number,
-    options: string[],
+    options: ReadonlyArray<string>,
     callback: (newIndex: number) => void): HTMLSelectElement {
 
     if (currentIndex < 0 || currentIndex >= options.length) {

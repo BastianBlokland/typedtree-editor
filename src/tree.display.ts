@@ -6,6 +6,8 @@ import * as SvgDisplay from "./svg.display";
 import * as Tree from "./tree";
 import * as TreeModifications from "./tree.modifications";
 import * as TreePositionLookup from "./tree.positionlookup";
+import * as TreeTypeLookup from "./tree.typelookup";
+import * as TreeScheme from "./treescheme";
 import * as Utils from "./utils";
 import * as Vec from "./vector";
 
@@ -14,16 +16,22 @@ export type treeChangedCallback = (newTree: Tree.INode) => void;
 
 /**
  * Draw the given tree.
+ * @param scheme Scheme that the given tree follows.
  * @param root Root node for the tree to draw.
  * @param changed Callback that is invoked when the user changes the tree.
  */
-export function setTree(root: Tree.INode | undefined, changed: treeChangedCallback | undefined): void {
+export function setTree(
+    scheme: TreeScheme.IScheme,
+    root: Tree.INode | undefined,
+    changed: treeChangedCallback | undefined): void {
+
     SvgDisplay.clear();
 
     if (root !== undefined) {
+        const typeLookup = TreeTypeLookup.createTypeLookup(scheme, root);
         const positionLookup = TreePositionLookup.createPositionLookup(root);
         positionLookup.nodes.forEach(node => {
-            createNode(node, positionLookup, newNode => {
+            createNode(node, typeLookup, positionLookup, newNode => {
                 if (changed !== undefined) {
                     changed(TreeModifications.treeWithReplacedNode(root, node, newNode));
                 }
@@ -48,15 +56,24 @@ type nodeChangedCallback = (newNode: Tree.INode) => void;
 
 function createNode(
     node: Tree.INode,
+    typeLookup: TreeTypeLookup.ITypeLookup,
     positionLookup: TreePositionLookup.IPositionLookup,
     changed: nodeChangedCallback): void {
 
+    const alias = typeLookup.getAlias(node);
+    const currentAliasIndex = alias.values.findIndex(a => a === node.type);
     const size = positionLookup.getSize(node);
     const nodeElement = SvgDisplay.createElement("node", positionLookup.getPosition(node));
     const backgroundClass = node.type === Tree.noneNodeType ? "nonenode-background" : "node-background";
 
     nodeElement.addRect(backgroundClass, size, Vec.zeroVector);
-    nodeElement.addText("node-type", node.type, { x: Utils.half(size.x), y: halfNodeHeaderHeight });
+    nodeElement.addDropdown(
+        "node-type",
+        currentAliasIndex,
+        alias.values,
+        { x: 0, y: halfNodeHeaderHeight },
+        { x: size.x, y: nodeHeaderHeight - 5 },
+        () => { });
 
     let yOffset = nodeHeaderHeight;
     node.fieldNames.forEach(fieldName => {

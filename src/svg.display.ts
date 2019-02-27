@@ -73,7 +73,7 @@ export interface IElement {
     addDropdown(
         className: ClassName,
         currentIndex: number,
-        options: string[],
+        options: ReadonlyArray<string>,
         position: Vec.Position,
         size: Vec.Size,
         callback: (newIndex: number) => void): void;
@@ -115,7 +115,7 @@ export function initialize(): void {
     const inputBlocker = document.getElementById(inputBlockerDomElementId);
     rootSvgDom.ondragstart = _ => false; // Disable native dragging as it interferes with ours.
     rootSvgDom.onmousedown = event => {
-        if (document.activeElement !== null && document.activeElement.tagName === "INPUT") {
+        if (isUsingInput()) {
             return;
         }
         dragOffset = Vec.subtract(viewOffset, { x: event.clientX, y: event.clientY });
@@ -129,7 +129,7 @@ export function initialize(): void {
         }
     };
     window.onmousemove = event => {
-        if (document.activeElement !== null && document.activeElement.tagName === "INPUT") {
+        if (isUsingInput()) {
             dragging = false;
             return;
         }
@@ -141,7 +141,7 @@ export function initialize(): void {
         }
     };
     rootSvgDom.onwheel = event => {
-        if (document.activeElement !== null && document.activeElement.tagName === "INPUT") {
+        if (isUsingInput()) {
             return;
         }
 
@@ -160,6 +160,13 @@ export function initialize(): void {
         scale = newScale;
         updateRootTransform();
     };
+
+    function isUsingInput() {
+        if (document.activeElement === null) {
+            return false;
+        }
+        return document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "SELECT";
+    }
 }
 
 /**
@@ -308,7 +315,7 @@ class GroupElement implements IElement {
     public addDropdown(
         className: ClassName,
         currentIndex: number,
-        options: string[],
+        options: ReadonlyArray<string>,
         position: Vec.Position,
         size: Vec.Size,
         callback: (newIndex: number) => void): void {

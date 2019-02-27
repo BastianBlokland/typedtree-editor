@@ -147,10 +147,14 @@ function setCurrentScheme(scheme: TreeScheme.IScheme, name: string): void {
 }
 
 function setCurrentTree(tree: Tree.INode | undefined, name?: string): void {
+    if (currentScheme === undefined) {
+        throw new Error("Unable to update tree. Error: No scheme loaded");
+    }
+
     currentTree = tree;
     currentTreeName = name;
     DomUtils.setText("tree-title", name === undefined ? "" : name);
-    TreeDisplay.setTree(tree, newTree => {
+    TreeDisplay.setTree(currentScheme, tree, newTree => {
         if (tree !== undefined) {
             enqueueUpdateTree(tree, newTree, name);
         }
