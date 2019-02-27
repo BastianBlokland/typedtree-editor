@@ -56,6 +56,23 @@ export function duplicateWithMissingFields(scheme: TreeScheme.IScheme, tree: Tre
 
 /**
  * Instantiate a (immutable) node with all fields set to their default values.
+ * @param scheme Scheme to get definitions for the type from.
+ * @param nodeType Type of the node to instantiate.
+ * @returns Newly created node.
+ */
+export function instantiateDefaultNodeType(scheme: TreeScheme.IScheme, nodeType: Tree.NodeType): Tree.INode {
+    if (nodeType === Tree.noneNodeType) {
+        return Tree.createNoneNode();
+    }
+    const definition = scheme.getNode(nodeType);
+    if (definition === undefined) {
+        throw new Error(`Unable to find definition for nodetype: ${nodeType}`);
+    }
+    return instantiateDefaultNode(definition);
+}
+
+/**
+ * Instantiate a (immutable) node with all fields set to their default values.
  * @param nodeDefinition Definition of the node to instantiate.
  * @returns Newly created node.
  */

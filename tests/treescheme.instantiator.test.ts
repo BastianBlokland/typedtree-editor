@@ -40,9 +40,15 @@ test("missingFieldsAreAppendedCorrectly", () => {
         }));
 });
 
+test("noneNodesCanBeInstantiated", () => {
+    const scheme = createTestScheme();
+    expect(TreeSchemeInstantiator.instantiateDefaultNodeType(scheme, Tree.noneNodeType)).
+        toEqual(Tree.createNoneNode());
+});
+
 test("defaultNodeCanBeCreatedSuccessfully", () => {
     const scheme = createTestScheme();
-    expect(TreeSchemeInstantiator.instantiateDefaultNode(scheme.nodes[0])).
+    expect(TreeSchemeInstantiator.instantiateDefaultNodeType(scheme, "Node1")).
         toEqual(Tree.createNode("Node1", b => {
             b.pushStringField("field1", "");
             b.pushNumberField("field2", 0);
