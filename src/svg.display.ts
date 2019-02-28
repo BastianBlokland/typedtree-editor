@@ -149,16 +149,7 @@ export function initialize(): void {
         const scrollDelta = -(event as WheelEvent).deltaY * scrollScaleSpeed;
         const pointerPos: Vec.Position = { x: (event as WheelEvent).pageX, y: (event as WheelEvent).pageY };
 
-        // Calculate new-scale and offset to zoom-in to where the user was pointing
-        const newScale = clampScale(scale + scrollDelta);
-        const zoomFactor = (newScale - scale) / scale;
-        const offsetToPointer = Vec.subtract(pointerPos, viewOffset);
-        const offsetDelta = Vec.multiply(offsetToPointer, -zoomFactor);
-
-        // Apply new scale and offset
-        viewOffset = Vec.add(viewOffset, offsetDelta);
-        scale = newScale;
-        updateRootTransform();
+        zoom(scrollDelta, pointerPos);
     };
 }
 
@@ -206,9 +197,24 @@ export function focusContent(maxScale?: number): void {
 /**
  * Update the zoom, use positive delta for zooming-in and negative delta for zooming-out.
  * @param delta Number indicating how far to zoom. (Use negative numbers for zooming out)
+ * @param focalPoint Point to focus on when zooming. (defaults to page center)
  */
-export function zoom(delta: number = 0.1): void {
-    setScale(scale + delta);
+export function zoom(delta: number = 0.1, focalPoint?: Vec.Position): void {
+    if (focalPoint === undefined) {
+        // Default the focalPoint to the page center
+        focalPoint = Vec.half(Vec.createVector(window.innerWidth, window.innerHeight));
+    }
+
+    // Calculate new-scale and offset to zoom-in to where the user was pointing
+    const newScale = clampScale(scale + delta);
+    const zoomFactor = (newScale - scale) / scale;
+    const offsetToPointer = Vec.subtract(focalPoint, viewOffset);
+    const offsetDelta = Vec.multiply(offsetToPointer, -zoomFactor);
+
+    // Apply new scale and offset
+    viewOffset = Vec.add(viewOffset, offsetDelta);
+    scale = newScale;
+    updateRootTransform();
 }
 
 /** Clear all content from this display. */
