@@ -76,7 +76,7 @@ function createNode(
         { x: size.x, y: nodeHeaderHeight - 5 },
         newIndex => {
             const newNodeType = typeOptions[newIndex];
-            const newNode = TreeSchemeInstantiator.instantiateDefaultNodeType(typeLookup.scheme, newNodeType!);
+            const newNode = TreeSchemeInstantiator.changeNodeType(typeLookup.scheme, node, newNodeType);
             changed(newNode);
         });
 

@@ -18,13 +18,20 @@ export interface IFailure {
  * Validate if a given tree conforms to the given scheme.
  * @param scheme Scheme to validate against.
  * @param tree Root-node for the tree to validate.
- * @returns True if tree conforms to the scene otherwise a failure object containing the failure reason.
+ * @returns True if tree conforms to the scheme otherwise a failure object containing the failure reason.
  */
 export function validate(scheme: TreeScheme.IScheme, tree: Tree.INode): Result {
     return validateNode(scheme, scheme.rootAlias, tree);
 }
 
-function validateNode(scheme: TreeScheme.IScheme, alias: TreeScheme.IAlias, node: Tree.INode): Result {
+/**
+ * Validate if a given node conforms to the given scheme.
+ * @param scheme Scheme to validate against.
+ * @param alias Alias that node has to be part of.
+ * @param node Node to validate.
+ * @returns True if the node conforms to the scheme otherwise a failure object containing the failure reason.
+ */
+export function validateNode(scheme: TreeScheme.IScheme, alias: TreeScheme.IAlias, node: Tree.INode): Result {
     // Validate type.
     if (!alias.containsValue(node.type)) {
         return createInvalidNodeTypeFailure(alias, node.type);
@@ -53,7 +60,14 @@ function validateNode(scheme: TreeScheme.IScheme, alias: TreeScheme.IAlias, node
     return true;
 }
 
-function validateField(
+/**
+ * Validate if a given node conforms to the given scheme.
+ * @param scheme Scheme to validate against.
+ * @param fieldDefinition Definition that this field has to match.
+ * @param field Field to validate.
+ * @returns True if the field conforms to the scheme otherwise a failure object containing the failure reason.
+ */
+export function validateField(
     scheme: TreeScheme.IScheme,
     fieldDefinition: TreeScheme.IFieldDefinition,
     field: Tree.Field): Result {

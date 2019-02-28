@@ -55,10 +55,38 @@ export function duplicateWithMissingFields(scheme: TreeScheme.IScheme, tree: Tre
 }
 
 /**
+ * Change the type of a node. Compatible fields will be used from the old-node, for missing / non-compatible
+ * fields new ones will be created with values set to default.
+ * @param scheme Scheme to get definitions for the type from.
+ * @param node Node to base the new node on.
+ * @param newNodeType Type of the new node to create.
+ * @returns Newly created (immutable) node.
+ */
+export function changeNodeType(scheme: TreeScheme.IScheme, node: Tree.INode, newNodeType: Tree.NodeType): Tree.INode {
+    const newNodeDefinition = scheme.getNode(newNodeType);
+    if (newNodeDefinition === undefined) {
+        throw new Error(`New node-type ${newNodeType} cannot be found in the given scheme`);
+    }
+    return Tree.createNode(newNodeType, b => {
+        newNodeDefinition.fields.forEach(f => {
+            /* If the field of the original node is compatible then use that, otherwise create a new
+            default field. */
+            const orgField = node.getField(f.name);
+            if (orgField !== undefined && TreeSchemeValidator.validateField(scheme, f, orgField) === true) {
+                b.pushField(orgField);
+            } else {
+                const defaultField = instantiateDefaultField(f);
+                b.pushField(defaultField);
+            }
+        });
+    });
+}
+
+/**
  * Instantiate a (immutable) node with all fields set to their default values.
  * @param scheme Scheme to get definitions for the type from.
  * @param nodeType Type of the node to instantiate.
- * @returns Newly created node.
+ * @returns Newly created (immutable) node.
  */
 export function instantiateDefaultNodeType(scheme: TreeScheme.IScheme, nodeType: Tree.NodeType): Tree.INode {
     if (nodeType === Tree.noneNodeType) {
