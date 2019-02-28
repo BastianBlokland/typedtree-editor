@@ -18,6 +18,17 @@ export function saveJsonText(json: string, fileName: string): void {
 }
 
 /**
+ * Check if the user currently has an input element focussed.
+ * @returns True if the user current has an input element focussed, otherwise False.
+ */
+export function isInputFocussed(): boolean {
+    if (document.activeElement === null) {
+        return false;
+    }
+    return document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "SELECT";
+}
+
+/**
  * Create an ordered-list with given elements.
  * @param items Items to add to the list.
  * @returns Newly created olist element.

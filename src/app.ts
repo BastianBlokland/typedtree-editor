@@ -174,6 +174,9 @@ function toggleToolbox(): void {
 }
 
 function onDomKeyPress(event: KeyboardEvent): void {
+    if (DomUtils.isInputFocussed()) {
+        return;
+    }
     switch (event.key) {
         case "t": toggleToolbox(); break;
         case "f":

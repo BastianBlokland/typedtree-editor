@@ -115,7 +115,7 @@ export function initialize(): void {
     const inputBlocker = document.getElementById(inputBlockerDomElementId);
     rootSvgDom.ondragstart = _ => false; // Disable native dragging as it interferes with ours.
     rootSvgDom.onmousedown = event => {
-        if (isUsingInput()) {
+        if (DomUtils.isInputFocussed()) {
             return;
         }
         dragOffset = Vec.subtract(viewOffset, { x: event.clientX, y: event.clientY });
@@ -129,7 +129,7 @@ export function initialize(): void {
         }
     };
     window.onmousemove = event => {
-        if (isUsingInput()) {
+        if (DomUtils.isInputFocussed()) {
             dragging = false;
             return;
         }
@@ -141,7 +141,7 @@ export function initialize(): void {
         }
     };
     rootSvgDom.onwheel = event => {
-        if (isUsingInput()) {
+        if (DomUtils.isInputFocussed()) {
             return;
         }
 
@@ -160,13 +160,6 @@ export function initialize(): void {
         scale = newScale;
         updateRootTransform();
     };
-
-    function isUsingInput() {
-        if (document.activeElement === null) {
-            return false;
-        }
-        return document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "SELECT";
-    }
 }
 
 /**
