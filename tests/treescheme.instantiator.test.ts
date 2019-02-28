@@ -89,6 +89,13 @@ test("defaultNodeCanBeCreatedSuccessfully", () => {
         }));
 });
 
+test("newArrayElementsCanBeCreated", () => {
+    expect(TreeSchemeInstantiator.createNewElement("stringArray")).toEqual("");
+    expect(TreeSchemeInstantiator.createNewElement("numberArray")).toEqual(0);
+    expect(TreeSchemeInstantiator.createNewElement("booleanArray")).toEqual(false);
+    expect(TreeSchemeInstantiator.createNewElement("nodeArray")).toEqual(Tree.createNoneNode());
+});
+
 function createTestScheme(): TreeScheme.IScheme {
     return TreeScheme.createScheme("Root", b => {
         const alias = b.pushAlias("Root", ["Node1"]);

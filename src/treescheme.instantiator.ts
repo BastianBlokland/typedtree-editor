@@ -138,3 +138,19 @@ export function instantiateDefaultField(fieldDefinition: TreeScheme.IFieldDefini
                 { kind: "node", name: fieldDefinition.name, value: Tree.createNoneNode() };
     }
 }
+
+/**
+ * Create a new default element for a given array-type.
+ * @param kind Array-kind to create a new value for.
+ * @returns Newly created default element.
+ */
+export function createNewElement<T extends Tree.ArrayField>(kind: Tree.FieldValueKind<T>): Tree.FieldElementType<T> {
+    switch (kind) {
+        case "stringArray": return "" as Tree.FieldElementType<T>;
+        case "numberArray": return 0 as Tree.FieldElementType<T>;
+        case "booleanArray": return false as Tree.FieldElementType<T>;
+        case "nodeArray": return Tree.createNoneNode() as Tree.FieldElementType<T>;
+        default:
+            throw new Error(`Unknown array value kind: ${kind}`);
+    }
+}
