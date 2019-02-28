@@ -40,6 +40,21 @@ test("missingFieldsAreAppendedCorrectly", () => {
         }));
 });
 
+test("nodeTypeCanBeChangedIntoNoneType", () => {
+    const scheme = createTestScheme();
+    const node = Tree.createNode("RandomNode", b => {
+        b.pushNumberField("field1", 1234);
+        b.pushNumberField("field2", 1337);
+        b.pushNodeArrayField("field8", [
+            Tree.createNode("Node1", b => {
+                b.pushStringArrayField("field5", ["elem1", "elem2"]);
+            }),
+        ]);
+    });
+    expect(TreeSchemeInstantiator.changeNodeType(scheme, node, Tree.noneNodeType)).
+        toEqual(Tree.createNoneNode());
+});
+
 test("whenChangingNodeTypeCompatibleFieldsAreReused", () => {
     const scheme = createTestScheme();
     const node = Tree.createNode("RandomNode", b => {

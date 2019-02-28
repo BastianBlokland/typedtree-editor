@@ -63,6 +63,9 @@ export function duplicateWithMissingFields(scheme: TreeScheme.IScheme, tree: Tre
  * @returns Newly created (immutable) node.
  */
 export function changeNodeType(scheme: TreeScheme.IScheme, node: Tree.INode, newNodeType: Tree.NodeType): Tree.INode {
+    if (newNodeType === Tree.noneNodeType) {
+        return Tree.createNoneNode();
+    }
     const newNodeDefinition = scheme.getNode(newNodeType);
     if (newNodeDefinition === undefined) {
         throw new Error(`New node-type ${newNodeType} cannot be found in the given scheme`);
