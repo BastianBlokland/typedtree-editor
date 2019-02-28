@@ -63,6 +63,9 @@ export function duplicateWithMissingFields(scheme: TreeScheme.IScheme, tree: Tre
  * @returns Newly created (immutable) node.
  */
 export function changeNodeType(scheme: TreeScheme.IScheme, node: Tree.INode, newNodeType: Tree.NodeType): Tree.INode {
+    if (newNodeType === Tree.noneNodeType) {
+        return Tree.createNoneNode();
+    }
     const newNodeDefinition = scheme.getNode(newNodeType);
     if (newNodeDefinition === undefined) {
         throw new Error(`New node-type ${newNodeType} cannot be found in the given scheme`);
@@ -136,5 +139,21 @@ export function instantiateDefaultField(fieldDefinition: TreeScheme.IFieldDefini
             return fieldDefinition.isArray ?
                 { kind: "nodeArray", name: fieldDefinition.name, value: [] } :
                 { kind: "node", name: fieldDefinition.name, value: Tree.createNoneNode() };
+    }
+}
+
+/**
+ * Create a new default element for a given array-type.
+ * @param kind Array-kind to create a new value for.
+ * @returns Newly created default element.
+ */
+export function createNewElement<T extends Tree.ArrayField>(kind: Tree.FieldValueKind<T>): Tree.FieldElementType<T> {
+    switch (kind) {
+        case "stringArray": return "" as Tree.FieldElementType<T>;
+        case "numberArray": return 0 as Tree.FieldElementType<T>;
+        case "booleanArray": return false as Tree.FieldElementType<T>;
+        case "nodeArray": return Tree.createNoneNode() as Tree.FieldElementType<T>;
+        default:
+            throw new Error(`Unknown array value kind: ${kind}`);
     }
 }

@@ -138,13 +138,21 @@ function createField(
         changed: fieldChangedCallback<T>): void {
 
         const array = field.value as ReadonlyArray<Tree.FieldElementType<T>>;
+
+        /* NOTE: There are some ugly casts here because the type-system cannot quite follow what
+        we are doing here. */
+
+        // Add element button
+        parent.addGraphics("fieldvalue-button", "arrayAdd", { x: nameWidth - 15, y: centeredYOffset }, () => {
+            const newElement = TreeSchemeInstantiator.createNewElement(field.kind);
+            const newArray = array.concat(newElement as Tree.FieldElementType<T>);
+            changed(TreeModifications.fieldWithValue(field, newArray as unknown as Tree.FieldValueType<T>));
+        });
+
         for (let i = 0; i < field.value.length; i++) {
             const element = array[i];
             const yOffset = i * nodeFieldHeight;
             const yPos = centeredYOffset + yOffset;
-
-            /* NOTE: There are some ugly casts here because the type-system cannot quite follow what
-            we are doing here. */
 
             // Element deletion button
             parent.addGraphics("fieldvalue-button", "arrayDelete", { x: nameWidth, y: yPos }, () => {
