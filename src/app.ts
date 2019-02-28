@@ -21,11 +21,9 @@ export async function run(): Promise<void> {
 
     window.onkeydown = onDomKeyPress;
     DomUtils.subscribeToClick("toolbox-toggle", toggleToolbox);
-    DomUtils.subscribeToClick("focus-button", () => {
-        if (currentTree !== undefined) {
-            TreeDisplay.focusTree(2);
-        }
-    });
+    DomUtils.subscribeToClick("focus-button", focusTree);
+    DomUtils.subscribeToClick("zoomin-button", () => { TreeDisplay.zoom(0.1); });
+    DomUtils.subscribeToClick("zoomout-button", () => { TreeDisplay.zoom(-0.1); });
 
     DomUtils.subscribeToFileInput("openscheme-file", enqueueLoadScheme);
     DomUtils.subscribeToClick("savescheme-button", enqueueSaveScheme);
@@ -173,17 +171,21 @@ function toggleToolbox(): void {
     }
 }
 
+function focusTree(): void {
+    if (currentTree !== undefined) {
+        TreeDisplay.focusTree(2);
+    }
+}
+
 function onDomKeyPress(event: KeyboardEvent): void {
     if (DomUtils.isInputFocussed()) {
         return;
     }
     switch (event.key) {
         case "t": toggleToolbox(); break;
-        case "f":
-            if (currentTree !== undefined) {
-                TreeDisplay.focusTree(2);
-            }
-            break;
+        case "f": focusTree(); break;
+        case "+": case "=": TreeDisplay.zoom(0.1); break;
+        case "-": case "_": TreeDisplay.zoom(-0.1); break;
         case "1":
             if (currentScheme !== undefined) {
                 const str = TreeScheme.toString(currentScheme);
