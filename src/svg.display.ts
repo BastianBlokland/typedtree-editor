@@ -203,6 +203,14 @@ export function focusContent(maxScale?: number): void {
     setOffset(Vec.add(halfDisplayMargin, centeringOffset));
 }
 
+/**
+ * Update the zoom, use positive delta for zooming-in and negative delta for zooming-out.
+ * @param delta Number indicating how far to zoom. (Use negative numbers for zooming out)
+ */
+export function zoom(delta: number = 0.1): void {
+    setScale(scale + delta);
+}
+
 /** Clear all content from this display. */
 export function clear(): void {
     assertInitialized();

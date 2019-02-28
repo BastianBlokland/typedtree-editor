@@ -47,6 +47,14 @@ export function focusTree(maxScale?: number): void {
     SvgDisplay.focusContent(maxScale);
 }
 
+/**
+ * Zoom on the tree, use positive delta for zooming-in and negative delta for zooming-out.
+ * @param delta Number indicating how far to zoom. (Use negative numbers for zooming out)
+ */
+export function zoom(delta: number = 0.1): void {
+    SvgDisplay.zoom(delta);
+}
+
 const nodeHeaderHeight = TreePositionLookup.nodeHeaderHeight;
 const halfNodeHeaderHeight = Utils.half(nodeHeaderHeight);
 const nodeFieldHeight = TreePositionLookup.nodeFieldHeight;
