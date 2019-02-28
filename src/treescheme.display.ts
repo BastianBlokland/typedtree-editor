@@ -45,10 +45,10 @@ function createAliasElement(alias: TreeScheme.IAlias): HTMLElement {
 
 function createNodeElement(nodeDefinition: TreeScheme.INodeDefinition): HTMLElement {
     if (nodeDefinition.fields.length === 0) {
-        return DomUtils.createWithText("span", nodeDefinition.identifier, "identifier");
+        return DomUtils.createWithText("span", nodeDefinition.nodeType, "identifier");
     }
     return DomUtils.createWithChildren("details",
-        DomUtils.createSummary(nodeDefinition.identifier, "identifier"),
+        DomUtils.createSummary(nodeDefinition.nodeType, "identifier"),
         DomUtils.createUList(...nodeDefinition.fields.map(f =>
             DomUtils.createWithChildren("div",
                 DomUtils.createWithText("span",

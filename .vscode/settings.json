@@ -6,12 +6,14 @@
   },
   // Common plugins
   "cSpell.words": [
+    "dropdown",
     "bbox",
     "callout",
     "classname",
     "codecov",
     "crossorigin",
     "domutils",
+    "dropdown",
     "fieldname",
     "fieldvalue",
     "instantiator",
@@ -21,6 +23,7 @@
     "nodefield",
     "nodescheme",
     "nodestyle",
+    "nodetype",
     "nonenode",
     "noselect",
     "olist",
@@ -30,6 +33,7 @@
     "opentree",
     "parserutils",
     "polyfill",
+    "positionlookup",
     "rbox",
     "rootalias",
     "savescheme",
@@ -46,8 +50,9 @@
     "truthy",
     "tsout",
     "typedtree",
+    "typelookup",
     "ulist"
-],
+  ],
   // Search settings
   "search.useIgnoreFiles": false,
   "search.exclude": {},

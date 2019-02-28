@@ -12,9 +12,9 @@ test("basicSchemeIsParsedSuccessfully", () => {
             { "identifier": "Alias", "values": [ "NodeA", "NodeB" ] }
         ],
         "nodes": [
-            { "identifier": "NodeA" },
+            { "nodeType": "NodeA" },
             {
-                "identifier": "NodeB",
+                "nodeType": "NodeB",
                 "fields": [
                     { "name": "field1", "valueType": "Alias", "isArray": true },
                     { "name": "field2", "valueType": "boolean" },

@@ -15,8 +15,11 @@
 }
 
 #svg-display .node-type {
-    text-anchor: middle;
     font-weight: bold;
+    margin-left: 5%;
+    width: 90%;
+    height: 90%;
+    background-color: #DDD;
 }
 
 /* Field backgrounds */

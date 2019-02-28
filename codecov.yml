@@ -7,3 +7,18 @@ coverage:
   range: 50..90
   round: down
   precision: 1
+  status:
+    patch:
+      default:
+        target: 60%
+        threshold: 10%
+        if_no_uploads: error
+        if_not_found: error
+        if_ci_failed: error
+    project:
+      default:
+        target: 75%
+        threshold: 5%
+        if_no_uploads: error
+        if_not_found: error
+        if_ci_failed: error

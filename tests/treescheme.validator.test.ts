@@ -76,3 +76,14 @@ test("invalidFieldTypeDoesNotValidate", () => {
     });
     expect(TreeSchemeValidator.validate(scheme, tree)).not.toBe(true);
 });
+
+test("nodeDefinitionCanHaveTheSameNameAsAnAlias", () => {
+    const scheme = TreeScheme.createScheme("Alias", b => {
+        const alias = b.pushAlias("Alias", ["Alias"]);
+        b.pushNodeDefinition("Alias", b => b.pushField("Alias", alias!));
+    });
+    const tree = Tree.createNode("Alias", b => {
+        b.pushNodeField("Alias", Tree.createNode("Alias"));
+    });
+    expect(TreeSchemeValidator.validate(scheme, tree)).toBe(true);
+});

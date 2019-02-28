@@ -1,8 +1,8 @@
 /**
  * @file Responsible for converting a tree model into a 2d structure that can be used to display tree's.
  * Example usage:
- * - Create a 'PositionTree' for a given tree structure.
- * - Display the nodes using the positions and sizes from the 'PositionTree'
+ * - Create a 'PositionLookup' for a given tree structure.
+ * - Display the nodes using the positions and sizes from the 'PositionLookup'
  */
 
 import * as Tree from "./tree";
@@ -25,7 +25,7 @@ export const nodeVerticalSpacing = 25;
 export const nodeFieldHeight = 25;
 
 /** Immutable object that can be used to find where nodes should be positioned. */
-export interface IPositionTree {
+export interface IPositionLookup {
     /** Root node for this tree. */
     readonly root: Tree.INode;
     /** All the nodes in the tree. */
@@ -58,12 +58,12 @@ export interface IPositionTree {
 }
 
 /**
- * Create a position-tree object for the given node (and its children).
- * @param root Root node for the tree to make a position-tree for.
- * @returns Position-tree object for the given root.
+ * Create a positionlookup object for the given node (and its children).
+ * @param root Root node for the tree to make a positionlookup for.
+ * @returns PositionLookup object for the given root.
  */
-export function createPositionTree(root: Tree.INode): IPositionTree {
-    return new PositionTreeImpl(root);
+export function createPositionLookup(root: Tree.INode): IPositionLookup {
+    return new PositionLookupImpl(root);
 }
 
 /**
@@ -98,7 +98,7 @@ export function getFieldHeight(field: Tree.Field): number {
     }
 }
 
-class PositionTreeImpl implements IPositionTree {
+class PositionLookupImpl implements IPositionLookup {
     private readonly _root: Tree.INode;
     private readonly _totalArea: Vec.Size;
     private readonly _nodes: Tree.INode[] = [];
@@ -136,7 +136,7 @@ class PositionTreeImpl implements IPositionTree {
     public getSize(node: Tree.INode): Vec.Size {
         const lookup = this._sizes.get(node);
         if (lookup === undefined) {
-            throw new Error("Node is not known to this view-tree");
+            throw new Error("Node is not known to this positionlookup");
         }
         return lookup;
     }
@@ -144,7 +144,7 @@ class PositionTreeImpl implements IPositionTree {
     public getArea(node: Tree.INode): Vec.Size {
         const lookup = this._areas.get(node);
         if (lookup === undefined) {
-            throw new Error("Node is not known to this view-tree");
+            throw new Error("Node is not known to this positionlookup");
         }
         return lookup;
     }
@@ -152,7 +152,7 @@ class PositionTreeImpl implements IPositionTree {
     public getPosition(node: Tree.INode): Vec.Position {
         const lookup = this._positions.get(node);
         if (lookup === undefined) {
-            throw new Error("Node is not known to this view-tree");
+            throw new Error("Node is not known to this positionlookup");
         }
         return lookup;
     }

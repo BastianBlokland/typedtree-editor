@@ -5,29 +5,40 @@
 import * as SvgDisplay from "./svg.display";
 import * as Tree from "./tree";
 import * as TreeModifications from "./tree.modifications";
-import * as TreeView from "./tree.view";
+import * as TreePositionLookup from "./tree.positionlookup";
+import * as TreeTypeLookup from "./tree.typelookup";
+import * as TreeScheme from "./treescheme";
+import * as TreeSchemeInstantiator from "./treescheme.instantiator";
 import * as Utils from "./utils";
 import * as Vec from "./vector";
 
+/** Callback for when a tree is changed, returns a new immutable tree. */
 export type treeChangedCallback = (newTree: Tree.INode) => void;
 
 /**
  * Draw the given tree.
+ * @param scheme Scheme that the given tree follows.
  * @param root Root node for the tree to draw.
+ * @param changed Callback that is invoked when the user changes the tree.
  */
-export function setTree(root: Tree.INode | undefined, changed: treeChangedCallback | undefined): void {
+export function setTree(
+    scheme: TreeScheme.IScheme,
+    root: Tree.INode | undefined,
+    changed: treeChangedCallback | undefined): void {
+
     SvgDisplay.clear();
 
     if (root !== undefined) {
-        const positionTree = TreeView.createPositionTree(root);
-        positionTree.nodes.forEach(node => {
-            createNode(node, positionTree, newNode => {
+        const typeLookup = TreeTypeLookup.createTypeLookup(scheme, root);
+        const positionLookup = TreePositionLookup.createPositionLookup(root);
+        positionLookup.nodes.forEach(node => {
+            createNode(node, typeLookup, positionLookup, newNode => {
                 if (changed !== undefined) {
                     changed(TreeModifications.treeWithReplacedNode(root, node, newNode));
                 }
             });
         });
-        SvgDisplay.setContentOffset(positionTree.rootOffset);
+        SvgDisplay.setContentOffset(positionLookup.rootOffset);
     }
 }
 
@@ -36,9 +47,9 @@ export function focusTree(maxScale?: number): void {
     SvgDisplay.focusContent(maxScale);
 }
 
-const nodeHeaderHeight = TreeView.nodeHeaderHeight;
-const halfNodeHeightHeight = Utils.half(nodeHeaderHeight);
-const nodeFieldHeight = TreeView.nodeFieldHeight;
+const nodeHeaderHeight = TreePositionLookup.nodeHeaderHeight;
+const halfNodeHeaderHeight = Utils.half(nodeHeaderHeight);
+const nodeFieldHeight = TreePositionLookup.nodeFieldHeight;
 const nodeInputSlotOffset: Vec.IVector2 = { x: 0, y: 12.5 };
 const nodeConnectionCurviness = .7;
 
@@ -46,19 +57,32 @@ type nodeChangedCallback = (newNode: Tree.INode) => void;
 
 function createNode(
     node: Tree.INode,
-    positionTree: TreeView.IPositionTree,
+    typeLookup: TreeTypeLookup.ITypeLookup,
+    positionLookup: TreePositionLookup.IPositionLookup,
     changed: nodeChangedCallback): void {
 
-    const size = positionTree.getSize(node);
-    const nodeElement = SvgDisplay.createElement("node", positionTree.getPosition(node));
+    const typeOptions = getTypeOptions(typeLookup, node);
+    const typeOptionsIndex = typeOptions.findIndex(a => a === node.type);
+    const size = positionLookup.getSize(node);
+    const nodeElement = SvgDisplay.createElement("node", positionLookup.getPosition(node));
     const backgroundClass = node.type === Tree.noneNodeType ? "nonenode-background" : "node-background";
 
     nodeElement.addRect(backgroundClass, size, Vec.zeroVector);
-    nodeElement.addText("node-type", node.type, { x: Utils.half(size.x), y: halfNodeHeightHeight });
+    nodeElement.addDropdown(
+        "node-type",
+        typeOptionsIndex,
+        typeOptions,
+        { x: 0, y: halfNodeHeaderHeight },
+        { x: size.x, y: nodeHeaderHeight - 5 },
+        newIndex => {
+            const newNodeType = typeOptions[newIndex];
+            const newNode = TreeSchemeInstantiator.changeNodeType(typeLookup.scheme, node, newNodeType);
+            changed(newNode);
+        });
 
     let yOffset = nodeHeaderHeight;
     node.fieldNames.forEach(fieldName => {
-        yOffset += createField(node, fieldName, nodeElement, positionTree, yOffset, newField => {
+        yOffset += createField(node, fieldName, nodeElement, positionLookup, yOffset, newField => {
             changed(TreeModifications.nodeWithField(node, newField));
         });
     });
@@ -70,7 +94,7 @@ function createField(
     node: Tree.INode,
     fieldName: string,
     parent: SvgDisplay.IElement,
-    positionTree: TreeView.IPositionTree,
+    positionLookup: TreePositionLookup.IPositionLookup,
     yOffset: number,
     changed: fieldChangedCallback<Tree.Field>): number {
 
@@ -79,7 +103,7 @@ function createField(
         return 0;
     }
 
-    const fieldSize = { x: positionTree.getSize(node).x, y: TreeView.getFieldHeight(field) };
+    const fieldSize = { x: positionLookup.getSize(node).x, y: TreePositionLookup.getFieldHeight(field) };
     const centeredYOffset = yOffset + Utils.half(nodeFieldHeight);
     const nameWidth = Utils.half(fieldSize.x) - 10;
 
@@ -195,7 +219,7 @@ function createField(
         pos: Vec.Position,
         size: Vec.Size): void {
 
-        addConnection(parent, { x: fieldSize.x - 12, y: pos.y }, getRelativeVector(node, value, positionTree));
+        addConnection(parent, { x: fieldSize.x - 12, y: pos.y }, getRelativeVector(node, value, positionLookup));
     }
 }
 
@@ -208,6 +232,18 @@ function addConnection(parent: SvgDisplay.IElement, from: Vec.Position, to: Vec.
     parent.addBezier("connection", from, c1, c2, target);
 }
 
-function getRelativeVector(from: Tree.INode, to: Tree.INode, positionTree: TreeView.IPositionTree): Vec.IVector2 {
-    return Vec.subtract(positionTree.getPosition(to), positionTree.getPosition(from));
+function getRelativeVector(
+    from: Tree.INode,
+    to: Tree.INode,
+    positionLookup: TreePositionLookup.IPositionLookup): Vec.IVector2 {
+
+    return Vec.subtract(positionLookup.getPosition(to), positionLookup.getPosition(from));
+}
+
+function getTypeOptions(typeLookup: TreeTypeLookup.ITypeLookup, node: Tree.INode): Tree.NodeType[] {
+    const alias = typeLookup.getAlias(node);
+    const result = alias.values.slice();
+    // Add the none-type
+    result.unshift(Tree.noneNodeType);
+    return result;
 }

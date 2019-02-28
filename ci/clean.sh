@@ -9,5 +9,7 @@ source ./ci/utils.sh
 # Remove all previous build artifacts
 rm -rf ./build
 rm -rf ./tsout
+rm -rf ./coverage
+rm -f ./junit.xml
 
 exit 0

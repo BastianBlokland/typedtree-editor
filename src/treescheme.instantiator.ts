@@ -28,7 +28,7 @@ export function duplicateWithMissingFields(scheme: TreeScheme.IScheme, tree: Tre
         if (definition === undefined) {
             throw new Error(`Unable to find definition for node-type: ${node.type}`);
         }
-        return Tree.createNode(definition.identifier, b => {
+        return Tree.createNode(definition.nodeType, b => {
             // Copy fields from the original if it has them, otherwise create defaults.
             definition.fields.forEach(f => {
                 const orgField = node.getField(f.name);
@@ -55,12 +55,57 @@ export function duplicateWithMissingFields(scheme: TreeScheme.IScheme, tree: Tre
 }
 
 /**
+ * Change the type of a node. Compatible fields will be used from the old-node, for missing / non-compatible
+ * fields new ones will be created with values set to default.
+ * @param scheme Scheme to get definitions for the type from.
+ * @param node Node to base the new node on.
+ * @param newNodeType Type of the new node to create.
+ * @returns Newly created (immutable) node.
+ */
+export function changeNodeType(scheme: TreeScheme.IScheme, node: Tree.INode, newNodeType: Tree.NodeType): Tree.INode {
+    const newNodeDefinition = scheme.getNode(newNodeType);
+    if (newNodeDefinition === undefined) {
+        throw new Error(`New node-type ${newNodeType} cannot be found in the given scheme`);
+    }
+    return Tree.createNode(newNodeType, b => {
+        newNodeDefinition.fields.forEach(f => {
+            /* If the field of the original node is compatible then use that, otherwise create a new
+            default field. */
+            const orgField = node.getField(f.name);
+            if (orgField !== undefined && TreeSchemeValidator.validateField(scheme, f, orgField) === true) {
+                b.pushField(orgField);
+            } else {
+                const defaultField = instantiateDefaultField(f);
+                b.pushField(defaultField);
+            }
+        });
+    });
+}
+
+/**
+ * Instantiate a (immutable) node with all fields set to their default values.
+ * @param scheme Scheme to get definitions for the type from.
+ * @param nodeType Type of the node to instantiate.
+ * @returns Newly created (immutable) node.
+ */
+export function instantiateDefaultNodeType(scheme: TreeScheme.IScheme, nodeType: Tree.NodeType): Tree.INode {
+    if (nodeType === Tree.noneNodeType) {
+        return Tree.createNoneNode();
+    }
+    const definition = scheme.getNode(nodeType);
+    if (definition === undefined) {
+        throw new Error(`Unable to find definition for nodetype: ${nodeType}`);
+    }
+    return instantiateDefaultNode(definition);
+}
+
+/**
  * Instantiate a (immutable) node with all fields set to their default values.
  * @param nodeDefinition Definition of the node to instantiate.
  * @returns Newly created node.
  */
 export function instantiateDefaultNode(nodeDefinition: TreeScheme.INodeDefinition): Tree.INode {
-    return Tree.createNode(nodeDefinition.identifier, b => {
+    return Tree.createNode(nodeDefinition.nodeType, b => {
         nodeDefinition.fields.forEach(f => {
             const field = instantiateDefaultField(f);
             b.pushField(field);
