@@ -80,7 +80,8 @@ function createNode(
         "node-type",
         typeOptionsIndex,
         typeOptions,
-        { x: 0, y: halfNodeHeaderHeight },
+        /* Ugly offsets to compensate for styling of select elements */
+        { x: 0, y: halfNodeHeaderHeight - 3 },
         { x: size.x, y: nodeHeaderHeight - 5 },
         newIndex => {
             const newNodeType = typeOptions[newIndex];
@@ -113,10 +114,14 @@ function createField(
 
     const fieldSize = { x: positionLookup.getSize(node).x, y: TreePositionLookup.getFieldHeight(field) };
     const centeredYOffset = yOffset + Utils.half(nodeFieldHeight);
-    const nameWidth = Utils.half(fieldSize.x) - 10;
+    const nameWidth = Utils.half(fieldSize.x) + 20;
 
     parent.addRect(`${field.kind}-value-background`, fieldSize, { x: 0, y: yOffset });
-    parent.addText("fieldname", `${field.name}:`, { x: 10, y: centeredYOffset });
+    parent.addText(
+        "fieldname",
+        `${field.name}:`,
+        { x: 10, y: centeredYOffset },
+        { x: nameWidth - 45, y: nodeFieldHeight });
 
     // Value
     switch (field.kind) {
