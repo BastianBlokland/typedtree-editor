@@ -22,6 +22,7 @@
 /* Show cursor on buttons in the toolbox */
 #toolbox button {
     cursor: pointer;
+    color: #000;
 }
 
 #toolbox #openscheme-container, #toolbox #opentree-container {
