@@ -113,22 +113,51 @@ export function initialize(): void {
 
     // Setup global listeners
     const inputBlocker = document.getElementById(inputBlockerDomElementId);
-    rootSvgDom.ondragstart = _ => false; // Disable native dragging as it interferes with ours.
-    rootSvgDom.onmousedown = event => {
+    // Prevent standard 'dragging'
+    rootSvgDom.addEventListener("dragstart", event => event.preventDefault(), { passive: false });
+
+    // Subscribe to both desktop and mobile 'down' events
+    rootSvgDom.addEventListener("mousedown", event => {
+        handleMoveStart({ x: event.clientX, y: event.clientY });
+    }, { passive: true });
+    rootSvgDom.addEventListener("touchstart", event => {
+        handleMoveStart({ x: event.touches[0].clientX, y: event.touches[0].clientY });
+    }, { passive: true });
+
+    // Subscribe to both desktop and mobile 'move' events
+    window.addEventListener("mousemove", event => {
+        if (dragging) {
+            event.preventDefault();
+        }
+        handleMoveUpdate({ x: event.clientX, y: event.clientY });
+    }, { passive: false });
+    window.addEventListener("touchmove", event => {
+        if (dragging) {
+            event.preventDefault();
+        }
+        handleMoveUpdate({ x: event.touches[0].clientX, y: event.touches[0].clientY });
+    }, { passive: false });
+
+    // Subscribe to both desktop and mobile 'up' events
+    window.addEventListener("mouseup", _ => handleMoveEnd(), { passive: true });
+    window.addEventListener("touchend", _ => handleMoveEnd(), { passive: true });
+
+    // Subscribe to the desktop 'scrollwheel' event.
+    rootSvgDom.addEventListener("wheel", event => {
+        const scrollDelta = -(event as WheelEvent).deltaY * scrollScaleSpeed;
+        const pointerPos: Vec.Position = { x: (event as WheelEvent).pageX, y: (event as WheelEvent).pageY };
+        handleScroll(scrollDelta, pointerPos);
+    }, { passive: true });
+
+    function handleMoveStart(pointerPos: Vec.Position): void {
         if (DomUtils.isInputFocussed()) {
             return;
         }
-        dragOffset = Vec.subtract(viewOffset, { x: event.clientX, y: event.clientY });
+        dragOffset = Vec.subtract(viewOffset, pointerPos);
         dragging = true;
+    }
 
-    };
-    window.onmouseup = () => {
-        dragging = false;
-        if (inputBlocker !== null) {
-            inputBlocker.className = "order-back";
-        }
-    };
-    window.onmousemove = event => {
+    function handleMoveUpdate(pointerPos: Vec.Position): void {
         if (DomUtils.isInputFocussed()) {
             dragging = false;
             return;
@@ -137,20 +166,23 @@ export function initialize(): void {
             if (inputBlocker !== null) {
                 inputBlocker.className = "order-front";
             }
-            setOffset(Vec.add(dragOffset, { x: event.clientX, y: event.clientY }));
+            setOffset(Vec.add(dragOffset, pointerPos));
         }
-    };
-    rootSvgDom.onwheel = event => {
+    }
+
+    function handleMoveEnd(): void {
+        dragging = false;
+        if (inputBlocker !== null) {
+            inputBlocker.className = "order-back";
+        }
+    }
+
+    function handleScroll(scrollDelta: number, pointerPos: Vec.Position): void {
         if (DomUtils.isInputFocussed()) {
             return;
         }
-
-        // Get data from the event
-        const scrollDelta = -(event as WheelEvent).deltaY * scrollScaleSpeed;
-        const pointerPos: Vec.Position = { x: (event as WheelEvent).pageX, y: (event as WheelEvent).pageY };
-
         zoom(scrollDelta, pointerPos);
-    };
+    }
 }
 
 /**
