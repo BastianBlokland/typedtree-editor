@@ -115,6 +115,12 @@ export function initialize(): void {
     const inputBlocker = document.getElementById(inputBlockerDomElementId);
     // Prevent standard 'dragging'
     rootSvgDom.addEventListener("dragstart", event => event.preventDefault(), { passive: false });
+    // Disable selecting of elements when 'dragging'
+    (document as any).onselectstart = (event: any) => {
+        if (dragging) {
+            event.preventDefault();
+        }
+    };
 
     // Subscribe to both desktop and mobile 'down' events
     rootSvgDom.addEventListener("mousedown", event => {

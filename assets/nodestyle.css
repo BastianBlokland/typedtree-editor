@@ -20,6 +20,7 @@
     width: 90%;
     height: 90%;
     background-color: #DDD;
+    cursor: pointer;
 }
 
 /* Field backgrounds */
@@ -58,6 +59,7 @@
 #svg-display .fieldname {
     font-weight: bold;
     white-space: pre;
+    pointer-events: none;
 }
 
 /* Field values */
