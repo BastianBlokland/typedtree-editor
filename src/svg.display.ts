@@ -31,7 +31,7 @@ export interface IElement {
      * Add a text graphic to this element.
      * Note: Position is vertically centered.
      */
-    addText(className: ClassName, text: string, position: Vec.Position): void;
+    addText(className: ClassName, value: string, position: Vec.Position, size: Vec.Size): void;
 
     /**
      * Add a editable text graphic to this element.
@@ -303,17 +303,11 @@ class GroupElement implements IElement {
             addClass(className);
     }
 
-    public addText(className: ClassName, text: string, position: Vec.Position): void {
-        this._svgGroup.group().
-            x(position.x).
-            y(position.y).
-            text(b => {
-                /* NOTE: Using dy offset here to center vertically, reason why we not just use:
-                'dominant-baseline' is that its not supported on edge */
-                b.tspan(text).dy("0.6ex");
-            }).
-            addClass(className).
-            addClass("noselect");
+    public addText(className: ClassName, value: string, position: Vec.Position, size: Vec.Size): void {
+
+        const textElement = DomUtils.createWithText("code", value);
+        textElement.className = className;
+        this.addForeignObject(position, size, textElement);
     }
 
     public addEditableText(
@@ -400,7 +394,8 @@ class GroupElement implements IElement {
         this._svgGroup.group().
             element("foreignObject").
             x(position.x).
-            y(position.y - Utils.half(size.y)).
+            // + 3 here because the foreign objects seem to render too low on most browsers.
+            y(position.y - Utils.half(size.y) + 2).
             width(size.x).
             height(size.y).
             node.appendChild(htmlElement);

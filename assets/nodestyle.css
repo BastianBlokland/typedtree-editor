@@ -57,6 +57,7 @@
 
 #svg-display .fieldname {
     font-weight: bold;
+    white-space: pre;
 }
 
 /* Field values */
