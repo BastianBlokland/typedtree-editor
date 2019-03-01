@@ -114,12 +114,30 @@ export function initialize(): void {
     // Setup global listeners
     const inputBlocker = document.getElementById(inputBlockerDomElementId);
     rootSvgDom.ondragstart = _ => false; // Disable native dragging as it interferes with ours.
-    window.onmousedown = event => handleMoveStart({ x: event.clientX, y: event.clientY });
-    window.ontouchstart = event => handleMoveStart({ x: event.touches[0].clientX, y: event.touches[0].clientY });
-    window.onmousemove = event => handleMoveUpdate({ x: event.clientX, y: event.clientY });
-    window.ontouchmove = event => handleMoveUpdate({ x: event.touches[0].clientX, y: event.touches[0].clientY });
-    window.onmouseup = handleMoveEnd;
-    window.ontouchend = handleMoveEnd;
+    window.onmousedown = event => {
+        handleMoveStart({ x: event.clientX, y: event.clientY });
+        event.preventDefault();
+    };
+    window.ontouchstart = event => {
+        handleMoveStart({ x: event.touches[0].clientX, y: event.touches[0].clientY });
+        event.preventDefault();
+    };
+    window.onmousemove = event => {
+        handleMoveUpdate({ x: event.clientX, y: event.clientY });
+        event.preventDefault();
+    };
+    window.ontouchmove = event => {
+        handleMoveUpdate({ x: event.touches[0].clientX, y: event.touches[0].clientY });
+        event.preventDefault();
+    };
+    window.onmouseup = event => {
+        handleMoveEnd();
+        event.preventDefault();
+    };
+    window.ontouchend = event => {
+        handleMoveEnd();
+        event.preventDefault();
+    };
     rootSvgDom.onwheel = event => {
         const scrollDelta = -(event as WheelEvent).deltaY * scrollScaleSpeed;
         const pointerPos: Vec.Position = { x: (event as WheelEvent).pageX, y: (event as WheelEvent).pageY };
