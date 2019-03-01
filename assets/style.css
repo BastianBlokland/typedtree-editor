@@ -45,6 +45,8 @@ body button {
     font-weight: bold;
     text-align: center;
     cursor: pointer;
+    /* Disable double tap zoom on mobile */
+    touch-action: manipulation;
 }
 
 #toolbox-toggle {
