@@ -113,13 +113,18 @@ export function initialize(): void {
 
     // Setup global listeners
     const inputBlocker = document.getElementById(inputBlockerDomElementId);
+    // Prevent standard 'dragging'
     rootSvgDom.addEventListener("dragstart", event => event.preventDefault(), { passive: false });
+
+    // Subscribe to both desktop and mobile 'down' events
     rootSvgDom.addEventListener("mousedown", event => {
         handleMoveStart({ x: event.clientX, y: event.clientY });
     }, { passive: true });
     rootSvgDom.addEventListener("touchstart", event => {
         handleMoveStart({ x: event.touches[0].clientX, y: event.touches[0].clientY });
     }, { passive: true });
+
+    // Subscribe to both desktop and mobile 'move' events
     window.addEventListener("mousemove", event => {
         if (dragging) {
             event.preventDefault();
@@ -132,12 +137,12 @@ export function initialize(): void {
         }
         handleMoveUpdate({ x: event.touches[0].clientX, y: event.touches[0].clientY });
     }, { passive: false });
-    window.addEventListener("mouseup", event => {
-        handleMoveEnd();
-    }, { passive: false });
-    window.addEventListener("touchend", event => {
-        handleMoveEnd();
-    }, { passive: false });
+
+    // Subscribe to both desktop and mobile 'up' events
+    window.addEventListener("mouseup", _ => handleMoveEnd(), { passive: true });
+    window.addEventListener("touchend", _ => handleMoveEnd(), { passive: true });
+
+    // Subscribe to the desktop 'scrollwheel' event.
     rootSvgDom.addEventListener("wheel", event => {
         const scrollDelta = -(event as WheelEvent).deltaY * scrollScaleSpeed;
         const pointerPos: Vec.Position = { x: (event as WheelEvent).pageX, y: (event as WheelEvent).pageY };
