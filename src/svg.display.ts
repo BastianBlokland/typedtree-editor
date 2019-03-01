@@ -113,36 +113,36 @@ export function initialize(): void {
 
     // Setup global listeners
     const inputBlocker = document.getElementById(inputBlockerDomElementId);
-    rootSvgDom.ondragstart = _ => false; // Disable native dragging as it interferes with ours.
-    rootSvgDom.onmousedown = event => {
+    rootSvgDom.addEventListener("dragstart", event => event.preventDefault(), { passive: false });
+    rootSvgDom.addEventListener("mousedown", event => {
         handleMoveStart({ x: event.clientX, y: event.clientY });
-        event.preventDefault();
-    };
-    rootSvgDom.ontouchstart = event => {
+    }, { passive: true });
+    rootSvgDom.addEventListener("touchstart", event => {
         handleMoveStart({ x: event.touches[0].clientX, y: event.touches[0].clientY });
-        event.preventDefault();
-    };
-    window.onmousemove = event => {
+    }, { passive: true });
+    window.addEventListener("mousemove", event => {
+        if (dragging) {
+            event.preventDefault();
+        }
         handleMoveUpdate({ x: event.clientX, y: event.clientY });
-        event.preventDefault();
-    };
-    window.ontouchmove = event => {
+    }, { passive: false });
+    window.addEventListener("touchmove", event => {
+        if (dragging) {
+            event.preventDefault();
+        }
         handleMoveUpdate({ x: event.touches[0].clientX, y: event.touches[0].clientY });
-        event.preventDefault();
-    };
-    window.onmouseup = event => {
+    }, { passive: false });
+    window.addEventListener("mouseup", event => {
         handleMoveEnd();
-        event.preventDefault();
-    };
-    window.ontouchend = event => {
+    }, { passive: false });
+    window.addEventListener("touchend", event => {
         handleMoveEnd();
-        event.preventDefault();
-    };
-    rootSvgDom.onwheel = event => {
+    }, { passive: false });
+    rootSvgDom.addEventListener("wheel", event => {
         const scrollDelta = -(event as WheelEvent).deltaY * scrollScaleSpeed;
         const pointerPos: Vec.Position = { x: (event as WheelEvent).pageX, y: (event as WheelEvent).pageY };
         handleScroll(scrollDelta, pointerPos);
-    };
+    }, { passive: true });
 
     function handleMoveStart(pointerPos: Vec.Position): void {
         if (DomUtils.isInputFocussed()) {
