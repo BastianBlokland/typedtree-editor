@@ -3,16 +3,18 @@ set -e
 source ./ci/utils.sh
 
 # --------------------------------------------------------------------------------------------------
-# Create distribution, minify and deploy it to a azure blob-storage bucket.
+# Minify and deploy a build to a azure blob-storage bucket.
 # --------------------------------------------------------------------------------------------------
 
-info "Starting build"
-
-# Run build
-./ci/build.sh
+BUILD_DIR="./build"
+if [ ! -d "$BUILD_DIR" ]
+then
+    fail "No build directory found"
+fi
 
 info "Starting minification"
-./node_modules/.bin/uglifyjs --output ./build/bundle.js --compress --mangle -- ./build/bundle.js
+./node_modules/.bin/uglifyjs \
+    --output "$BUILD_DIR/bundle.js" --compress --mangle -- "$BUILD_DIR/bundle.js"
 
 info "Starting deployment"
 
@@ -37,7 +39,7 @@ az storage blob delete-batch \
 
 info "Upload to destination"
 az storage blob upload-batch \
-    --source ./build \
+    --source "$BUILD_DIR" \
     --destination \$web \
     --destination-path "$DEST_PATH" \
     --content-cache-control "max-age=60" \

@@ -11,14 +11,14 @@ clean:
 build: clean
 	./ci/build.sh
 
-deploy: clean
+deploy: build
 	./ci/deploy.sh
 
 lint:
 	./ci/lint.sh
 
 test:
-	./ci/test.sh
+	./ci/unit-test.sh
 
 watch:
 	./ci/watch.sh
