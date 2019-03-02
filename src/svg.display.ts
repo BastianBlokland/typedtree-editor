@@ -340,7 +340,7 @@ class GroupElement implements IElement {
     public addText(className: ClassName, value: string, position: Vec.Position, size: Vec.Size): void {
 
         const textElement = DomUtils.createWithText("code", value);
-        textElement.className = className;
+        textElement.className = `noselect ${className}`;
         this.addForeignObject(position, size, textElement);
     }
 
