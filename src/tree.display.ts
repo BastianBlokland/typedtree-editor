@@ -26,20 +26,24 @@ export function setTree(
     root: Tree.INode | undefined,
     changed: treeChangedCallback | undefined): void {
 
-    SvgDisplay.clear();
+    if (root === undefined) {
+        SvgDisplay.setContent(undefined);
+        return;
+    }
 
-    if (root !== undefined) {
-        const typeLookup = TreeTypeLookup.createTypeLookup(scheme, root);
-        const positionLookup = TreePositionLookup.createPositionLookup(root);
+    const typeLookup = TreeTypeLookup.createTypeLookup(scheme, root);
+    const positionLookup = TreePositionLookup.createPositionLookup(root);
+
+    SvgDisplay.setContent(b => {
         positionLookup.nodes.forEach(node => {
-            createNode(node, typeLookup, positionLookup, newNode => {
+            createNode(b, node, typeLookup, positionLookup, newNode => {
                 if (changed !== undefined) {
                     changed(TreeModifications.treeWithReplacedNode(root, node, newNode));
                 }
             });
         });
-        SvgDisplay.setContentOffset(positionLookup.rootOffset);
-    }
+    });
+    SvgDisplay.setContentOffset(positionLookup.rootOffset);
 }
 
 /** Focus the given tree on the display. */
@@ -64,6 +68,7 @@ const nodeConnectionCurviness = .7;
 type nodeChangedCallback = (newNode: Tree.INode) => void;
 
 function createNode(
+    builder: SvgDisplay.IBuilder,
     node: Tree.INode,
     typeLookup: TreeTypeLookup.ITypeLookup,
     positionLookup: TreePositionLookup.IPositionLookup,
@@ -72,7 +77,7 @@ function createNode(
     const typeOptions = getTypeOptions(typeLookup, node);
     const typeOptionsIndex = typeOptions.findIndex(a => a === node.type);
     const size = positionLookup.getSize(node);
-    const nodeElement = SvgDisplay.createElement("node", positionLookup.getPosition(node));
+    const nodeElement = builder.addElement("node", positionLookup.getPosition(node));
     const backgroundClass = node.type === Tree.noneNodeType ? "nonenode-background" : "node-background";
 
     nodeElement.addRect(backgroundClass, size, Vec.zeroVector);

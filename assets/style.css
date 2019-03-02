@@ -61,23 +61,23 @@ body button {
     position: absolute;
     left: 110px;
     bottom: 5px;
-    width: 80px;
+    width: 85px;
     height: 25px;
 }
 
 #zoomout-button {
     position: absolute;
-    left: 195px;
+    left: 200px;
     bottom: 5px;
-    width: 80px;
+    width: 85px;
     height: 25px;
 }
 
 #zoomin-button {
     position: absolute;
-    left: 280px;
+    left: 290px;
     bottom: 5px;
-    width: 80px;
+    width: 85px;
     height: 25px;
 }
 

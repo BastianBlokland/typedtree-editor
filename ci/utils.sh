@@ -46,3 +46,12 @@ verifyCommand ()
         fail "Dependency '$1' is missing, we cannot continue without it"
     fi
 }
+
+fileExists ()
+{
+    if [ -f "$1" ]
+    then
+        return 0
+    fi
+    return 1
+}

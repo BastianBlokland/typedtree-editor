@@ -2,13 +2,21 @@
  * @file Responsible for creating svg display elements and updating them.
  */
 
-import * as SvgJs from "svg.js";
 import * as DomUtils from "./domutils";
 import { ClassName } from "./domutils";
 import * as Utils from "./utils";
 import * as Vec from "./vector";
 
-declare const SVG: typeof SvgJs;
+/** Builder that display elements can be added to. */
+export interface IBuilder {
+    /**
+     * Add a new root display element.
+     * @param className Html class identifier for this element.
+     * @param  position Position to place the element at.
+     * @returns Newly created element.
+     */
+    addElement(className: ClassName, position: Vec.Position): IElement;
+}
 
 /** Display element that content can be added to. */
 export interface IElement {
@@ -78,9 +86,6 @@ export interface IElement {
         size: Vec.Size,
         callback: (newIndex: number) => void): void;
 
-    /** Add a line graphic to this element. */
-    addLine(className: ClassName, from: Vec.Position, to: Vec.Position): void;
-
     /** Add a bezier graphic to this element. */
     addBezier(className: ClassName, from: Vec.Position, c1: Vec.Position, c2: Vec.Position, to: Vec.Position): void;
 
@@ -94,27 +99,29 @@ export interface IElement {
 
 /** Initialize the display, needs to be done once. */
 export function initialize(): void {
-    if (svgDocument != null || svgRoot != null) {
+    if (svgRoot != null) {
         throw new Error("Already initialized");
     }
 
-    const rootSvgDom = document.getElementById(rootSvgDomElementId);
-    if (rootSvgDom === null) {
-        throw new Error(`No dom element found with id: ${rootSvgDomElementId}`);
-    }
-
-    if (!SVG.supported) {
-        throw new Error("Svg not supported");
+    const displayRoot = document.getElementById(displayRootElementId);
+    if (displayRoot === null) {
+        throw new Error(`No dom element found with id: ${displayRootElementId}`);
     }
 
     // Create document
-    svgDocument = SVG(rootSvgDomElementId);
-    svgRoot = svgDocument.group();
+    svgDocument = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svgDocument.setAttribute("width", "100%");
+    svgDocument.setAttribute("height", "100%");
+    displayRoot.appendChild(svgDocument);
+
+    // Create a root-element for applying root transformations to.
+    svgRoot = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    svgDocument.appendChild(svgRoot);
 
     // Setup global listeners
     const inputBlocker = document.getElementById(inputBlockerDomElementId);
     // Prevent standard 'dragging'
-    rootSvgDom.addEventListener("dragstart", event => event.preventDefault(), { passive: false });
+    displayRoot.addEventListener("dragstart", event => event.preventDefault(), { passive: false });
     // Disable selecting of elements when 'dragging'
     (document as any).onselectstart = (event: any) => {
         if (dragging) {
@@ -123,10 +130,10 @@ export function initialize(): void {
     };
 
     // Subscribe to both desktop and mobile 'down' events
-    rootSvgDom.addEventListener("mousedown", event => {
+    displayRoot.addEventListener("mousedown", event => {
         handleMoveStart({ x: event.clientX, y: event.clientY });
     }, { passive: true });
-    rootSvgDom.addEventListener("touchstart", event => {
+    displayRoot.addEventListener("touchstart", event => {
         handleMoveStart({ x: event.touches[0].clientX, y: event.touches[0].clientY });
     }, { passive: true });
 
@@ -149,7 +156,7 @@ export function initialize(): void {
     window.addEventListener("touchend", _ => handleMoveEnd(), { passive: true });
 
     // Subscribe to the desktop 'scrollwheel' event.
-    rootSvgDom.addEventListener("wheel", event => {
+    displayRoot.addEventListener("wheel", event => {
         const scrollDelta = -(event as WheelEvent).deltaY * scrollScaleSpeed;
         const pointerPos: Vec.Position = { x: (event as WheelEvent).pageX, y: (event as WheelEvent).pageY };
         handleScroll(scrollDelta, pointerPos);
@@ -192,14 +199,23 @@ export function initialize(): void {
 }
 
 /**
- * Create a new root display element.
- * @param className Html class identifier for this element.
- * @param  position Position to place the element at.
- * @returns Element
+ * The the content to display (overrides the previous content)
+ * @param callback Callback that can be used to build the content.
  */
-export function createElement(className: ClassName, position: Vec.Position): IElement {
+export function setContent(callback?: (builder: IBuilder) => void): void {
     assertInitialized();
-    return new GroupElement(svgRoot!, className, position);
+    dragging = false;
+
+    // Build new content
+    const builder = new Builder();
+    if (callback !== undefined) {
+        callback(builder);
+    }
+
+    // Replace existing content
+    const newContent = builder.build();
+    DomUtils.clearChildren(svgRoot!);
+    svgRoot!.appendChild(newContent);
 }
 
 /**
@@ -255,37 +271,48 @@ export function zoom(delta: number = 0.1, focalPoint?: Vec.Position): void {
     updateRootTransform();
 }
 
-/** Clear all content from this display. */
-export function clear(): void {
-    assertInitialized();
-    svgRoot!.clear();
-    dragging = false;
-}
-
-const rootSvgDomElementId = "svg-display";
+const displayRootElementId = "svg-display";
 const inputBlockerDomElementId = "input-blocker";
-const graphicsFilePath = "graphics.svg";
 const minScale = 0.05;
 const maxScale = 3;
 const scrollScaleSpeed = 0.001;
 const displayMargin: Vec.IVector2 = { x: 75, y: 75 };
 const halfDisplayMargin = Vec.half(displayMargin);
 
-let svgDocument: SvgJs.Doc | undefined;
-let svgRoot: SvgJs.G | undefined;
+let svgDocument: SVGElement | undefined;
+let svgRoot: SVGGElement | undefined;
 let viewOffset = Vec.zeroVector;
 let contentOffset = Vec.zeroVector;
 let scale = 1;
 let dragging = false;
 let dragOffset = Vec.zeroVector;
 
+class Builder implements IBuilder {
+    private readonly _parent: SVGGElement;
+
+    constructor() {
+        this._parent = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    }
+
+    public addElement(className: ClassName, position: Vec.Position): IElement {
+        return new GroupElement(this._parent, className, position);
+    }
+
+    public build(): Element {
+        return this._parent;
+    }
+}
+
 class GroupElement implements IElement {
-    private readonly _svgGroup: SvgJs.G;
+    private readonly _svgGroup: SVGElement;
     private readonly _className: ClassName;
     private readonly _position: Vec.Position;
 
-    constructor(svgContainer: SvgJs.Container, className: ClassName, position: Vec.Position) {
-        this._svgGroup = svgContainer.group().x(position.x).y(position.y);
+    constructor(parent: Element, className: ClassName, position: Vec.Position) {
+        this._svgGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        this._svgGroup.setAttribute("transform", `translate(${position.x}, ${position.y})`);
+        parent.appendChild(this._svgGroup);
+
         this._className = className;
         this._position = position;
     }
@@ -303,16 +330,19 @@ class GroupElement implements IElement {
     }
 
     public addRect(className: ClassName, size: Vec.Size, position: Vec.Position): void {
-        this._svgGroup.rect(size.x, size.y).
-            x(position.x).
-            y(position.y).
-            addClass(className);
+        const pathElem = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        pathElem.setAttribute("class", className);
+        pathElem.setAttribute("x", position.x.toString());
+        pathElem.setAttribute("y", position.y.toString());
+        pathElem.setAttribute("width", size.x.toString());
+        pathElem.setAttribute("height", size.y.toString());
+
+        this._svgGroup.appendChild(pathElem);
     }
 
     public addText(className: ClassName, value: string, position: Vec.Position, size: Vec.Size): void {
-
         const textElement = DomUtils.createWithText("code", value);
-        textElement.className = className;
+        textElement.className = `noselect ${className}`;
         this.addForeignObject(position, size, textElement);
     }
 
@@ -365,11 +395,6 @@ class GroupElement implements IElement {
         this.addForeignObject(position, size, selectElement);
     }
 
-    public addLine(className: ClassName, from: Vec.Position, to: Vec.Position): void {
-        this._svgGroup.line(from.x, from.y, to.x, to.y).
-            addClass(className);
-    }
-
     public addBezier(
         className: ClassName,
         from: Vec.Position,
@@ -377,8 +402,11 @@ class GroupElement implements IElement {
         c2: Vec.Position,
         to: Vec.Position): void {
 
-        this._svgGroup.path(`M${from.x},${from.y} C${c1.x},${c1.y} ${c2.x},${c2.y} ${to.x},${to.y}`).
-            addClass(className);
+        const pathElem = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        pathElem.setAttribute("class", className);
+        pathElem.setAttribute("d", `M${from.x},${from.y} C${c1.x},${c1.y} ${c2.x},${c2.y} ${to.x},${to.y}`);
+
+        this._svgGroup.appendChild(pathElem);
     }
 
     public addGraphics(
@@ -387,38 +415,41 @@ class GroupElement implements IElement {
         position: Vec.Position,
         clickCallback?: () => void): void {
 
-        const elem = this._svgGroup.use(graphicsId, graphicsFilePath).
-            addClass(className).
-            x(position.x).
-            y(position.y);
+        const useElem = document.createElementNS("http://www.w3.org/2000/svg", "use");
+        useElem.setAttribute("class", className);
+        useElem.setAttribute("href", `#${graphicsId}`);
+        useElem.setAttribute("x", position.x.toString());
+        useElem.setAttribute("y", position.y.toString());
         if (clickCallback !== undefined) {
-            elem.click(clickCallback);
+            useElem.onclick = clickCallback;
         }
+        this._svgGroup.appendChild(useElem);
     }
 
     private addForeignObject(position: Vec.Position, size: Vec.Size, htmlElement: HTMLElement): void {
-        this._svgGroup.group().
-            element("foreignObject").
-            x(position.x).
-            // + 3 here because the foreign objects seem to render too low on most browsers.
-            y(position.y - Utils.half(size.y) + 2).
-            width(size.x).
-            height(size.y).
-            node.appendChild(htmlElement);
+        const foreignObject = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
+        foreignObject.setAttribute("x", position.x.toString());
+        // + 3 here because the foreign objects seem to render too low on most browsers.
+        foreignObject.setAttribute("y", (position.y - Utils.half(size.y) + 2).toString());
+        foreignObject.setAttribute("width", size.x.toString());
+        foreignObject.setAttribute("height", size.y.toString());
+        foreignObject.appendChild(htmlElement);
+
+        this._svgGroup.appendChild(foreignObject);
     }
 }
 
 /** Get the size of the current window */
 function getDisplaySize(): Vec.IVector2 {
     assertInitialized();
-    const bounds = svgDocument!.rbox();
+    const bounds = svgDocument!.getBoundingClientRect();
     return { x: bounds.width, y: bounds.height };
 }
 
 /** Get the total size of the current content */
 function getContentSize(): Vec.IVector2 {
     assertInitialized();
-    const contentSize = svgRoot!.bbox();
+    const contentSize = svgRoot!.getBBox();
     return { x: contentSize.width, y: contentSize.height };
 }
 
@@ -443,7 +474,9 @@ function setOffset(newOffset: Vec.IVector2): void {
 }
 
 function updateRootTransform(): void {
-    svgRoot!.node.setAttribute("transform", `translate(${viewOffset.x}, ${viewOffset.y})scale(${scale})`);
+    if (svgRoot !== undefined) {
+        svgRoot.setAttribute("transform", `translate(${viewOffset.x}, ${viewOffset.y})scale(${scale})`);
+    }
 }
 
 function clampScale(newScale: number): number {

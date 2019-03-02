@@ -139,7 +139,7 @@ export function subscribeToFileInput(inputId: string, callback: (file: File) => 
  * Delete all the children of a given node.
  * @param element Element to delete the children from.
  */
-export function clearChildren(element: HTMLElement): void {
+export function clearChildren(element: Element): void {
     while (element.firstChild) {
         element.removeChild(element.firstChild);
     }

@@ -7,6 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 
   <link rel="icon" href="favicon.ico" />
+  <link rel="preload" href="bundle.js" as="script">
   <link rel="stylesheet" type="text/css" href="style.css">
   <title>TypedTree</title>
 </head>
@@ -55,9 +56,36 @@
   <noscript>
     <div class="error">JavaScript support is required.</div>
   </noscript>
-  <script src="https://unpkg.com/svg.js@2.7.1/dist/svg.min.js"></script>
-  <script src="https://unpkg.com/file-saver@2.0.0/dist/FileSaver.min.js"></script>
   <script src="bundle.js"></script>
 </body>
 
 </html>
+
+<!-- Definition for svg icons -->
+<svg xmlns="http://www.w3.org/2000/svg">
+  <defs>
+
+    <circle id="nodeConnector" cx="0" cy="0" r="7" />
+
+    <g id="arrayAdd">
+      <rect x="-6" y="-6" width="12" height="12" stroke-width="1" stroke="#000" />
+      <path d="M 0 3.5 L 0 -3.5 M 3.5 0 L -3.5 0 z" fill="none" stroke="#000" stroke-width="2" />
+    </g>
+
+    <g id="arrayDelete">
+      <rect x="-6" y="-6" width="12" height="12" stroke-width="1" stroke="#000" />
+      <path d="M -3.5 3.5 L 3.5 -3.5 M 3.5 3.5 L -3.5 -3.5 z" fill="none" stroke="#000" stroke-width="2" />
+    </g>
+
+    <g id="arrayOrderUp">
+      <rect x="-4" y="-4" width="8" height="8" stroke-width="1" stroke="#000" />
+      <path d="M -2.5 2.5 L 0 -2.5 L 2.5 2.5 z" fill="#000" stroke="none" />
+    </g>
+
+    <g id="arrayOrderDown">
+      <rect x="-4" y="-4" width="8" height="8" stroke-width="1" stroke="#000" />
+      <path d="M -2.5 -2.5 L 0 2.5 L 2.5 -2.5 z" fill="#000" stroke="none" />
+    </g>
+
+  </defs>
+</svg>
