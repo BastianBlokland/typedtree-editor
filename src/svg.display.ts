@@ -415,13 +415,15 @@ class GroupElement implements IElement {
         position: Vec.Position,
         clickCallback?: () => void): void {
 
-        const elem = this._svgGroup.use(graphicsId).
-            addClass(className).
-            x(position.x).
-            y(position.y);
+        const useElem = document.createElementNS("http://www.w3.org/2000/svg", "use");
+        useElem.setAttribute("class", className);
+        useElem.setAttribute("href", `#${graphicsId}`);
+        useElem.setAttribute("x", position.x.toString());
+        useElem.setAttribute("y", position.y.toString());
         if (clickCallback !== undefined) {
-            elem.click(clickCallback);
+            useElem.onclick = clickCallback;
         }
+        this._svgGroup.node.appendChild(useElem);
     }
 
     private addForeignObject(position: Vec.Position, size: Vec.Size, htmlElement: HTMLElement): void {
