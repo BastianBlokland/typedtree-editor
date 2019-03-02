@@ -4,6 +4,8 @@
  */
 
 import pkg from './package.json'
+import commonjs from 'rollup-plugin-commonjs';
+import nodeResolve from 'rollup-plugin-node-resolve';
 
 export default {
     input: './tsout/main.js',
@@ -11,7 +13,10 @@ export default {
         file: pkg.main,
         format: 'umd'
     },
-    external: ['file-saver'],
+    plugins: [
+        nodeResolve(),
+        commonjs()
+    ],
     onwarn(warning, warn) {
         if (warning.code === 'THIS_IS_UNDEFINED')
             return;
