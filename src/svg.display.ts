@@ -2,13 +2,10 @@
  * @file Responsible for creating svg display elements and updating them.
  */
 
-import * as SvgJs from "svg.js";
 import * as DomUtils from "./domutils";
 import { ClassName } from "./domutils";
 import * as Utils from "./utils";
 import * as Vec from "./vector";
-
-declare const SVG: typeof SvgJs;
 
 /** Builder that display elements can be added to. */
 export interface IBuilder {
@@ -102,27 +99,29 @@ export interface IElement {
 
 /** Initialize the display, needs to be done once. */
 export function initialize(): void {
-    if (svgDocument != null || svgRoot != null) {
+    if (svgRoot != null) {
         throw new Error("Already initialized");
     }
 
-    const rootSvgDom = document.getElementById(rootSvgDomElementId);
-    if (rootSvgDom === null) {
-        throw new Error(`No dom element found with id: ${rootSvgDomElementId}`);
-    }
-
-    if (!SVG.supported) {
-        throw new Error("Svg not supported");
+    const displayRoot = document.getElementById(displayRootElementId);
+    if (displayRoot === null) {
+        throw new Error(`No dom element found with id: ${displayRootElementId}`);
     }
 
     // Create document
-    svgDocument = SVG(rootSvgDomElementId);
-    svgRoot = svgDocument.group();
+    svgDocument = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svgDocument.setAttribute("width", "100%");
+    svgDocument.setAttribute("height", "100%");
+    displayRoot.appendChild(svgDocument);
+
+    // Create a root-element for applying root transformations to.
+    svgRoot = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    svgDocument.appendChild(svgRoot);
 
     // Setup global listeners
     const inputBlocker = document.getElementById(inputBlockerDomElementId);
     // Prevent standard 'dragging'
-    rootSvgDom.addEventListener("dragstart", event => event.preventDefault(), { passive: false });
+    displayRoot.addEventListener("dragstart", event => event.preventDefault(), { passive: false });
     // Disable selecting of elements when 'dragging'
     (document as any).onselectstart = (event: any) => {
         if (dragging) {
@@ -131,10 +130,10 @@ export function initialize(): void {
     };
 
     // Subscribe to both desktop and mobile 'down' events
-    rootSvgDom.addEventListener("mousedown", event => {
+    displayRoot.addEventListener("mousedown", event => {
         handleMoveStart({ x: event.clientX, y: event.clientY });
     }, { passive: true });
-    rootSvgDom.addEventListener("touchstart", event => {
+    displayRoot.addEventListener("touchstart", event => {
         handleMoveStart({ x: event.touches[0].clientX, y: event.touches[0].clientY });
     }, { passive: true });
 
@@ -157,7 +156,7 @@ export function initialize(): void {
     window.addEventListener("touchend", _ => handleMoveEnd(), { passive: true });
 
     // Subscribe to the desktop 'scrollwheel' event.
-    rootSvgDom.addEventListener("wheel", event => {
+    displayRoot.addEventListener("wheel", event => {
         const scrollDelta = -(event as WheelEvent).deltaY * scrollScaleSpeed;
         const pointerPos: Vec.Position = { x: (event as WheelEvent).pageX, y: (event as WheelEvent).pageY };
         handleScroll(scrollDelta, pointerPos);
@@ -215,8 +214,8 @@ export function setContent(callback?: (builder: IBuilder) => void): void {
 
     // Replace existing content
     const newContent = builder.build();
-    svgRoot!.clear();
-    svgRoot!.node.appendChild(newContent);
+    DomUtils.clearChildren(svgRoot!);
+    svgRoot!.appendChild(newContent);
 }
 
 /**
@@ -272,7 +271,7 @@ export function zoom(delta: number = 0.1, focalPoint?: Vec.Position): void {
     updateRootTransform();
 }
 
-const rootSvgDomElementId = "svg-display";
+const displayRootElementId = "svg-display";
 const inputBlockerDomElementId = "input-blocker";
 const minScale = 0.05;
 const maxScale = 3;
@@ -280,8 +279,8 @@ const scrollScaleSpeed = 0.001;
 const displayMargin: Vec.IVector2 = { x: 75, y: 75 };
 const halfDisplayMargin = Vec.half(displayMargin);
 
-let svgDocument: SvgJs.Doc | undefined;
-let svgRoot: SvgJs.G | undefined;
+let svgDocument: SVGElement | undefined;
+let svgRoot: SVGGElement | undefined;
 let viewOffset = Vec.zeroVector;
 let contentOffset = Vec.zeroVector;
 let scale = 1;
@@ -444,14 +443,14 @@ class GroupElement implements IElement {
 /** Get the size of the current window */
 function getDisplaySize(): Vec.IVector2 {
     assertInitialized();
-    const bounds = svgDocument!.rbox();
+    const bounds = svgDocument!.getBoundingClientRect();
     return { x: bounds.width, y: bounds.height };
 }
 
 /** Get the total size of the current content */
 function getContentSize(): Vec.IVector2 {
     assertInitialized();
-    const contentSize = svgRoot!.bbox();
+    const contentSize = svgRoot!.getBBox();
     return { x: contentSize.width, y: contentSize.height };
 }
 
@@ -477,7 +476,7 @@ function setOffset(newOffset: Vec.IVector2): void {
 
 function updateRootTransform(): void {
     if (svgRoot !== undefined) {
-        svgRoot.node.setAttribute("transform", `translate(${viewOffset.x}, ${viewOffset.y})scale(${scale})`);
+        svgRoot.setAttribute("transform", `translate(${viewOffset.x}, ${viewOffset.y})scale(${scale})`);
     }
 }
 
