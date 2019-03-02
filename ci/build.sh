@@ -18,6 +18,13 @@ info "Rolling up JavaScript"
 info "Copying assets"
 cp -v -r ./assets/. ./build/
 
+if fileExists "./assets/style.css"
+then
+    info "Combining css"
+    rm -rf ./build/*.css
+    ./node_modules/.bin/css-combine "./assets/style.css" > "./build/style.css"
+fi
+
 if fileExists "./assets/csp.txt"
 then
     info "Setting Content-Security-Policy"

@@ -27,7 +27,8 @@ checkNpmTooling ()
         [ -f "./node_modules/.bin/uglifyjs" ] &&
         [ -f "./node_modules/.bin/codecov" ] &&
         [ -f "./node_modules/.bin/tslint" ] &&
-        [ -f "./node_modules/.bin/ncu" ]
+        [ -f "./node_modules/.bin/ncu" ] &&
+        [ -f "./node_modules/.bin/css-combine" ]
     then
         return 1
     fi
