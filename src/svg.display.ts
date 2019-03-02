@@ -10,6 +10,17 @@ import * as Vec from "./vector";
 
 declare const SVG: typeof SvgJs;
 
+/** Builder that display elements can be added to. */
+export interface IBuilder {
+    /**
+     * Add a new root display element.
+     * @param className Html class identifier for this element.
+     * @param  position Position to place the element at.
+     * @returns Newly created element.
+     */
+    addElement(className: ClassName, position: Vec.Position): IElement;
+}
+
 /** Display element that content can be added to. */
 export interface IElement {
     /** Html class identifier for this element */
@@ -192,14 +203,23 @@ export function initialize(): void {
 }
 
 /**
- * Create a new root display element.
- * @param className Html class identifier for this element.
- * @param  position Position to place the element at.
- * @returns Element
+ * The the content to display (overrides the previous content)
+ * @param callback Callback that can be used to build the content.
  */
-export function createElement(className: ClassName, position: Vec.Position): IElement {
+export function setContent(callback?: (builder: IBuilder) => void): void {
     assertInitialized();
-    return new GroupElement(svgRoot!, className, position);
+    dragging = false;
+
+    // Build new content
+    const builder = new Builder();
+    if (callback !== undefined) {
+        callback(builder);
+    }
+
+    // Replace existing content
+    const newContent = builder.build();
+    svgRoot!.clear();
+    newContent.addTo(svgRoot!);
 }
 
 /**
@@ -255,13 +275,6 @@ export function zoom(delta: number = 0.1, focalPoint?: Vec.Position): void {
     updateRootTransform();
 }
 
-/** Clear all content from this display. */
-export function clear(): void {
-    assertInitialized();
-    svgRoot!.clear();
-    dragging = false;
-}
-
 const rootSvgDomElementId = "svg-display";
 const inputBlockerDomElementId = "input-blocker";
 const graphicsFilePath = "graphics.svg";
@@ -278,6 +291,22 @@ let contentOffset = Vec.zeroVector;
 let scale = 1;
 let dragging = false;
 let dragOffset = Vec.zeroVector;
+
+class Builder implements IBuilder {
+    private readonly _svgGroup: SvgJs.G;
+
+    constructor() {
+        this._svgGroup = new SVG.G();
+    }
+
+    public addElement(className: ClassName, position: Vec.Position): IElement {
+        return new GroupElement(this._svgGroup, className, position);
+    }
+
+    public build(): SvgJs.Element {
+        return this._svgGroup;
+    }
+}
 
 class GroupElement implements IElement {
     private readonly _svgGroup: SvgJs.G;
@@ -443,7 +472,9 @@ function setOffset(newOffset: Vec.IVector2): void {
 }
 
 function updateRootTransform(): void {
-    svgRoot!.node.setAttribute("transform", `translate(${viewOffset.x}, ${viewOffset.y})scale(${scale})`);
+    if (svgRoot !== undefined) {
+        svgRoot.node.setAttribute("transform", `translate(${viewOffset.x}, ${viewOffset.y})scale(${scale})`);
+    }
 }
 
 function clampScale(newScale: number): number {
