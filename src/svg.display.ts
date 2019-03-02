@@ -277,7 +277,6 @@ export function zoom(delta: number = 0.1, focalPoint?: Vec.Position): void {
 
 const rootSvgDomElementId = "svg-display";
 const inputBlockerDomElementId = "input-blocker";
-const graphicsFilePath = "graphics.svg";
 const minScale = 0.05;
 const maxScale = 3;
 const scrollScaleSpeed = 0.001;
@@ -416,7 +415,7 @@ class GroupElement implements IElement {
         position: Vec.Position,
         clickCallback?: () => void): void {
 
-        const elem = this._svgGroup.use(graphicsId, graphicsFilePath).
+        const elem = this._svgGroup.use(graphicsId).
             addClass(className).
             x(position.x).
             y(position.y);
