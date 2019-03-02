@@ -216,7 +216,7 @@ export function setContent(callback?: (builder: IBuilder) => void): void {
     // Replace existing content
     const newContent = builder.build();
     svgRoot!.clear();
-    newContent.addTo(svgRoot!);
+    svgRoot!.node.appendChild(newContent);
 }
 
 /**
@@ -289,28 +289,31 @@ let dragging = false;
 let dragOffset = Vec.zeroVector;
 
 class Builder implements IBuilder {
-    private readonly _svgGroup: SvgJs.G;
+    private readonly _parent: SVGGElement;
 
     constructor() {
-        this._svgGroup = new SVG.G();
+        this._parent = document.createElementNS("http://www.w3.org/2000/svg", "g");
     }
 
     public addElement(className: ClassName, position: Vec.Position): IElement {
-        return new GroupElement(this._svgGroup, className, position);
+        return new GroupElement(this._parent, className, position);
     }
 
-    public build(): SvgJs.Element {
-        return this._svgGroup;
+    public build(): Element {
+        return this._parent;
     }
 }
 
 class GroupElement implements IElement {
-    private readonly _svgGroup: SvgJs.G;
+    private readonly _svgGroup: SVGElement;
     private readonly _className: ClassName;
     private readonly _position: Vec.Position;
 
-    constructor(svgContainer: SvgJs.Container, className: ClassName, position: Vec.Position) {
-        this._svgGroup = svgContainer.group().x(position.x).y(position.y);
+    constructor(parent: Element, className: ClassName, position: Vec.Position) {
+        this._svgGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        this._svgGroup.setAttribute("transform", `translate(${position.x}, ${position.y})`);
+        parent.appendChild(this._svgGroup);
+
         this._className = className;
         this._position = position;
     }
@@ -328,10 +331,14 @@ class GroupElement implements IElement {
     }
 
     public addRect(className: ClassName, size: Vec.Size, position: Vec.Position): void {
-        this._svgGroup.rect(size.x, size.y).
-            x(position.x).
-            y(position.y).
-            addClass(className);
+        const pathElem = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        pathElem.setAttribute("class", className);
+        pathElem.setAttribute("x", position.x.toString());
+        pathElem.setAttribute("y", position.y.toString());
+        pathElem.setAttribute("width", size.x.toString());
+        pathElem.setAttribute("height", size.y.toString());
+
+        this._svgGroup.appendChild(pathElem);
     }
 
     public addText(className: ClassName, value: string, position: Vec.Position, size: Vec.Size): void {
@@ -401,7 +408,7 @@ class GroupElement implements IElement {
         pathElem.setAttribute("class", className);
         pathElem.setAttribute("d", `M${from.x},${from.y} C${c1.x},${c1.y} ${c2.x},${c2.y} ${to.x},${to.y}`);
 
-        this._svgGroup.node.appendChild(pathElem);
+        this._svgGroup.appendChild(pathElem);
     }
 
     public addGraphics(
@@ -418,7 +425,7 @@ class GroupElement implements IElement {
         if (clickCallback !== undefined) {
             useElem.onclick = clickCallback;
         }
-        this._svgGroup.node.appendChild(useElem);
+        this._svgGroup.appendChild(useElem);
     }
 
     private addForeignObject(position: Vec.Position, size: Vec.Size, htmlElement: HTMLElement): void {
@@ -430,7 +437,7 @@ class GroupElement implements IElement {
         foreignObject.setAttribute("height", size.y.toString());
         foreignObject.appendChild(htmlElement);
 
-        this._svgGroup.node.appendChild(foreignObject);
+        this._svgGroup.appendChild(foreignObject);
     }
 }
 
