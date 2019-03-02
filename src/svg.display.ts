@@ -427,14 +427,15 @@ class GroupElement implements IElement {
     }
 
     private addForeignObject(position: Vec.Position, size: Vec.Size, htmlElement: HTMLElement): void {
-        this._svgGroup.group().
-            element("foreignObject").
-            x(position.x).
-            // + 3 here because the foreign objects seem to render too low on most browsers.
-            y(position.y - Utils.half(size.y) + 2).
-            width(size.x).
-            height(size.y).
-            node.appendChild(htmlElement);
+        const foreignObject = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
+        foreignObject.setAttribute("x", position.x.toString());
+        // + 3 here because the foreign objects seem to render too low on most browsers.
+        foreignObject.setAttribute("y", (position.y - Utils.half(size.y) + 2).toString());
+        foreignObject.setAttribute("width", size.x.toString());
+        foreignObject.setAttribute("height", size.y.toString());
+        foreignObject.appendChild(htmlElement);
+
+        this._svgGroup.node.appendChild(foreignObject);
     }
 }
 
