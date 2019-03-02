@@ -89,9 +89,6 @@ export interface IElement {
         size: Vec.Size,
         callback: (newIndex: number) => void): void;
 
-    /** Add a line graphic to this element. */
-    addLine(className: ClassName, from: Vec.Position, to: Vec.Position): void;
-
     /** Add a bezier graphic to this element. */
     addBezier(className: ClassName, from: Vec.Position, c1: Vec.Position, c2: Vec.Position, to: Vec.Position): void;
 
@@ -393,11 +390,6 @@ class GroupElement implements IElement {
         this.addForeignObject(position, size, selectElement);
     }
 
-    public addLine(className: ClassName, from: Vec.Position, to: Vec.Position): void {
-        this._svgGroup.line(from.x, from.y, to.x, to.y).
-            addClass(className);
-    }
-
     public addBezier(
         className: ClassName,
         from: Vec.Position,
@@ -405,8 +397,11 @@ class GroupElement implements IElement {
         c2: Vec.Position,
         to: Vec.Position): void {
 
-        this._svgGroup.path(`M${from.x},${from.y} C${c1.x},${c1.y} ${c2.x},${c2.y} ${to.x},${to.y}`).
-            addClass(className);
+        const pathElem = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        pathElem.setAttribute("class", className);
+        pathElem.setAttribute("d", `M${from.x},${from.y} C${c1.x},${c1.y} ${c2.x},${c2.y} ${to.x},${to.y}`);
+
+        this._svgGroup.node.appendChild(pathElem);
     }
 
     public addGraphics(
