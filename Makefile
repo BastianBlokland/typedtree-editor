@@ -8,7 +8,7 @@ default: build
 clean:
 	./ci/clean.sh
 
-build: clean
+build:
 	./ci/build.sh
 
 deploy: build
@@ -17,8 +17,13 @@ deploy: build
 lint:
 	./ci/lint.sh
 
-test:
-	./ci/unit-test.sh
+test.unit:
+	./ci/test.unit.sh
+
+test.integration: build
+	./ci/test.integration.sh
+
+test: test.unit test.integration
 
 watch:
 	./ci/watch.sh

@@ -8,6 +8,9 @@ source ./ci/utils.sh
 
 BUILD_DIR="./build"
 
+# Clean build dir
+rm -rf "$BUILD_DIR"
+
 # Verify tooling
 ./ci/verify-tooling.sh
 

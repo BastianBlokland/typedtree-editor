@@ -13,3 +13,4 @@
 # Test output
 /coverage/
 /*.junit.xml
+/junit.xml

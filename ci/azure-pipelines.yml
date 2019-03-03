@@ -16,11 +16,14 @@ steps:
 - script: ./ci/lint.sh
   displayName: 'Lint'
 
-- script: ./ci/unit-test.sh
+- script: ./ci/test.unit.sh
   displayName: 'Unit Test'
 
 - script: ./ci/build.sh
   displayName: 'Build'
+
+- script: ./ci/test.integration.sh
+  displayName: 'Integration Test'
 
 - script: ./ci/deploy.sh "$(Build.SourceBranch)" "$(storagestaticconnection)"
   displayName: 'Deploy'

@@ -24,7 +24,7 @@ then
     fail "No 'junit.xml' output found"
 fi
 
-# Rename unit-test output to reflect that these are unit-test results.
+# Rename junit output to reflect that these are unit-test results.
 mv -f "./junit.xml" "./test.unit.junit.xml"
 
 info "Finished unit-tests"
