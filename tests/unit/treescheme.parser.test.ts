@@ -2,8 +2,8 @@
  * @file Jest tests for treescheme.parser.ts
  */
 
-import * as TreeScheme from "../src/treescheme";
-import * as Tree̦SchemeParser from "../src/treescheme.parser";
+import * as TreeScheme from "../../src/treescheme";
+import * as Tree̦SchemeParser from "../../src/treescheme.parser";
 
 test("basicSchemeIsParsedSuccessfully", () => {
     const json = `{

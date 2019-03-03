@@ -2,9 +2,9 @@
  * @file Jest tests for tree.positionlookup.ts
  */
 
-import * as Tree from "../src/tree";
-import * as TreePositionLookup from "../src/tree.positionlookup";
-import * as Vec from "../src/vector";
+import * as Tree from "../../src/tree";
+import * as TreePositionLookup from "../../src/tree.positionlookup";
+import * as Vec from "../../src/vector";
 
 test("allChildNodeExists", () => {
     const testTree = createTestTree();

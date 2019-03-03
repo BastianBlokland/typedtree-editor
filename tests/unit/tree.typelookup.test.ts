@@ -2,9 +2,9 @@
  * @file Jest tests for tree.typelookup.ts
  */
 
-import * as Tree from "../src/tree";
-import * as TreeTypeLookup from "../src/tree.typelookup";
-import * as TreeScheme from "../src/treescheme";
+import * as Tree from "../../src/tree";
+import * as TreeTypeLookup from "../../src/tree.typelookup";
+import * as TreeScheme from "../../src/treescheme";
 
 test("schemeCanBeFound", () => {
     const testScheme = createTestScheme();

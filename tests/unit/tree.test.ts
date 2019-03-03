@@ -2,7 +2,7 @@
  * @file Jest tests for tree.ts
  */
 
-import * as Tree from "../src/tree";
+import * as Tree from "../../src/tree";
 
 test("cannotPushDuplicateField", () => {
     const result = Tree.createNode("root", b => {

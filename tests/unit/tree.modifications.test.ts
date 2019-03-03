@@ -2,8 +2,8 @@
  * @file Jest tests for tree.modifications.ts
  */
 
-import * as Tree from "../src/tree";
-import * as TreeModifications from "../src/tree.modifications";
+import * as Tree from "../../src/tree";
+import * as TreeModifications from "../../src/tree.modifications";
 
 test("fieldWithValueString", () => {
     const field: Tree.IStringField = { kind: "string", name: "testName", value: "oldValue" };

@@ -16,20 +16,30 @@ steps:
 - script: ./ci/lint.sh
   displayName: 'Lint'
 
-- script: ./ci/unit-test.sh
+- script: ./ci/test.unit.sh
   displayName: 'Unit Test'
 
 - script: ./ci/build.sh
   displayName: 'Build'
 
+- script: ./ci/test.integration.sh
+  displayName: 'Integration Test'
+
 - script: ./ci/deploy.sh "$(Build.SourceBranch)" "$(storagestaticconnection)"
   displayName: 'Deploy'
 
 - task: PublishBuildArtifacts@1
-  displayName: 'Publish artifacts'
+  displayName: 'Publish build'
   inputs:
     artifactName: 'build'
     PathtoPublish: '$(System.DefaultWorkingDirectory)/build'
+    parallel: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish screenshots'
+  inputs:
+    artifactName: 'screenshots'
+    PathtoPublish: '$(System.DefaultWorkingDirectory)/screenshots'
     parallel: true
 
 - script: ./ci/report-coverage.sh "$(typedtreeeditor-codecov)"
@@ -40,7 +50,7 @@ steps:
   displayName: 'Publish test results'
   inputs:
     testResultsFormat: JUnit
-    testResultsFiles: '$(System.DefaultWorkingDirectory)/junit.xml'
+    testResultsFiles: '$(System.DefaultWorkingDirectory)/*.junit.xml'
   condition: always()
 
 - task: PublishCodeCoverageResults@1

@@ -55,3 +55,12 @@ fileExists ()
     fi
     return 1
 }
+
+fileDoesNotExist ()
+{
+    if fileExists "$1"
+    then
+        return 1
+    fi
+    return 0
+}

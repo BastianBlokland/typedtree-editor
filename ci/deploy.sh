@@ -3,20 +3,34 @@ set -e
 source ./ci/utils.sh
 
 # --------------------------------------------------------------------------------------------------
-# Minify and deploy a build to a azure blob-storage bucket.
+# Deploy a build and screenshots to a azure blob-storage bucket.
 # --------------------------------------------------------------------------------------------------
 
 BUILD_DIR="./build"
+SCREENSHOT_DIR="./screenshots"
 if [ ! -d "$BUILD_DIR" ]
 then
     fail "No build directory found"
 fi
 
-info "Starting minification"
-./node_modules/.bin/uglifyjs \
-    --output "$BUILD_DIR/bundle.js" --compress --mangle -- "$BUILD_DIR/bundle.js"
-
 info "Starting deployment"
+
+# Why don't set the csp in the build step allready? Reason is that if we do we cannot use a local
+# that injects JavaScript for hot-reload anymore.
+if fileExists "./assets/csp.txt"
+then
+    info "Setting Content-Security-Policy"
+    # Insert the csp element in all html files that hdefine a 'Content-Security-Policy' comment.
+    # Note: Using 'tr' to strip the newlines
+    CSP_CONTENT="$(tr '\n' ' ' < ./assets/csp.txt)";
+    CSP_ELEMENT='<meta http-equiv="Content-Security-Policy" content="'"$CSP_CONTENT"'">'
+    sed -i.backup -e "/<!-- Content-Security-Policy -->/a\\
+        \ \ $CSP_ELEMENT
+        " $BUILD_DIR/*.html
+fi
+
+info "Cleaning backup files"
+rm -rf $BUILD_DIR/*.backup
 
 # Sanity check existance of the azure cli tooling and the connection string
 verifyCommand az
@@ -37,13 +51,24 @@ az storage blob delete-batch \
     --pattern "$DEST_PATH/*" \
     --connection-string "$2"
 
-info "Upload to destination"
-az storage blob upload-batch \
-    --source "$BUILD_DIR" \
-    --destination \$web \
-    --destination-path "$DEST_PATH" \
-    --content-cache-control "max-age=60" \
-    --connection-string "$2"
+function upload ()
+{
+    info "Uploading: '$1' to '$DEST_PATH/$2'"
+    az storage blob upload-batch \
+        --source "$1" \
+        --destination \$web \
+        --destination-path "$DEST_PATH/$2" \
+        --content-cache-control "max-age=60" \
+        --connection-string "$3"
+}
+
+# Upload build
+upload "$BUILD_DIR" "" "$2"
+# Upload screenshots
+if [ -d "$SCREENSHOT_DIR" ]
+then
+    upload "$SCREENSHOT_DIR" "screenshots" "$2"
+fi
 
 info "Finished deployment"
 exit 0

@@ -9,8 +9,9 @@ source ./ci/utils.sh
 # Verify tooling
 ./ci/verify-tooling.sh
 
-info "Starting tests"
+info "Starting unit-tests"
 ./node_modules/.bin/jest \
+    --config=jest.config.unit.js \
     --reporters=default \
     --reporters=jest-junit \
     --coverage \
@@ -18,5 +19,13 @@ info "Starting tests"
     --coverageReporters=cobertura \
     --coverageReporters=html
 
-info "Finished tests"
+if fileDoesNotExist "./junit.xml"
+then
+    fail "No 'junit.xml' output found"
+fi
+
+# Rename junit output to reflect that these are unit-test results.
+mv -f "./junit.xml" "./test.unit.junit.xml"
+
+info "Finished unit-tests"
 exit 0

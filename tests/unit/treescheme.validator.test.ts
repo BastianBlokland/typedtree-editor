@@ -2,9 +2,9 @@
  * @file Jest tests for treescheme.validator.ts
  */
 
-import * as Tree from "../src/tree";
-import * as TreeScheme from "../src/treescheme";
-import * as TreeSchemeValidator from "../src/treescheme.validator";
+import * as Tree from "../../src/tree";
+import * as TreeScheme from "../../src/treescheme";
+import * as TreeSchemeValidator from "../../src/treescheme.validator";
 
 test("validTreeDoesValidate", () => {
     const scheme = TreeScheme.createScheme("Alias1", b => {

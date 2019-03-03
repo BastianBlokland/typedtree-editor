@@ -2,10 +2,10 @@
  * @file Jest tests for tree.serializer.ts
  */
 
-import * as Tree from "../src/tree";
-import * as Tree̦Parser from "../src/tree.parser";
-import * as TreeSerializer from "../src/tree.serializer";
-import * as Utils from "../src/utils";
+import * as Tree from "../../src/tree";
+import * as Tree̦Parser from "../../src/tree.parser";
+import * as TreeSerializer from "../../src/tree.serializer";
+import * as Utils from "../../src/utils";
 
 test("savedJsonIsIdenticalToReadJson", () => {
     const json = Utils.formatJson(`{
