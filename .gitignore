@@ -11,7 +11,8 @@
 /tsout/
 
 # Test output
-/screenshots
+/screenshots/
+/tmp/
 /coverage/
 /*.junit.xml
 /junit.xml

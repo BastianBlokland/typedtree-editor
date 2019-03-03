@@ -2,6 +2,7 @@
  * @file Jest puppeteer test for app.ts
  */
 
+import * as FileSystem from "fs";
 import * as Tree from "../../src/tree";
 import * as TreeParser from "../../src/tree.parser";
 import * as TreeScheme from "../../src/treescheme";
@@ -24,6 +25,29 @@ describe("app", () => {
         // Expect current tree to be first type of the root alias of the scheme
         const scheme = await getCurrentScheme();
         expect(await getCurrentTree()).toEqual(Tree.createNode(scheme.rootAlias.values[0]));
+    });
+
+    it("can load a scheme", async () => {
+        const testScheme = `{
+            "rootAlias": "Alias",
+            "aliases": [ { "identifier": "Alias", "values": [ "Node" ] } ],
+            "nodes": [ { "nodeType": "Node" } ]
+        }`;
+
+        // Set the test-file in the scheme input field.
+        FileSystem.writeFileSync("tmp/test.treescheme.json", testScheme);
+        const schemeInput = await page.$("#openscheme-file");
+        if (schemeInput !== null) {
+            schemeInput.uploadFile("tmp/test.treescheme.json");
+            // Give the page some time to respond to the file input.
+            await page.waitFor(500);
+        }
+
+        const testSchemeParseResult = TreeSchemeParser.parseJson(testScheme);
+        if (testSchemeParseResult.kind === "error") {
+            throw new Error(testSchemeParseResult.kind);
+        }
+        expect(await getCurrentScheme()).toEqual(testSchemeParseResult.value);
     });
 
     it("can toggle toolbox visibility", async () => {
