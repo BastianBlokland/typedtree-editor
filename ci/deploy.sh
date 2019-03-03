@@ -3,7 +3,7 @@ set -e
 source ./ci/utils.sh
 
 # --------------------------------------------------------------------------------------------------
-# Minify and deploy a build to a azure blob-storage bucket.
+# Deploy a build to a azure blob-storage bucket.
 # --------------------------------------------------------------------------------------------------
 
 BUILD_DIR="./build"
@@ -12,11 +12,24 @@ then
     fail "No build directory found"
 fi
 
-info "Starting minification"
-./node_modules/.bin/uglifyjs \
-    --output "$BUILD_DIR/bundle.js" --compress --mangle -- "$BUILD_DIR/bundle.js"
-
 info "Starting deployment"
+
+# Why don't set the csp in the build step allready? Reason is that if we do we cannot use a local
+# that injects JavaScript for hot-reload anymore.
+if fileExists "./assets/csp.txt"
+then
+    info "Setting Content-Security-Policy"
+    # Insert the csp element in all html files that hdefine a 'Content-Security-Policy' comment.
+    # Note: Using 'tr' to strip the newlines
+    CSP_CONTENT="$(tr '\n' ' ' < ./assets/csp.txt)";
+    CSP_ELEMENT='<meta http-equiv="Content-Security-Policy" content="'"$CSP_CONTENT"'">'
+    sed -i.backup -e "/<!-- Content-Security-Policy -->/a\\
+        \ \ $CSP_ELEMENT
+        " ./build/*.html
+fi
+
+info "Cleaning backup files"
+rm -rf ./build/*.backup
 
 # Sanity check existance of the azure cli tooling and the connection string
 verifyCommand az
