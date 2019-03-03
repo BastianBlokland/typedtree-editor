@@ -143,7 +143,7 @@ to `bastian.tech/typedtree-editor/refs/heads/master/`
 consistently in almost all browsers.
 
 ## Troubleshooting
-* If `verify-tooling.sh` fails try clearing the `./node_modules` directory.
+* If `verify-tooling.sh` fails try removing the `./node_modules` directory.
 
 ## Known issues
 * Running the integration tests in the windows linux subsystem fails with `Error: Failed to launch chrome!`
