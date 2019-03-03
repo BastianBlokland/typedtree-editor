@@ -100,7 +100,7 @@ are minified using [uglify-js](https://github.com/mishoo/UglifyJS2) and
 
 Any ide can be used of course but configuration files for [vscode](https://github.com/Microsoft/vscode)
 are included. Ci scripts are written in bash so windows users should use the
-[wls](https://docs.microsoft.com/en-us/windows/wsl) for running them.
+[wsl](https://docs.microsoft.com/en-us/windows/wsl) for running them.
 
 ### Building
 Installing [node](https://nodejs.org/en/download/) and executing: `make` should be enough, build-output
