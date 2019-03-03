@@ -141,3 +141,6 @@ to `bastian.tech/typedtree-editor/refs/heads/master/`
 ### Dependencies
 * [FileSaver](https://github.com/eligrey/FileSaver.js): Library for saving files that works
 consistently in almost all browsers.
+
+## Troubleshooting
+* If `verify-tooling.sh` fails try clearing the `./node_modules` directory.
