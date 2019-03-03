@@ -63,11 +63,11 @@ function upload ()
 }
 
 # Upload build
-upload "$BUILD_DIR" "/" "$2"
+upload "$BUILD_DIR" "" "$2"
 # Upload screenshots
 if [ -d "$SCREENSHOT_DIR" ]
 then
-    upload "$SCREENSHOT_DIR" "/screenshots" "$2"
+    upload "$SCREENSHOT_DIR" "screenshots" "$2"
 fi
 
 info "Finished deployment"
