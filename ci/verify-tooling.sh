@@ -18,7 +18,7 @@ verifyCommand grep
 verifyCommand awk
 verifyCommand xargs
 
-# Update npm if tooling is missing
+# Install with npm if tooling is missing
 checkNpmTooling ()
 {
     if  [ -f "./node_modules/.bin/tsc" ] &&
@@ -37,8 +37,8 @@ checkNpmTooling ()
 
 if checkNpmTooling
 then
-    warn "Found missing tooling, running 'npm update'"
-    npm update
+    warn "Found missing tooling, installing with npm"
+    npm install
 fi
 
 if checkNpmTooling
