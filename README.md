@@ -144,3 +144,7 @@ consistently in almost all browsers.
 
 ## Troubleshooting
 * If `verify-tooling.sh` fails try clearing the `./node_modules` directory.
+
+## Known issues
+* Running the integration tests in the windows linux subsystem fails with `Error: Failed to launch chrome!`
+This is a known puppeteer [issue](https://github.com/GoogleChrome/puppeteer/issues/1837)
