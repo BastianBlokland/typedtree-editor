@@ -3,10 +3,11 @@ set -e
 source ./ci/utils.sh
 
 # --------------------------------------------------------------------------------------------------
-# Deploy a build to a azure blob-storage bucket.
+# Deploy a build and screenshots to a azure blob-storage bucket.
 # --------------------------------------------------------------------------------------------------
 
 BUILD_DIR="./build"
+SCREENSHOT_DIR="./screenshots"
 if [ ! -d "$BUILD_DIR" ]
 then
     fail "No build directory found"
@@ -25,11 +26,11 @@ then
     CSP_ELEMENT='<meta http-equiv="Content-Security-Policy" content="'"$CSP_CONTENT"'">'
     sed -i.backup -e "/<!-- Content-Security-Policy -->/a\\
         \ \ $CSP_ELEMENT
-        " ./build/*.html
+        " $BUILD_DIR/*.html
 fi
 
 info "Cleaning backup files"
-rm -rf ./build/*.backup
+rm -rf $BUILD_DIR/*.backup
 
 # Sanity check existance of the azure cli tooling and the connection string
 verifyCommand az
@@ -50,13 +51,24 @@ az storage blob delete-batch \
     --pattern "$DEST_PATH/*" \
     --connection-string "$2"
 
-info "Upload to destination"
-az storage blob upload-batch \
-    --source "$BUILD_DIR" \
-    --destination \$web \
-    --destination-path "$DEST_PATH" \
-    --content-cache-control "max-age=60" \
-    --connection-string "$2"
+function upload ()
+{
+    info "Uploading: '$1' to '$DEST_PATH/$2'"
+    az storage blob upload-batch \
+        --source "$1" \
+        --destination \$web \
+        --destination-path "$DEST_PATH/$2" \
+        --content-cache-control "max-age=60" \
+        --connection-string "$3"
+}
+
+# Upload build
+upload "$BUILD_DIR" "/" "$2"
+# Upload screenshots
+if [ -d "$SCREENSHOT_DIR" ]
+then
+    upload "$SCREENSHOT_DIR" "/screenshots" "$2"
+fi
 
 info "Finished deployment"
 exit 0
