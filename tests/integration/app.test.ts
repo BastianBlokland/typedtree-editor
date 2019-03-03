@@ -37,8 +37,7 @@ describe("app", () => {
         // Set the test-file in the scheme input field.
         FileSystem.writeFileSync("tmp/test.treescheme.json", testScheme);
         (await page.$("#openscheme-file"))!.uploadFile("tmp/test.treescheme.json");
-        // Give the page some time to respond to the file input.
-        await page.waitFor(100);
+        await page.waitFor(100); // Give the page some time to respond
 
         const testSchemeParseResult = TreeSchemeParser.parseJson(testScheme);
         if (testSchemeParseResult.kind === "error") {
@@ -55,11 +54,23 @@ describe("app", () => {
         // Set the test-file in the scheme input field.
         FileSystem.writeFileSync("tmp/test.tree.json", testTree);
         (await page.$("#opentree-file"))!.uploadFile("tmp/test.tree.json");
-        // Give the page some time to respond to the file input.
-        await page.waitFor(100);
+        await page.waitFor(100); // Give the page some time to respond
 
         await saveScreenshot("loaded-tree");
         expect(await getCurrentTree()).toEqual(Tree.createNode(scheme.rootAlias.values[0]));
+    });
+
+    it("can change type of a node", async () => {
+        const scheme = await getCurrentScheme();
+        const targetType = scheme.rootAlias.values[scheme.rootAlias.values.length - 1];
+        expect((await getCurrentTree()).type).not.toBe(targetType);
+        await saveScreenshot("change-node-before");
+
+        await page.select(".node-type", targetType);
+        await page.waitFor(100); // Give the page some time to respond
+
+        await saveScreenshot("change-node-after");
+        expect((await getCurrentTree()).type).toBe(targetType);
     });
 
     it("can toggle toolbox visibility", async () => {
