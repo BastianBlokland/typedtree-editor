@@ -9,5 +9,11 @@ describe("app", () => {
 
     it("should load", async () => {
         await expect(await page.title()).toMatch("TypedTree");
+        await saveScreenshot("load");
     });
 });
+
+async function saveScreenshot(title: string): Promise<void> {
+    const screenshotDir = "./screenshots";
+    await page.screenshot({ path: `${screenshotDir}/${title}.png` });
+}

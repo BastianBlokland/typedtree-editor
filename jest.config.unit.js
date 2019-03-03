@@ -4,8 +4,8 @@
  */
 
 module.exports = {
-    transform: { '^.+\\.ts?$': 'ts-jest' },
     testEnvironment: 'node',
+    transform: { '^.+\\.ts?$': 'ts-jest' },
     testRegex: '/tests/unit/.*\\.(test|spec)?\\.(ts|tsx)$',
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
     globals: {

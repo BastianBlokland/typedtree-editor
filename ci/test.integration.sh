@@ -10,6 +10,11 @@ source ./ci/utils.sh
 ./ci/verify-tooling.sh
 
 info "Starting integration-tests"
+
+# Create directory for saving screenshots
+rm -rf ./screenshots
+mkdir "./screenshots"
+
 ./node_modules/.bin/jest \
     --runInBand \
     --config=jest.config.integration.js \
