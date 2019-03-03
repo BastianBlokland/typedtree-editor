@@ -42,6 +42,16 @@ export async function run(): Promise<void> {
     console.log("Stopped running");
 }
 
+/** Return a json export of the currently loaded scheme. Useful for interop with other JavaScript. */
+export function getCurrentSchemeJson(): string | undefined {
+    return currentScheme === undefined ? undefined : TreeSchemeSerializer.composeJson(currentScheme);
+}
+
+/** Return a json export of the currently loaded tree. Useful for interop with other JavaScript. */
+export function getCurrentTreeJson(): string | undefined {
+    return currentTree === undefined ? undefined : TreeSerializer.composeJson(currentTree);
+}
+
 let sequencer: Sequencer.ISequenceRunner | undefined;
 
 let currentScheme: TreeScheme.IScheme | undefined;
