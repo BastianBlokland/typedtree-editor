@@ -36,18 +36,30 @@ describe("app", () => {
 
         // Set the test-file in the scheme input field.
         FileSystem.writeFileSync("tmp/test.treescheme.json", testScheme);
-        const schemeInput = await page.$("#openscheme-file");
-        if (schemeInput !== null) {
-            schemeInput.uploadFile("tmp/test.treescheme.json");
-            // Give the page some time to respond to the file input.
-            await page.waitFor(500);
-        }
+        (await page.$("#openscheme-file"))!.uploadFile("tmp/test.treescheme.json");
+        // Give the page some time to respond to the file input.
+        await page.waitFor(100);
 
         const testSchemeParseResult = TreeSchemeParser.parseJson(testScheme);
         if (testSchemeParseResult.kind === "error") {
             throw new Error(testSchemeParseResult.kind);
         }
+        await saveScreenshot("loaded-scheme");
         expect(await getCurrentScheme()).toEqual(testSchemeParseResult.value);
+    });
+
+    it("can load a tree", async () => {
+        const scheme = await getCurrentScheme();
+        const testTree = `{ "$type": "${scheme.rootAlias.values[0]}" }`;
+
+        // Set the test-file in the scheme input field.
+        FileSystem.writeFileSync("tmp/test.tree.json", testTree);
+        (await page.$("#opentree-file"))!.uploadFile("tmp/test.tree.json");
+        // Give the page some time to respond to the file input.
+        await page.waitFor(100);
+
+        await saveScreenshot("loaded-tree");
+        expect(await getCurrentTree()).toEqual(Tree.createNode(scheme.rootAlias.values[0]));
     });
 
     it("can toggle toolbox visibility", async () => {
