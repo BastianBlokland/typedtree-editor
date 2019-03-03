@@ -40,7 +40,7 @@ steps:
   displayName: 'Publish test results'
   inputs:
     testResultsFormat: JUnit
-    testResultsFiles: '$(System.DefaultWorkingDirectory)/junit.xml'
+    testResultsFiles: '$(System.DefaultWorkingDirectory)/*.junit.xml'
   condition: always()
 
 - task: PublishCodeCoverageResults@1

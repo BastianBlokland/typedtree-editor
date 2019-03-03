@@ -4,10 +4,12 @@
 # --------------------------------------------------------------------------------------------------
 
 # Npm modules
-node_modules/
+/node_modules/
 
 # Build output
-build/
-tsout/
-coverage/
-junit.xml
+/build/
+/tsout/
+
+# Test output
+/coverage/
+/*.junit.xml
