@@ -11,6 +11,7 @@ source ./ci/utils.sh
 
 info "Starting unit-tests"
 ./node_modules/.bin/jest \
+    --config=jest.config.unit.js \
     --reporters=default \
     --reporters=jest-junit \
     --coverage \
@@ -24,7 +25,7 @@ then
 fi
 
 # Rename unit-test output to reflect that these are unit-test results.
-mv -f "./junit.xml" "./unit-test.junit.xml"
+mv -f "./junit.xml" "./test.unit.junit.xml"
 
 info "Finished unit-tests"
 exit 0

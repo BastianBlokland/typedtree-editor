@@ -2,9 +2,9 @@
  * @file Jest tests for treescheme.instantiator.ts
  */
 
-import * as Tree from "../src/tree";
-import * as TreeScheme from "../src/treescheme";
-import * as TreeSchemeInstantiator from "../src/treescheme.instantiator";
+import * as Tree from "../../src/tree";
+import * as TreeScheme from "../../src/treescheme";
+import * as TreeSchemeInstantiator from "../../src/treescheme.instantiator";
 
 test("missingFieldsAreAppendedCorrectly", () => {
     const scheme = createTestScheme();

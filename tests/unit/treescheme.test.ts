@@ -2,7 +2,7 @@
  * @file Jest tests for treescheme.ts
  */
 
-import * as TreeScheme from "../src/treescheme";
+import * as TreeScheme from "../../src/treescheme";
 
 test("cannotPushDuplicateAlias", () => {
     const scheme = TreeScheme.createScheme("testAlias", b => {
