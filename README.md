@@ -1,14 +1,12 @@
 ﻿# TypedTree-Editor
-Web app to edit typed tree structures (For example a behaviour or decision tree)
-
-`Work In Progress`
 
 [![Build Status](https://dev.azure.com/bastian-blokland/TypedTree-Editor/_apis/build/status/BastianBlokland.typedtree-editor?branchName=master)](https://dev.azure.com/bastian-blokland/TypedTree-Editor/_build/latest?definitionId=3?branchName=master)
 [![codecov](https://codecov.io/gh/BastianBlokland/typedtree-editor/branch/master/graph/badge.svg)](https://codecov.io/gh/BastianBlokland/typedtree-editor)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-## Demo
-* [Demo site](https://bastian.tech/tree/)
+[**Web editor for typed tree structures**](https://bastian.tech/tree/)
+
+![Preview image](https://bastian.tech/tree/screenshots/toolbox-hidden.png)
 
 ## Ci
 * [Azure ci](https://dev.azure.com/bastian-blokland/TypedTree-Editor/_build)
