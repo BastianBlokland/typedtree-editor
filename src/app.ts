@@ -196,23 +196,5 @@ function onDomKeyPress(event: KeyboardEvent): void {
         case "f": focusTree(); break;
         case "+": case "=": TreeDisplay.zoom(0.1); break;
         case "-": case "_": TreeDisplay.zoom(-0.1); break;
-        case "1":
-            if (currentScheme !== undefined) {
-                const str = TreeScheme.toString(currentScheme);
-                alert(str);
-                console.log(str);
-            } else {
-                alert("No scheme is currently loaded");
-            }
-            break;
-        case "2":
-            if (currentTree !== undefined) {
-                const str = Tree.toString(currentTree);
-                alert(str);
-                console.log(str);
-            } else {
-                alert("No tree is currently loaded");
-            }
-            break;
     }
 }
