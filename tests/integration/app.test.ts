@@ -12,6 +12,11 @@ describe("app", () => {
         await saveScreenshot("load");
     });
 
+    it("links to github", async () => {
+        await page.click("#github-button");
+        expect(page.url()).toBe("https://github.com/BastianBlokland/typedtree-editor");
+    });
+
     it("can toggle toolbox visibility", async () => {
         await page.click("#toolbox-toggle");
         expect(await getToolboxVisibility()).toEqual("hidden");
