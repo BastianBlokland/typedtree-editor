@@ -12,11 +12,11 @@ source ./ci/utils.sh
 info "Starting integration-tests"
 
 # Create temp directory for use in the tests.
-rm -rf ./tmp
+rm -rf "./tmp"
 mkdir "./tmp"
 
 # Create directory for saving screenshots.
-rm -rf ./screenshots
+rm -rf "./screenshots"
 mkdir "./screenshots"
 
 ./node_modules/.bin/jest \
