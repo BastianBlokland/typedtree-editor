@@ -136,6 +136,19 @@ export function subscribeToFileInput(inputId: string, callback: (file: File) => 
 }
 
 /**
+ * Set the disabled property of a button;
+ * @param elementId Id of the button to set the disabled property for.
+ * @param disabled True if the button should be disabled False is the button should be enabled.
+ */
+export function setButtonDisabled(elementId: string, disabled: boolean): void {
+    const element = document.getElementById(elementId);
+    if (element === null || element.nodeName !== "BUTTON") {
+        throw new Error(`Element with id: ${elementId} not found or is not a button`);
+    }
+    (element as HTMLButtonElement).disabled = disabled;
+}
+
+/**
  * Delete all the children of a given node.
  * @param element Element to delete the children from.
  */
