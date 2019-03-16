@@ -2,35 +2,27 @@
  * @file Responsible for running the main app logic.
  */
 
-import * as DomUtils from "./domutils";
-import * as Sequencer from "./sequencer";
+import * as Display from "./display";
 import * as Tree from "./tree";
-import * as TreeDisplay from "./tree.display";
-import * as TreeParser from "./tree.parser";
-import * as TreeSerializer from "./tree.serializer";
 import * as TreeScheme from "./treescheme";
-import * as TreeSchemeDisplay from "./treescheme.display";
-import * as TreeSchemeInstantiator from "./treescheme.instantiator";
-import * as TreeSchemeParser from "./treescheme.parser";
-import * as TreeSchemeSerializer from "./treescheme.serializer";
-import * as TreeSchemeValidator from "./treescheme.validator";
+import * as Utils from "./utils";
 
 /** Function to run the main app logic in. */
 export async function run(): Promise<void> {
-    sequencer = Sequencer.createRunner();
+    sequencer = Utils.Sequencer.createRunner();
 
     window.onkeydown = onDomKeyPress;
-    DomUtils.subscribeToClick("toolbox-toggle", toggleToolbox);
-    DomUtils.subscribeToClick("focus-button", focusTree);
-    DomUtils.subscribeToClick("zoomin-button", () => { TreeDisplay.zoom(0.1); });
-    DomUtils.subscribeToClick("zoomout-button", () => { TreeDisplay.zoom(-0.1); });
+    Utils.Dom.subscribeToClick("toolbox-toggle", toggleToolbox);
+    Utils.Dom.subscribeToClick("focus-button", focusTree);
+    Utils.Dom.subscribeToClick("zoomin-button", () => { Display.Tree.zoom(0.1); });
+    Utils.Dom.subscribeToClick("zoomout-button", () => { Display.Tree.zoom(-0.1); });
 
-    DomUtils.subscribeToFileInput("openscheme-file", enqueueLoadScheme);
-    DomUtils.subscribeToClick("savescheme-button", enqueueSaveScheme);
+    Utils.Dom.subscribeToFileInput("openscheme-file", enqueueLoadScheme);
+    Utils.Dom.subscribeToClick("savescheme-button", enqueueSaveScheme);
 
-    DomUtils.subscribeToClick("newtree-button", enqueueNewTree);
-    DomUtils.subscribeToFileInput("opentree-file", enqueueLoadTree);
-    DomUtils.subscribeToClick("savetree-button", enqueueSaveTree);
+    Utils.Dom.subscribeToClick("newtree-button", enqueueNewTree);
+    Utils.Dom.subscribeToFileInput("opentree-file", enqueueLoadTree);
+    Utils.Dom.subscribeToClick("savetree-button", enqueueSaveTree);
 
     console.log("Started running");
 
@@ -44,15 +36,15 @@ export async function run(): Promise<void> {
 
 /** Return a json export of the currently loaded scheme. Useful for interop with other JavaScript. */
 export function getCurrentSchemeJson(): string | undefined {
-    return currentScheme === undefined ? undefined : TreeSchemeSerializer.composeJson(currentScheme);
+    return currentScheme === undefined ? undefined : TreeScheme.Serializer.composeJson(currentScheme);
 }
 
 /** Return a json export of the currently loaded tree. Useful for interop with other JavaScript. */
 export function getCurrentTreeJson(): string | undefined {
-    return currentTree === undefined ? undefined : TreeSerializer.composeJson(currentTree);
+    return currentTree === undefined ? undefined : Tree.Serializer.composeJson(currentTree);
 }
 
-let sequencer: Sequencer.ISequenceRunner | undefined;
+let sequencer: Utils.Sequencer.ISequenceRunner | undefined;
 
 let currentScheme: TreeScheme.IScheme | undefined;
 let currentSchemeName: string | undefined;
@@ -63,7 +55,7 @@ let currentTreeName: string | undefined;
 function enqueueLoadScheme(source: string | File): void {
     const name = typeof source === "string" ? source : source.name;
     sequencer!.enqueue(async () => {
-        const result = await TreeSchemeParser.load(source);
+        const result = await TreeScheme.Parser.load(source);
         if (result.kind === "error") {
             alert(`Failed to load. Error: ${result.errorMessage}`);
         } else {
@@ -80,11 +72,11 @@ function enqueueNewTree(): void {
             return;
         }
         const defaultRoot = TreeScheme.getDefaultDefinition(currentScheme, currentScheme.rootAlias);
-        const newRoot = TreeSchemeInstantiator.instantiateDefaultNode(defaultRoot);
+        const newRoot = TreeScheme.Instantiator.instantiateDefaultNode(defaultRoot);
 
         console.log(`Successfully created new tree. Scheme: ${currentSchemeName}`);
         setCurrentTree(newRoot, "New tree");
-        TreeDisplay.focusTree(1);
+        Display.Tree.focusTree(1);
     });
 }
 
@@ -95,7 +87,7 @@ function enqueueLoadTree(source: string | File): void {
         setCurrentTree(undefined, undefined);
 
         // Download and pars the tree from the given source.
-        const result = await TreeParser.load(source);
+        const result = await Tree.Parser.load(source);
         if (result.kind === "error") {
             alert(`Failed to parse tree. Error: ${result.errorMessage}`);
         } else {
@@ -104,16 +96,16 @@ function enqueueLoadTree(source: string | File): void {
                 return;
             }
             // Validated the parsed tree against the current scheme.
-            const validateResult = TreeSchemeValidator.validate(currentScheme, result.value);
+            const validateResult = TreeScheme.Validator.validate(currentScheme, result.value);
             if (validateResult !== true) {
                 alert(`Failed to validate tree. Error: ${validateResult.errorMessage}`);
                 return;
             }
-            const completeTree = TreeSchemeInstantiator.duplicateWithMissingFields(currentScheme, result.value);
+            const completeTree = TreeScheme.Instantiator.duplicateWithMissingFields(currentScheme, result.value);
 
             console.log(`Successfully loaded tree: ${name}`);
             setCurrentTree(completeTree, name);
-            TreeDisplay.focusTree(1);
+            Display.Tree.focusTree(1);
         }
     });
 }
@@ -121,8 +113,8 @@ function enqueueLoadTree(source: string | File): void {
 function enqueueSaveScheme(): void {
     sequencer!.enqueue(async () => {
         if (currentScheme !== undefined) {
-            const treeJson = TreeSchemeSerializer.composeJson(currentScheme);
-            DomUtils.saveJsonText(treeJson, currentSchemeName!);
+            const treeJson = TreeScheme.Serializer.composeJson(currentScheme);
+            Utils.Dom.saveJsonText(treeJson, currentSchemeName!);
         }
     });
 }
@@ -130,8 +122,8 @@ function enqueueSaveScheme(): void {
 function enqueueSaveTree(): void {
     sequencer!.enqueue(async () => {
         if (currentTree !== undefined) {
-            const treeJson = TreeSerializer.composeJson(currentTree);
-            DomUtils.saveJsonText(treeJson, currentTreeName!);
+            const treeJson = Tree.Serializer.composeJson(currentTree);
+            Utils.Dom.saveJsonText(treeJson, currentTreeName!);
         }
     });
 }
@@ -147,7 +139,7 @@ function enqueueUpdateTree(oldTree: Tree.INode, newTree?: Tree.INode, name?: str
 function setCurrentScheme(scheme: TreeScheme.IScheme, name: string): void {
     currentScheme = scheme;
     currentSchemeName = name;
-    TreeSchemeDisplay.setScheme(currentScheme);
+    Display.TreeScheme.setScheme(currentScheme);
 
     // Loading a new scheme invalidates the current tree. (In theory we could support checking if the
     // previously loaded tree is still compatible with the new scheme)
@@ -161,8 +153,8 @@ function setCurrentTree(tree: Tree.INode | undefined, name?: string): void {
 
     currentTree = tree;
     currentTreeName = name;
-    DomUtils.setText("tree-title", name === undefined ? "" : name);
-    TreeDisplay.setTree(currentScheme, tree, newTree => {
+    Utils.Dom.setText("tree-title", name === undefined ? "" : name);
+    Display.Tree.setTree(currentScheme, tree, newTree => {
         if (tree !== undefined) {
             enqueueUpdateTree(tree, newTree, name);
         }
@@ -183,18 +175,18 @@ function toggleToolbox(): void {
 
 function focusTree(): void {
     if (currentTree !== undefined) {
-        TreeDisplay.focusTree(2);
+        Display.Tree.focusTree(2);
     }
 }
 
 function onDomKeyPress(event: KeyboardEvent): void {
-    if (DomUtils.isInputFocussed()) {
+    if (Utils.Dom.isInputFocussed()) {
         return;
     }
     switch (event.key) {
         case "t": toggleToolbox(); break;
         case "f": focusTree(); break;
-        case "+": case "=": TreeDisplay.zoom(0.1); break;
-        case "-": case "_": TreeDisplay.zoom(-0.1); break;
+        case "+": case "=": Display.Tree.zoom(0.1); break;
+        case "-": case "_": Display.Tree.zoom(-0.1); break;
     }
 }

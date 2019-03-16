@@ -4,9 +4,7 @@
 
 import * as FileSystem from "fs";
 import * as Tree from "../../src/tree";
-import * as TreeParser from "../../src/tree.parser";
 import * as TreeScheme from "../../src/treescheme";
-import * as TreeSchemeParser from "../../src/treescheme.parser";
 
 describe("app", () => {
     beforeEach(async () => {
@@ -39,7 +37,7 @@ describe("app", () => {
         (await page.$("#openscheme-file"))!.uploadFile("tmp/test.treescheme.json");
         await page.waitFor(100); // Give the page some time to respond
 
-        const testSchemeParseResult = TreeSchemeParser.parseJson(testScheme);
+        const testSchemeParseResult = TreeScheme.Parser.parseJson(testScheme);
         if (testSchemeParseResult.kind === "error") {
             throw new Error(testSchemeParseResult.kind);
         }
@@ -96,7 +94,7 @@ describe("app", () => {
 async function getCurrentScheme(): Promise<TreeScheme.IScheme> {
     const schemeJson: string | undefined = await page.evaluate("getCurrentSchemeJson()");
     if (schemeJson !== undefined) {
-        const parseResult = TreeSchemeParser.parseJson(schemeJson);
+        const parseResult = TreeScheme.Parser.parseJson(schemeJson);
         if (parseResult.kind === "success") {
             return parseResult.value;
         }
@@ -107,7 +105,7 @@ async function getCurrentScheme(): Promise<TreeScheme.IScheme> {
 async function getCurrentTree(): Promise<Tree.INode> {
     const treeJson: string | undefined = await page.evaluate("getCurrentTreeJson()");
     if (treeJson !== undefined) {
-        const parseResult = TreeParser.parseJson(treeJson);
+        const parseResult = Tree.Parser.parseJson(treeJson);
         if (parseResult.kind === "success") {
             return parseResult.value;
         }

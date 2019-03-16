@@ -3,12 +3,11 @@
  */
 
 import * as App from "./app";
-import * as SvgDisplay from "./svg.display";
-import * as TreeSchemeDisplay from "./treescheme.display";
+import * as Display from "./display";
 
 // Initialize dom elements.
-SvgDisplay.initialize();
-TreeSchemeDisplay.initialize();
+Display.Svg.initialize();
+Display.TreeScheme.initialize();
 
 // Export functions to window for interop.
 (window as any).getCurrentSchemeJson = App.getCurrentSchemeJson;
