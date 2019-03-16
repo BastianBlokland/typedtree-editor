@@ -4,7 +4,6 @@
 
 import * as FileSystem from "fs";
 import * as Tree from "../../src/tree";
-import * as TreeParser from "../../src/tree.parser";
 import * as TreeScheme from "../../src/treescheme";
 import * as TreeSchemeParser from "../../src/treescheme.parser";
 
@@ -107,7 +106,7 @@ async function getCurrentScheme(): Promise<TreeScheme.IScheme> {
 async function getCurrentTree(): Promise<Tree.INode> {
     const treeJson: string | undefined = await page.evaluate("getCurrentTreeJson()");
     if (treeJson !== undefined) {
-        const parseResult = TreeParser.parseJson(treeJson);
+        const parseResult = Tree.Parser.parseJson(treeJson);
         if (parseResult.kind === "success") {
             return parseResult.value;
         }

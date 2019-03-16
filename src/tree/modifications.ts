@@ -2,9 +2,9 @@
  * @file Responsible for constructing new tree's by replacing elements of existing trees.
  */
 
+import * as Utils from "../utils";
+import * as Path from "./path";
 import * as Tree from "./tree";
-import * as TreePath from "./tree.path";
-import * as Utils from "./utils";
 
 /**
  * Create a new field based on a existing field and a new element. If the field is a non-array then
@@ -73,7 +73,7 @@ export function nodeWithField(node: Tree.INode, field: Tree.Field): Tree.INode {
  * @returns New root node for a new tree with a replaced node.
  */
 export function treeWithReplacedNode(root: Tree.INode, target: Tree.INode, newNode: Tree.INode): Tree.INode {
-    const pathToRoot = TreePath.findPathToRoot(root, target);
+    const pathToRoot = Path.findPathToRoot(root, target);
     let node = newNode;
     pathToRoot.forEach(parent => {
         node = nodeWithField(parent.node, fieldWithNewNode(parent.node, parent.output, node));

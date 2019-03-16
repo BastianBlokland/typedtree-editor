@@ -1,11 +1,9 @@
 /**
- * @file Jest tests for tree.serializer.ts
+ * @file Jest tests for tree/serializer.ts
  */
 
-import * as Tree from "../../src/tree";
-import * as Tree̦Parser from "../../src/tree.parser";
-import * as TreeSerializer from "../../src/tree.serializer";
-import * as Utils from "../../src/utils";
+import * as Tree from "../../../src/tree";
+import * as Utils from "../../../src/utils";
 
 test("savedJsonIsIdenticalToReadJson", () => {
     const json = Utils.formatJson(`{
@@ -26,10 +24,10 @@ test("savedJsonIsIdenticalToReadJson", () => {
             ]
         }
     }`);
-    const parseResult = Tree̦Parser.parseJson(json);
+    const parseResult = Tree.Parser.parseJson(json);
     expect(parseResult.kind).toBe("success");
     if (parseResult.kind === "success") {
-        const composedJson = TreeSerializer.composeJson(parseResult.value);
+        const composedJson = Tree.Serializer.composeJson(parseResult.value);
         expect(composedJson).toEqual(json);
     }
 });
@@ -37,7 +35,7 @@ test("savedJsonIsIdenticalToReadJson", () => {
 test("emptyArraysAreNotSerialized", () => {
     const node = Tree.createNode("root", b => b.pushNumberArrayField("field", []));
 
-    const composedJson = TreeSerializer.composeJson(node);
+    const composedJson = Tree.Serializer.composeJson(node);
     expect(composedJson).toEqual(Utils.formatJson(`{
         "$type": "root"
     }`));
@@ -46,7 +44,7 @@ test("emptyArraysAreNotSerialized", () => {
 test("anonymousTypeFieldsAreNotSerialized", () => {
     const node = Tree.createNode(Tree.anonymousNodeType, b => b.pushStringField("field", "test"));
 
-    const composedJson = TreeSerializer.composeJson(node);
+    const composedJson = Tree.Serializer.composeJson(node);
     expect(composedJson).toEqual(Utils.formatJson(`{
         "field": "test"
     }`));
@@ -55,7 +53,7 @@ test("anonymousTypeFieldsAreNotSerialized", () => {
 test("noneNodesFieldsAreNotSerialized", () => {
     const node = Tree.createNode("root", b => b.pushNodeField("field", Tree.createNoneNode()));
 
-    const composedJson = TreeSerializer.composeJson(node);
+    const composedJson = Tree.Serializer.composeJson(node);
     expect(composedJson).toEqual(Utils.formatJson(`{
         "$type": "root"
     }`));
@@ -68,7 +66,7 @@ test("noneNodesAreFilteredOutOfNodeArrayFields", () => {
         Tree.createNode("test2"),
     ]));
 
-    const composedJson = TreeSerializer.composeJson(node);
+    const composedJson = Tree.Serializer.composeJson(node);
     expect(composedJson).toEqual(Utils.formatJson(`{
         "$type": "root",
         "children": [
@@ -80,6 +78,6 @@ test("noneNodesAreFilteredOutOfNodeArrayFields", () => {
 
 test("rootNodeCannotBeNoneNode", () => {
     expect(() => {
-        TreeSerializer.composeJson(Tree.createNoneNode());
+        Tree.Serializer.composeJson(Tree.createNoneNode());
     }).toThrowError();
 });

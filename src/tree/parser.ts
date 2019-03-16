@@ -2,8 +2,8 @@
  * @file Responsible for parsing tree's from json.
  */
 
+import * as Utils from "../utils";
 import * as Tree from "./tree";
-import * as Utils from "./utils";
 
 /**
  * Load a tree as json from the given file or url.

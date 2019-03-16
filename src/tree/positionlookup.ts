@@ -5,9 +5,9 @@
  * - Display the nodes using the positions and sizes from the 'PositionLookup'
  */
 
+import * as Utils from "../utils";
+import { Vector } from "../utils";
 import * as Tree from "./tree";
-import * as Utils from "./utils";
-import { Vector } from "./utils";
 
 /** Height for the header (the part that contains the type) of a node. */
 export const nodeHeaderHeight = 25;

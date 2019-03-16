@@ -4,9 +4,9 @@
 
 import * as SvgDisplay from "./svg.display";
 import * as Tree from "./tree";
-import * as TreeModifications from "./tree.modifications";
-import * as TreePositionLookup from "./tree.positionlookup";
 import * as TreeTypeLookup from "./tree.typelookup";
+import * as TreeModifications from "./tree/modifications";
+import * as TreePositionLookup from "./tree/positionlookup";
 import * as TreeScheme from "./treescheme";
 import * as TreeSchemeInstantiator from "./treescheme.instantiator";
 import * as Utils from "./utils";

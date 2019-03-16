@@ -2,8 +2,8 @@
  * @file Responsible for serializing tree's to json.
  */
 
+import * as Utils from "../utils";
 import * as Tree from "./tree";
-import * as Utils from "./utils";
 
 /**
  * Compose json for the given node (and its children).

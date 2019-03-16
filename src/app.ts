@@ -4,8 +4,6 @@
 
 import * as Tree from "./tree";
 import * as TreeDisplay from "./tree.display";
-import * as TreeParser from "./tree.parser";
-import * as TreeSerializer from "./tree.serializer";
 import * as TreeScheme from "./treescheme";
 import * as TreeSchemeDisplay from "./treescheme.display";
 import * as TreeSchemeInstantiator from "./treescheme.instantiator";
@@ -48,7 +46,7 @@ export function getCurrentSchemeJson(): string | undefined {
 
 /** Return a json export of the currently loaded tree. Useful for interop with other JavaScript. */
 export function getCurrentTreeJson(): string | undefined {
-    return currentTree === undefined ? undefined : TreeSerializer.composeJson(currentTree);
+    return currentTree === undefined ? undefined : Tree.Serializer.composeJson(currentTree);
 }
 
 let sequencer: Utils.Sequencer.ISequenceRunner | undefined;
@@ -94,7 +92,7 @@ function enqueueLoadTree(source: string | File): void {
         setCurrentTree(undefined, undefined);
 
         // Download and pars the tree from the given source.
-        const result = await TreeParser.load(source);
+        const result = await Tree.Parser.load(source);
         if (result.kind === "error") {
             alert(`Failed to parse tree. Error: ${result.errorMessage}`);
         } else {
@@ -129,7 +127,7 @@ function enqueueSaveScheme(): void {
 function enqueueSaveTree(): void {
     sequencer!.enqueue(async () => {
         if (currentTree !== undefined) {
-            const treeJson = TreeSerializer.composeJson(currentTree);
+            const treeJson = Tree.Serializer.composeJson(currentTree);
             Utils.Dom.saveJsonText(treeJson, currentTreeName!);
         }
     });
