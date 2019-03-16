@@ -195,5 +195,13 @@ function onDomKeyPress(event: KeyboardEvent): void {
         case "f": focusTree(); break;
         case "+": case "=": Display.Tree.zoom(0.1); break;
         case "-": case "_": Display.Tree.zoom(-0.1); break;
+        case "z":
+            if (event.shiftKey) {
+                enqueueRedo();
+            } else {
+                enqueueUndo();
+            }
+            break;
+        case "Z": enqueueRedo(); break;
     }
 }
