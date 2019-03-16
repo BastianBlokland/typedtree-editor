@@ -49,6 +49,10 @@ body button {
     touch-action: manipulation;
 }
 
+body button:disabled {
+    color: #000;
+}
+
 #toolbox-toggle {
     position: absolute;
     left: 5px;

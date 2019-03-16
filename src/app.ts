@@ -166,6 +166,10 @@ function updateTree(name?: string): void {
             updateTree(name);
         });
     });
+
+    // Update undo / button disabled state
+    Utils.Dom.setButtonDisabled("undo-button", !treeHistory.hasUndo);
+    Utils.Dom.setButtonDisabled("redo-button", !treeHistory.hasRedo);
 }
 
 function toggleToolbox(): void {
