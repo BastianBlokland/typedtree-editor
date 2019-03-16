@@ -1,10 +1,9 @@
 /**
- * @file Jest tests for treescheme.serializer.ts
+ * @file Jest tests for treescheme/serializer.ts
  */
 
-import * as TreeSchemeParser from "../../src/treescheme.parser";
-import * as TreeSchemeSerializer from "../../src/treescheme.serializer";
-import * as Utils from "../../src/utils";
+import * as TreeScheme from "../../../src/treescheme";
+import * as Utils from "../../../src/utils";
 
 test("savedJsonIsIdenticalToReadJson", () => {
     const json = Utils.formatJson(`{
@@ -28,10 +27,10 @@ test("savedJsonIsIdenticalToReadJson", () => {
             }
         ]
     }`);
-    const parseResult = TreeSchemeParser.parseJson(json);
+    const parseResult = TreeScheme.Parser.parseJson(json);
     expect(parseResult.kind).toBe("success");
     if (parseResult.kind === "success") {
-        const composedJson = TreeSchemeSerializer.composeJson(parseResult.value);
+        const composedJson = TreeScheme.Serializer.composeJson(parseResult.value);
         expect(composedJson).toEqual(json);
     }
 });

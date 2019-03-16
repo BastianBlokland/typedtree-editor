@@ -4,11 +4,9 @@
 
 import * as SvgDisplay from "./svg.display";
 import * as Tree from "./tree";
-import * as TreeTypeLookup from "./tree.typelookup";
 import * as TreeModifications from "./tree/modifications";
 import * as TreePositionLookup from "./tree/positionlookup";
 import * as TreeScheme from "./treescheme";
-import * as TreeSchemeInstantiator from "./treescheme.instantiator";
 import * as Utils from "./utils";
 import { Vector } from "./utils";
 
@@ -31,7 +29,7 @@ export function setTree(
         return;
     }
 
-    const typeLookup = TreeTypeLookup.createTypeLookup(scheme, root);
+    const typeLookup = TreeScheme.TypeLookup.createTypeLookup(scheme, root);
     const positionLookup = TreePositionLookup.createPositionLookup(root);
 
     SvgDisplay.setContent(b => {
@@ -70,7 +68,7 @@ type nodeChangedCallback = (newNode: Tree.INode) => void;
 function createNode(
     builder: SvgDisplay.IBuilder,
     node: Tree.INode,
-    typeLookup: TreeTypeLookup.ITypeLookup,
+    typeLookup: TreeScheme.TypeLookup.ITypeLookup,
     positionLookup: TreePositionLookup.IPositionLookup,
     changed: nodeChangedCallback): void {
 
@@ -90,7 +88,7 @@ function createNode(
         { x: size.x, y: nodeHeaderHeight - 5 },
         newIndex => {
             const newNodeType = typeOptions[newIndex];
-            const newNode = TreeSchemeInstantiator.changeNodeType(typeLookup.scheme, node, newNodeType);
+            const newNode = TreeScheme.Instantiator.changeNodeType(typeLookup.scheme, node, newNodeType);
             changed(newNode);
         });
 
@@ -162,7 +160,7 @@ function createField(
 
         // Add element button
         parent.addGraphics("fieldvalue-button", "arrayAdd", { x: nameWidth - 15, y: centeredYOffset }, () => {
-            const newElement = TreeSchemeInstantiator.createNewElement(field.kind);
+            const newElement = TreeScheme.Instantiator.createNewElement(field.kind);
             const newArray = array.concat(newElement as Tree.FieldElementType<T>);
             changed(TreeModifications.fieldWithValue(field, newArray as unknown as Tree.FieldValueType<T>));
         });
@@ -266,7 +264,7 @@ function getRelativeVector(
     return Vector.subtract(positionLookup.getPosition(to), positionLookup.getPosition(from));
 }
 
-function getTypeOptions(typeLookup: TreeTypeLookup.ITypeLookup, node: Tree.INode): Tree.NodeType[] {
+function getTypeOptions(typeLookup: TreeScheme.TypeLookup.ITypeLookup, node: Tree.INode): Tree.NodeType[] {
     const alias = typeLookup.getAlias(node);
     const result = alias.values.slice();
     // Add the none-type

@@ -4,8 +4,8 @@
 
 import * as FileSystem from "fs";
 import * as Tree from "../../src/tree";
-import * as TreeScheme from "../../src/treescheme";
-import * as TreeSchemeParser from "../../src/treescheme.parser";
+import * as TreeSchemeParser from "../../src/treescheme/parser";
+import * as TreeScheme from "../../src/treescheme/treescheme";
 
 describe("app", () => {
     beforeEach(async () => {

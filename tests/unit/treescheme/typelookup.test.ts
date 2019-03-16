@@ -1,36 +1,35 @@
 /**
- * @file Jest tests for tree.typelookup.ts
+ * @file Jest tests for treescheme/typelookup.ts
  */
 
-import * as Tree from "../../src/tree";
-import * as TreeTypeLookup from "../../src/tree.typelookup";
-import * as TreeScheme from "../../src/treescheme";
+import * as Tree from "../../../src/tree";
+import * as TreeScheme from "../../../src/treescheme";
 
 test("schemeCanBeFound", () => {
     const testScheme = createTestScheme();
     const testTree = createTestTree();
-    const typeLookup = TreeTypeLookup.createTypeLookup(testScheme, testTree);
+    const typeLookup = TreeScheme.TypeLookup.createTypeLookup(testScheme, testTree);
     expect(typeLookup.scheme).toBe(testScheme);
 });
 
 test("treeCanBeFound", () => {
     const testScheme = createTestScheme();
     const testTree = createTestTree();
-    const typeLookup = TreeTypeLookup.createTypeLookup(testScheme, testTree);
+    const typeLookup = TreeScheme.TypeLookup.createTypeLookup(testScheme, testTree);
     expect(typeLookup.root).toBe(testTree);
 });
 
 test("rootAliasMatches", () => {
     const testScheme = createTestScheme();
     const testTree = createTestTree();
-    const typeLookup = TreeTypeLookup.createTypeLookup(testScheme, testTree);
+    const typeLookup = TreeScheme.TypeLookup.createTypeLookup(testScheme, testTree);
     expect(typeLookup.getAlias(testTree)).toBe(testScheme.rootAlias);
 });
 
 test("allNodeDefinitionsCanBeFound", () => {
     const testScheme = createTestScheme();
     const testTree = createTestTree();
-    const typeLookup = TreeTypeLookup.createTypeLookup(testScheme, testTree);
+    const typeLookup = TreeScheme.TypeLookup.createTypeLookup(testScheme, testTree);
 
     Tree.getAllChildren(testTree).forEach(node => {
         expect(typeLookup.getDefinition(node).nodeType).toEqual(node.type);
@@ -40,7 +39,7 @@ test("allNodeDefinitionsCanBeFound", () => {
 test("allNodesHaveAnAlias", () => {
     const testScheme = createTestScheme();
     const testTree = createTestTree();
-    const typeLookup = TreeTypeLookup.createTypeLookup(testScheme, testTree);
+    const typeLookup = TreeScheme.TypeLookup.createTypeLookup(testScheme, testTree);
 
     Tree.getAllChildren(testTree).forEach(node => {
         expect(typeLookup.getAlias(node).values).toContainEqual(node.type);
@@ -66,14 +65,14 @@ test("allNodesHaveAnAlias", () => {
 test("noDefinitionCanBeFoundForInvalidNode", () => {
     const testScheme = createTestScheme();
     const testTree = createTestTree();
-    const typeLookup = TreeTypeLookup.createTypeLookup(testScheme, testTree);
+    const typeLookup = TreeScheme.TypeLookup.createTypeLookup(testScheme, testTree);
     expect(() => typeLookup.getDefinition(Tree.createNode("Invalid"))).toThrowError();
 });
 
 test("noAliasCanBeFoundForInvalidNode", () => {
     const testScheme = createTestScheme();
     const testTree = createTestTree();
-    const typeLookup = TreeTypeLookup.createTypeLookup(testScheme, testTree);
+    const typeLookup = TreeScheme.TypeLookup.createTypeLookup(testScheme, testTree);
     expect(() => typeLookup.getAlias(Tree.createNode("Invalid"))).toThrowError();
 });
 

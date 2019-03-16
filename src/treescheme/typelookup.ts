@@ -1,12 +1,12 @@
 /**
- * @file Can be used to gather type-info (based a scheme) from nodes in a tree without having to
+ * @file Can be used to gather type-info from nodes in a tree without having to
  * recurse the structure.
  * Example usage:
  * - Create a 'TypeLookup' for a given tree structure and scheme.
  * - Gather type info for nodes from the 'TypeLookup'
  */
 
-import * as Tree from "./tree";
+import * as Tree from "../tree";
 import * as TreeScheme from "./treescheme";
 
 /** Immutable object that can be used to find type-info for nodes in a tree. */

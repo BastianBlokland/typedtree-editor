@@ -2,8 +2,8 @@
  * @file Immutable data-model for representing tree scheme's.
  */
 
-import * as Tree from "./tree";
-import * as Utils from "./utils";
+import * as Tree from "../tree";
+import * as Utils from "../utils";
 
 /** Possible types a field can have */
 export type FieldValueType = "string" | "number" | "boolean" | IAlias;

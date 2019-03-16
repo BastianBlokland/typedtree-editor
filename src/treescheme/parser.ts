@@ -2,8 +2,8 @@
  * @file Responsible for parsing tree-scheme's from json.
  */
 
+import * as Utils from "../utils";
 import * as TreeScheme from "./treescheme";
-import * as Utils from "./utils";
 
 /**
  * Load a scheme as json from the given file or url.

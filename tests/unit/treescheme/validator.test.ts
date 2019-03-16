@@ -1,10 +1,9 @@
 /**
- * @file Jest tests for treescheme.validator.ts
+ * @file Jest tests for treescheme/validator.ts
  */
 
-import * as Tree from "../../src/tree";
-import * as TreeScheme from "../../src/treescheme";
-import * as TreeSchemeValidator from "../../src/treescheme.validator";
+import * as Tree from "../../../src/tree";
+import * as TreeScheme from "../../../src/treescheme";
 
 test("validTreeDoesValidate", () => {
     const scheme = TreeScheme.createScheme("Alias1", b => {
@@ -26,7 +25,7 @@ test("validTreeDoesValidate", () => {
             b.pushNumberField("field2", 1337);
         }));
     });
-    expect(TreeSchemeValidator.validate(scheme, tree)).toBe(true);
+    expect(TreeScheme.Validator.validate(scheme, tree)).toBe(true);
 });
 
 test("invalidNodeTypeDoesNotValidate", () => {
@@ -38,7 +37,7 @@ test("invalidNodeTypeDoesNotValidate", () => {
     });
 
     const tree = Tree.createNode("Node3");
-    expect(TreeSchemeValidator.validate(scheme, tree)).not.toBe(true);
+    expect(TreeScheme.Validator.validate(scheme, tree)).not.toBe(true);
 });
 
 test("invalidFieldNameDoesNotValidate", () => {
@@ -56,7 +55,7 @@ test("invalidFieldNameDoesNotValidate", () => {
         b.pushStringField("field1", "test");
         b.pushNumberField("field3", 1337);
     });
-    expect(TreeSchemeValidator.validate(scheme, tree)).not.toBe(true);
+    expect(TreeScheme.Validator.validate(scheme, tree)).not.toBe(true);
 });
 
 test("invalidFieldTypeDoesNotValidate", () => {
@@ -74,7 +73,7 @@ test("invalidFieldTypeDoesNotValidate", () => {
         b.pushStringField("field2", "test");
         b.pushNumberField("field1", 1337);
     });
-    expect(TreeSchemeValidator.validate(scheme, tree)).not.toBe(true);
+    expect(TreeScheme.Validator.validate(scheme, tree)).not.toBe(true);
 });
 
 test("nodeDefinitionCanHaveTheSameNameAsAnAlias", () => {
@@ -85,5 +84,5 @@ test("nodeDefinitionCanHaveTheSameNameAsAnAlias", () => {
     const tree = Tree.createNode("Alias", b => {
         b.pushNodeField("Alias", Tree.createNode("Alias"));
     });
-    expect(TreeSchemeValidator.validate(scheme, tree)).toBe(true);
+    expect(TreeScheme.Validator.validate(scheme, tree)).toBe(true);
 });

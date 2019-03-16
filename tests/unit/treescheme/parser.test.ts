@@ -1,9 +1,8 @@
 /**
- * @file Jest tests for treescheme.parser.ts
+ * @file Jest tests for treescheme/parser.ts
  */
 
-import * as TreeScheme from "../../src/treescheme";
-import * as Tree̦SchemeParser from "../../src/treescheme.parser";
+import * as TreeScheme from "../../../src/treescheme";
 
 test("basicSchemeIsParsedSuccessfully", () => {
     const json = `{
@@ -25,7 +24,7 @@ test("basicSchemeIsParsedSuccessfully", () => {
         ]
     }`;
 
-    const parseResult = Tree̦SchemeParser.parseJson(json);
+    const parseResult = TreeScheme.Parser.parseJson(json);
     expect(parseResult.kind).toBe("success");
     if (parseResult.kind === "success") {
         expect(parseResult.value).toEqual(TreeScheme.createScheme("Alias", b => {

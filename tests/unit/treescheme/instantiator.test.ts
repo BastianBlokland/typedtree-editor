@@ -1,10 +1,9 @@
 /**
- * @file Jest tests for treescheme.instantiator.ts
+ * @file Jest tests for treescheme/instantiator.ts
  */
 
-import * as Tree from "../../src/tree";
-import * as TreeScheme from "../../src/treescheme";
-import * as TreeSchemeInstantiator from "../../src/treescheme.instantiator";
+import * as Tree from "../../../src/tree";
+import * as TreeScheme from "../../../src/treescheme";
 
 test("missingFieldsAreAppendedCorrectly", () => {
     const scheme = createTestScheme();
@@ -16,7 +15,7 @@ test("missingFieldsAreAppendedCorrectly", () => {
             }),
         ]);
     });
-    expect(TreeSchemeInstantiator.duplicateWithMissingFields(scheme, tree)).
+    expect(TreeScheme.Instantiator.duplicateWithMissingFields(scheme, tree)).
         toEqual(Tree.createNode("Node1", b => {
             b.pushStringField("field1", "");
             b.pushNumberField("field2", 1337);
@@ -51,7 +50,7 @@ test("nodeTypeCanBeChangedIntoNoneType", () => {
             }),
         ]);
     });
-    expect(TreeSchemeInstantiator.changeNodeType(scheme, node, Tree.noneNodeType)).
+    expect(TreeScheme.Instantiator.changeNodeType(scheme, node, Tree.noneNodeType)).
         toEqual(Tree.createNoneNode());
 });
 
@@ -66,7 +65,7 @@ test("whenChangingNodeTypeCompatibleFieldsAreReused", () => {
             }),
         ]);
     });
-    expect(TreeSchemeInstantiator.changeNodeType(scheme, node, "Node1")).
+    expect(TreeScheme.Instantiator.changeNodeType(scheme, node, "Node1")).
         toEqual(Tree.createNode("Node1", b => {
             b.pushStringField("field1", "");
             b.pushNumberField("field2", 1337);
@@ -85,13 +84,13 @@ test("whenChangingNodeTypeCompatibleFieldsAreReused", () => {
 
 test("noneNodesCanBeInstantiated", () => {
     const scheme = createTestScheme();
-    expect(TreeSchemeInstantiator.instantiateDefaultNodeType(scheme, Tree.noneNodeType)).
+    expect(TreeScheme.Instantiator.instantiateDefaultNodeType(scheme, Tree.noneNodeType)).
         toEqual(Tree.createNoneNode());
 });
 
 test("defaultNodeCanBeCreatedSuccessfully", () => {
     const scheme = createTestScheme();
-    expect(TreeSchemeInstantiator.instantiateDefaultNodeType(scheme, "Node1")).
+    expect(TreeScheme.Instantiator.instantiateDefaultNodeType(scheme, "Node1")).
         toEqual(Tree.createNode("Node1", b => {
             b.pushStringField("field1", "");
             b.pushNumberField("field2", 0);
@@ -105,10 +104,10 @@ test("defaultNodeCanBeCreatedSuccessfully", () => {
 });
 
 test("newArrayElementsCanBeCreated", () => {
-    expect(TreeSchemeInstantiator.createNewElement("stringArray")).toEqual("");
-    expect(TreeSchemeInstantiator.createNewElement("numberArray")).toEqual(0);
-    expect(TreeSchemeInstantiator.createNewElement("booleanArray")).toEqual(false);
-    expect(TreeSchemeInstantiator.createNewElement("nodeArray")).toEqual(Tree.createNoneNode());
+    expect(TreeScheme.Instantiator.createNewElement("stringArray")).toEqual("");
+    expect(TreeScheme.Instantiator.createNewElement("numberArray")).toEqual(0);
+    expect(TreeScheme.Instantiator.createNewElement("booleanArray")).toEqual(false);
+    expect(TreeScheme.Instantiator.createNewElement("nodeArray")).toEqual(Tree.createNoneNode());
 });
 
 function createTestScheme(): TreeScheme.IScheme {

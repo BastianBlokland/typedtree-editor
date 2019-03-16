@@ -2,9 +2,9 @@
  * @file Can be used to validate if a tree matches a tree-scheme.
  */
 
-import * as Tree from "./tree";
+import * as Tree from "../tree";
+import * as Utils from "../utils";
 import * as TreeScheme from "./treescheme";
-import * as Utils from "./utils";
 
 /** Result of a validation attempt */
 export type Result = true | IFailure;

@@ -2,9 +2,9 @@
  * @file Responsible for instantiating tree nodes from a scheme.
  */
 
-import * as Tree from "./tree";
+import * as Tree from "../tree";
 import * as TreeScheme from "./treescheme";
-import * as TreeSchemeValidator from "./treescheme.validator";
+import * as TreeSchemeValidator from "./validator";
 
 /**
  * Create a duplicate of a existing tree but add any fields that the scheme specifies but the tree
