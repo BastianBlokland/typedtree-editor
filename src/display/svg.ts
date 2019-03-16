@@ -2,8 +2,8 @@
  * @file Responsible for creating svg display elements and updating them.
  */
 
-import * as Utils from "./utils";
-import { Vector } from "./utils";
+import * as Utils from "../utils";
+import { Vector } from "../utils";
 
 /** Builder that display elements can be added to. */
 export interface IBuilder {

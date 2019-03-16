@@ -2,8 +2,8 @@
  * @file Responsible for displaying tree-scheme's as dom elements.
  */
 
+import * as TreeScheme from "../treescheme";
 import * as Utils from "../utils";
-import * as TreeScheme from "./treescheme";
 
 /** Initialize the display, needs to be done once. */
 export function initialize(): void {

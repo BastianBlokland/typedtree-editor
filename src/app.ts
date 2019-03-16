@@ -2,8 +2,8 @@
  * @file Responsible for running the main app logic.
  */
 
+import * as Display from "./display";
 import * as Tree from "./tree";
-import * as TreeDisplay from "./tree.display";
 import * as TreeScheme from "./treescheme";
 import * as Utils from "./utils";
 
@@ -14,8 +14,8 @@ export async function run(): Promise<void> {
     window.onkeydown = onDomKeyPress;
     Utils.Dom.subscribeToClick("toolbox-toggle", toggleToolbox);
     Utils.Dom.subscribeToClick("focus-button", focusTree);
-    Utils.Dom.subscribeToClick("zoomin-button", () => { TreeDisplay.zoom(0.1); });
-    Utils.Dom.subscribeToClick("zoomout-button", () => { TreeDisplay.zoom(-0.1); });
+    Utils.Dom.subscribeToClick("zoomin-button", () => { Display.Tree.zoom(0.1); });
+    Utils.Dom.subscribeToClick("zoomout-button", () => { Display.Tree.zoom(-0.1); });
 
     Utils.Dom.subscribeToFileInput("openscheme-file", enqueueLoadScheme);
     Utils.Dom.subscribeToClick("savescheme-button", enqueueSaveScheme);
@@ -76,7 +76,7 @@ function enqueueNewTree(): void {
 
         console.log(`Successfully created new tree. Scheme: ${currentSchemeName}`);
         setCurrentTree(newRoot, "New tree");
-        TreeDisplay.focusTree(1);
+        Display.Tree.focusTree(1);
     });
 }
 
@@ -105,7 +105,7 @@ function enqueueLoadTree(source: string | File): void {
 
             console.log(`Successfully loaded tree: ${name}`);
             setCurrentTree(completeTree, name);
-            TreeDisplay.focusTree(1);
+            Display.Tree.focusTree(1);
         }
     });
 }
@@ -139,7 +139,7 @@ function enqueueUpdateTree(oldTree: Tree.INode, newTree?: Tree.INode, name?: str
 function setCurrentScheme(scheme: TreeScheme.IScheme, name: string): void {
     currentScheme = scheme;
     currentSchemeName = name;
-    TreeScheme.Display.setScheme(currentScheme);
+    Display.TreeScheme.setScheme(currentScheme);
 
     // Loading a new scheme invalidates the current tree. (In theory we could support checking if the
     // previously loaded tree is still compatible with the new scheme)
@@ -154,7 +154,7 @@ function setCurrentTree(tree: Tree.INode | undefined, name?: string): void {
     currentTree = tree;
     currentTreeName = name;
     Utils.Dom.setText("tree-title", name === undefined ? "" : name);
-    TreeDisplay.setTree(currentScheme, tree, newTree => {
+    Display.Tree.setTree(currentScheme, tree, newTree => {
         if (tree !== undefined) {
             enqueueUpdateTree(tree, newTree, name);
         }
@@ -175,7 +175,7 @@ function toggleToolbox(): void {
 
 function focusTree(): void {
     if (currentTree !== undefined) {
-        TreeDisplay.focusTree(2);
+        Display.Tree.focusTree(2);
     }
 }
 
@@ -186,7 +186,7 @@ function onDomKeyPress(event: KeyboardEvent): void {
     switch (event.key) {
         case "t": toggleToolbox(); break;
         case "f": focusTree(); break;
-        case "+": case "=": TreeDisplay.zoom(0.1); break;
-        case "-": case "_": TreeDisplay.zoom(-0.1); break;
+        case "+": case "=": Display.Tree.zoom(0.1); break;
+        case "-": case "_": Display.Tree.zoom(-0.1); break;
     }
 }
