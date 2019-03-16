@@ -1,5 +1,5 @@
 /**
- * @file Miscellaneous reusable utilities.
+ * @file Miscellaneous utilities.
  */
 
 /**

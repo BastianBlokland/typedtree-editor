@@ -2,8 +2,8 @@
  * @file Responsible for displaying tree-scheme's as dom elements.
  */
 
-import * as DomUtils from "./domutils";
 import * as TreeScheme from "./treescheme";
+import * as Utils from "./utils";
 
 /** Initialize the display, needs to be done once. */
 export function initialize(): void {
@@ -20,16 +20,16 @@ export function initialize(): void {
 
 export function setScheme(scheme: TreeScheme.IScheme): void {
     assertInitialized();
-    DomUtils.clearChildren(schemeDisplayElement!);
+    Utils.Dom.clearChildren(schemeDisplayElement!);
 
-    const content = DomUtils.createWithChildren("div",
-        DomUtils.createWithChildren("div",
-            DomUtils.createWithText("span", "Root: ", "header"),
-            DomUtils.createWithText("span", scheme.rootAlias.identifier, "identifier")),
-        DomUtils.createWithText("span", "Aliases: ", "header"),
-        DomUtils.createUList(...scheme.aliases.map(createAliasElement)),
-        DomUtils.createWithText("span", "Nodes: ", "header"),
-        DomUtils.createUList(...scheme.nodes.map(createNodeElement)));
+    const content = Utils.Dom.createWithChildren("div",
+        Utils.Dom.createWithChildren("div",
+            Utils.Dom.createWithText("span", "Root: ", "header"),
+            Utils.Dom.createWithText("span", scheme.rootAlias.identifier, "identifier")),
+        Utils.Dom.createWithText("span", "Aliases: ", "header"),
+        Utils.Dom.createUList(...scheme.aliases.map(createAliasElement)),
+        Utils.Dom.createWithText("span", "Nodes: ", "header"),
+        Utils.Dom.createUList(...scheme.nodes.map(createNodeElement)));
 
     schemeDisplayElement!.appendChild(content);
 }
@@ -38,22 +38,22 @@ const schemeDisplayElementId = "scheme-display";
 let schemeDisplayElement: HTMLElement | undefined;
 
 function createAliasElement(alias: TreeScheme.IAlias): HTMLElement {
-    return DomUtils.createWithChildren("details",
-        DomUtils.createSummary(alias.identifier, "identifier"),
-        DomUtils.createUList(...alias.values.map(f => DomUtils.createWithText("span", f, "identifier"))));
+    return Utils.Dom.createWithChildren("details",
+        Utils.Dom.createSummary(alias.identifier, "identifier"),
+        Utils.Dom.createUList(...alias.values.map(f => Utils.Dom.createWithText("span", f, "identifier"))));
 }
 
 function createNodeElement(nodeDefinition: TreeScheme.INodeDefinition): HTMLElement {
     if (nodeDefinition.fields.length === 0) {
-        return DomUtils.createWithText("span", nodeDefinition.nodeType, "identifier");
+        return Utils.Dom.createWithText("span", nodeDefinition.nodeType, "identifier");
     }
-    return DomUtils.createWithChildren("details",
-        DomUtils.createSummary(nodeDefinition.nodeType, "identifier"),
-        DomUtils.createUList(...nodeDefinition.fields.map(f =>
-            DomUtils.createWithChildren("div",
-                DomUtils.createWithText("span",
+    return Utils.Dom.createWithChildren("details",
+        Utils.Dom.createSummary(nodeDefinition.nodeType, "identifier"),
+        Utils.Dom.createUList(...nodeDefinition.fields.map(f =>
+            Utils.Dom.createWithChildren("div",
+                Utils.Dom.createWithText("span",
                     f.name, "identifier"),
-                DomUtils.createWithText("span",
+                Utils.Dom.createWithText("span",
                     TreeScheme.getPrettyFieldValueType(f.valueType, f.isArray), "field-type")))));
 }
 

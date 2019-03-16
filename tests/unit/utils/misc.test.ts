@@ -1,8 +1,8 @@
 /**
- * @file Jest tests for utils.ts
+ * @file Jest tests for utils/misc.ts
  */
 
-import * as Utils from "../../src/utils";
+import * as Utils from "../../../src/utils";
 
 test("withNewElement", () => {
     expect(Utils.withNewElement([1, 2, 3], 0, 1337)).toEqual([1337, 2, 3]);

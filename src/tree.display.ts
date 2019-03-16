@@ -10,7 +10,7 @@ import * as TreeTypeLookup from "./tree.typelookup";
 import * as TreeScheme from "./treescheme";
 import * as TreeSchemeInstantiator from "./treescheme.instantiator";
 import * as Utils from "./utils";
-import * as Vec from "./vector";
+import { Vector } from "./utils";
 
 /** Callback for when a tree is changed, returns a new immutable tree. */
 export type treeChangedCallback = (newTree: Tree.INode) => void;
@@ -62,7 +62,7 @@ export function zoom(delta: number = 0.1): void {
 const nodeHeaderHeight = TreePositionLookup.nodeHeaderHeight;
 const halfNodeHeaderHeight = Utils.half(nodeHeaderHeight);
 const nodeFieldHeight = TreePositionLookup.nodeFieldHeight;
-const nodeInputSlotOffset: Vec.IVector2 = { x: 0, y: 12.5 };
+const nodeInputSlotOffset: Vector.IVector2 = { x: 0, y: 12.5 };
 const nodeConnectionCurviness = .7;
 
 type nodeChangedCallback = (newNode: Tree.INode) => void;
@@ -80,7 +80,7 @@ function createNode(
     const nodeElement = builder.addElement("node", positionLookup.getPosition(node));
     const backgroundClass = node.type === Tree.noneNodeType ? "nonenode-background" : "node-background";
 
-    nodeElement.addRect(backgroundClass, size, Vec.zeroVector);
+    nodeElement.addRect(backgroundClass, size, Vector.zeroVector);
     nodeElement.addDropdown(
         "node-type",
         typeOptionsIndex,
@@ -203,8 +203,8 @@ function createField(
         yOffset: number,
         changed: elementChangedCallback<T>): void {
 
-        const pos: Vec.Position = { x: nameWidth + xOffset, y: centeredYOffset + yOffset };
-        const size: Vec.Size = { x: fieldSize.x - pos.x, y: nodeFieldHeight };
+        const pos: Vector.Position = { x: nameWidth + xOffset, y: centeredYOffset + yOffset };
+        const size: Vector.Size = { x: fieldSize.x - pos.x, y: nodeFieldHeight };
         switch (typeof element) {
             case "string": createStringValue(element, pos, size, changed as elementChangedCallback<string>); break;
             case "number": createNumberValue(element, pos, size, changed as elementChangedCallback<number>); break;
@@ -215,8 +215,8 @@ function createField(
 
     function createStringValue(
         value: string,
-        pos: Vec.Position,
-        size: Vec.Size,
+        pos: Vector.Position,
+        size: Vector.Size,
         changed: elementChangedCallback<string>): void {
 
         parent.addEditableText("string-value", value, pos, size, changed);
@@ -224,8 +224,8 @@ function createField(
 
     function createNumberValue(
         value: number,
-        pos: Vec.Position,
-        size: Vec.Size,
+        pos: Vector.Position,
+        size: Vector.Size,
         changed: elementChangedCallback<number>): void {
 
         parent.addEditableNumber("number-value", value, pos, size, changed);
@@ -233,8 +233,8 @@ function createField(
 
     function createBooleanValue(
         value: boolean,
-        pos: Vec.Position,
-        size: Vec.Size,
+        pos: Vector.Position,
+        size: Vector.Size,
         changed: elementChangedCallback<boolean>): void {
 
         parent.addEditableBoolean("boolean-value", value, pos, size, changed);
@@ -242,17 +242,17 @@ function createField(
 
     function createNodeValue(
         value: Tree.INode,
-        pos: Vec.Position,
-        size: Vec.Size): void {
+        pos: Vector.Position,
+        size: Vector.Size): void {
 
         addConnection(parent, { x: fieldSize.x - 12, y: pos.y }, getRelativeVector(node, value, positionLookup));
     }
 }
 
-function addConnection(parent: SvgDisplay.IElement, from: Vec.Position, to: Vec.Position): void {
+function addConnection(parent: SvgDisplay.IElement, from: Vector.Position, to: Vector.Position): void {
     parent.addGraphics("nodeOutput", "nodeConnector", from);
 
-    const target = Vec.add(to, nodeInputSlotOffset);
+    const target = Vector.add(to, nodeInputSlotOffset);
     const c1 = { x: Utils.lerp(from.x, target.x, nodeConnectionCurviness), y: from.y };
     const c2 = { x: Utils.lerp(target.x, from.x, nodeConnectionCurviness), y: target.y };
     parent.addBezier("connection", from, c1, c2, target);
@@ -261,9 +261,9 @@ function addConnection(parent: SvgDisplay.IElement, from: Vec.Position, to: Vec.
 function getRelativeVector(
     from: Tree.INode,
     to: Tree.INode,
-    positionLookup: TreePositionLookup.IPositionLookup): Vec.IVector2 {
+    positionLookup: TreePositionLookup.IPositionLookup): Vector.IVector2 {
 
-    return Vec.subtract(positionLookup.getPosition(to), positionLookup.getPosition(from));
+    return Vector.subtract(positionLookup.getPosition(to), positionLookup.getPosition(from));
 }
 
 function getTypeOptions(typeLookup: TreeTypeLookup.ITypeLookup, node: Tree.INode): Tree.NodeType[] {

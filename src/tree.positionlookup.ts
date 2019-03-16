@@ -7,7 +7,7 @@
 
 import * as Tree from "./tree";
 import * as Utils from "./utils";
-import * as Vec from "./vector";
+import { Vector } from "./utils";
 
 /** Height for the header (the part that contains the type) of a node. */
 export const nodeHeaderHeight = 25;
@@ -31,30 +31,30 @@ export interface IPositionLookup {
     /** All the nodes in the tree. */
     readonly nodes: ReadonlyArray<Tree.INode>;
     /** Total area taken up by this tree. */
-    readonly totalArea: Vec.Size;
+    readonly totalArea: Vector.Size;
     /** Offset of the root node, can be used to center something on the tree for example */
-    readonly rootOffset: Vec.Size;
+    readonly rootOffset: Vector.Size;
 
     /**
      * Get the size of the given node.
      * @param node Node to get the size for.
      * @returns Vector representing the size of given node.
      */
-    getSize(node: Tree.INode): Vec.Size;
+    getSize(node: Tree.INode): Vector.Size;
 
     /**
      * Get the area taken up by the given node and its children.
      * @param node Node to get the area for.
      * @returns Vector representing the area taken up by the node and its children.
      */
-    getArea(node: Tree.INode): Vec.Size;
+    getArea(node: Tree.INode): Vector.Size;
 
     /**
      * Get the position of the given node.
      * @param node To get the position for.
      * @returns Vector representing the position of the given node.
      */
-    getPosition(node: Tree.INode): Vec.Position;
+    getPosition(node: Tree.INode): Vector.Position;
 }
 
 /**
@@ -100,11 +100,11 @@ export function getFieldHeight(field: Tree.Field): number {
 
 class PositionLookupImpl implements IPositionLookup {
     private readonly _root: Tree.INode;
-    private readonly _totalArea: Vec.Size;
+    private readonly _totalArea: Vector.Size;
     private readonly _nodes: Tree.INode[] = [];
-    private readonly _sizes: Map<Tree.INode, Vec.Size> = new Map();
-    private readonly _areas: Map<Tree.INode, Vec.Size> = new Map();
-    private readonly _positions: Map<Tree.INode, Vec.Position> = new Map();
+    private readonly _sizes: Map<Tree.INode, Vector.Size> = new Map();
+    private readonly _areas: Map<Tree.INode, Vector.Size> = new Map();
+    private readonly _positions: Map<Tree.INode, Vector.Position> = new Map();
 
     constructor(root: Tree.INode) {
         this._root = root;
@@ -124,16 +124,16 @@ class PositionLookupImpl implements IPositionLookup {
         return this._nodes;
     }
 
-    get totalArea(): Vec.Size {
+    get totalArea(): Vector.Size {
         return this._totalArea;
     }
 
-    get rootOffset(): Vec.Position {
+    get rootOffset(): Vector.Position {
         const rootArea = this.getArea(this._root);
         return { x: 0, y: -Utils.half(rootArea.y) };
     }
 
-    public getSize(node: Tree.INode): Vec.Size {
+    public getSize(node: Tree.INode): Vector.Size {
         const lookup = this._sizes.get(node);
         if (lookup === undefined) {
             throw new Error("Node is not known to this positionlookup");
@@ -141,7 +141,7 @@ class PositionLookupImpl implements IPositionLookup {
         return lookup;
     }
 
-    public getArea(node: Tree.INode): Vec.Size {
+    public getArea(node: Tree.INode): Vector.Size {
         const lookup = this._areas.get(node);
         if (lookup === undefined) {
             throw new Error("Node is not known to this positionlookup");
@@ -149,7 +149,7 @@ class PositionLookupImpl implements IPositionLookup {
         return lookup;
     }
 
-    public getPosition(node: Tree.INode): Vec.Position {
+    public getPosition(node: Tree.INode): Vector.Position {
         const lookup = this._positions.get(node);
         if (lookup === undefined) {
             throw new Error("Node is not known to this positionlookup");
@@ -163,7 +163,7 @@ class PositionLookupImpl implements IPositionLookup {
         Tree.forEachDirectChild(node, child => this.addSizes(child));
     }
 
-    private addAreas(node: Tree.INode): Vec.Size {
+    private addAreas(node: Tree.INode): Vector.Size {
         const size = this.getSize(node);
 
         const directChildren = Tree.getDirectChildren(node);
@@ -185,7 +185,7 @@ class PositionLookupImpl implements IPositionLookup {
         return area;
     }
 
-    private addPositions(node: Tree.INode, referencePos: Vec.Position): void {
+    private addPositions(node: Tree.INode, referencePos: Vector.Position): void {
         const size = this.getSize(node);
         const area = this.getArea(node);
         const position = { x: referencePos.x, y: referencePos.y + Utils.half(area.y) - Utils.half(size.y) };

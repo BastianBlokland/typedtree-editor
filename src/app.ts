@@ -2,8 +2,6 @@
  * @file Responsible for running the main app logic.
  */
 
-import * as DomUtils from "./domutils";
-import * as Sequencer from "./sequencer";
 import * as Tree from "./tree";
 import * as TreeDisplay from "./tree.display";
 import * as TreeParser from "./tree.parser";
@@ -14,23 +12,24 @@ import * as TreeSchemeInstantiator from "./treescheme.instantiator";
 import * as TreeSchemeParser from "./treescheme.parser";
 import * as TreeSchemeSerializer from "./treescheme.serializer";
 import * as TreeSchemeValidator from "./treescheme.validator";
+import * as Utils from "./utils";
 
 /** Function to run the main app logic in. */
 export async function run(): Promise<void> {
-    sequencer = Sequencer.createRunner();
+    sequencer = Utils.Sequencer.createRunner();
 
     window.onkeydown = onDomKeyPress;
-    DomUtils.subscribeToClick("toolbox-toggle", toggleToolbox);
-    DomUtils.subscribeToClick("focus-button", focusTree);
-    DomUtils.subscribeToClick("zoomin-button", () => { TreeDisplay.zoom(0.1); });
-    DomUtils.subscribeToClick("zoomout-button", () => { TreeDisplay.zoom(-0.1); });
+    Utils.Dom.subscribeToClick("toolbox-toggle", toggleToolbox);
+    Utils.Dom.subscribeToClick("focus-button", focusTree);
+    Utils.Dom.subscribeToClick("zoomin-button", () => { TreeDisplay.zoom(0.1); });
+    Utils.Dom.subscribeToClick("zoomout-button", () => { TreeDisplay.zoom(-0.1); });
 
-    DomUtils.subscribeToFileInput("openscheme-file", enqueueLoadScheme);
-    DomUtils.subscribeToClick("savescheme-button", enqueueSaveScheme);
+    Utils.Dom.subscribeToFileInput("openscheme-file", enqueueLoadScheme);
+    Utils.Dom.subscribeToClick("savescheme-button", enqueueSaveScheme);
 
-    DomUtils.subscribeToClick("newtree-button", enqueueNewTree);
-    DomUtils.subscribeToFileInput("opentree-file", enqueueLoadTree);
-    DomUtils.subscribeToClick("savetree-button", enqueueSaveTree);
+    Utils.Dom.subscribeToClick("newtree-button", enqueueNewTree);
+    Utils.Dom.subscribeToFileInput("opentree-file", enqueueLoadTree);
+    Utils.Dom.subscribeToClick("savetree-button", enqueueSaveTree);
 
     console.log("Started running");
 
@@ -52,7 +51,7 @@ export function getCurrentTreeJson(): string | undefined {
     return currentTree === undefined ? undefined : TreeSerializer.composeJson(currentTree);
 }
 
-let sequencer: Sequencer.ISequenceRunner | undefined;
+let sequencer: Utils.Sequencer.ISequenceRunner | undefined;
 
 let currentScheme: TreeScheme.IScheme | undefined;
 let currentSchemeName: string | undefined;
@@ -122,7 +121,7 @@ function enqueueSaveScheme(): void {
     sequencer!.enqueue(async () => {
         if (currentScheme !== undefined) {
             const treeJson = TreeSchemeSerializer.composeJson(currentScheme);
-            DomUtils.saveJsonText(treeJson, currentSchemeName!);
+            Utils.Dom.saveJsonText(treeJson, currentSchemeName!);
         }
     });
 }
@@ -131,7 +130,7 @@ function enqueueSaveTree(): void {
     sequencer!.enqueue(async () => {
         if (currentTree !== undefined) {
             const treeJson = TreeSerializer.composeJson(currentTree);
-            DomUtils.saveJsonText(treeJson, currentTreeName!);
+            Utils.Dom.saveJsonText(treeJson, currentTreeName!);
         }
     });
 }
@@ -161,7 +160,7 @@ function setCurrentTree(tree: Tree.INode | undefined, name?: string): void {
 
     currentTree = tree;
     currentTreeName = name;
-    DomUtils.setText("tree-title", name === undefined ? "" : name);
+    Utils.Dom.setText("tree-title", name === undefined ? "" : name);
     TreeDisplay.setTree(currentScheme, tree, newTree => {
         if (tree !== undefined) {
             enqueueUpdateTree(tree, newTree, name);
@@ -188,7 +187,7 @@ function focusTree(): void {
 }
 
 function onDomKeyPress(event: KeyboardEvent): void {
-    if (DomUtils.isInputFocussed()) {
+    if (Utils.Dom.isInputFocussed()) {
         return;
     }
     switch (event.key) {

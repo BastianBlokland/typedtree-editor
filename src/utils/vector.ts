@@ -2,7 +2,7 @@
  * @file 2D vector that can be used to represent positions, offsets and sizes.
  */
 
-import * as Utils from "./utils";
+import * as Misc from "./misc";
 
 /** Vector2 that represents a position. */
 export type Position = IVector2;
@@ -116,7 +116,7 @@ export function invert(vector: IVector2): IVector2 {
  * @returns Interpolated vector.
  */
 export function lerp(vectorA: IVector2, vectorB: IVector2, frac: number): IVector2 {
-    return createVector(Utils.lerp(vectorA.x, vectorB.x, frac), Utils.lerp(vectorA.y, vectorB.y, frac));
+    return createVector(Misc.lerp(vectorA.x, vectorB.x, frac), Misc.lerp(vectorA.y, vectorB.y, frac));
 }
 
 /**

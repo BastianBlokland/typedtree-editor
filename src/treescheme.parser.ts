@@ -2,19 +2,18 @@
  * @file Responsible for parsing tree-scheme's from json.
  */
 
-import * as ParserUtils from "./parserutils";
-import { createError, createSuccess, ParseResult } from "./parserutils";
 import * as TreeScheme from "./treescheme";
+import * as Utils from "./utils";
 
 /**
  * Load a scheme as json from the given file or url.
  * @param source Source to get the json from (Can be a file or a url).
  * @returns Scheme or parse failure.
  */
-export async function load(source: File | string): Promise<ParseResult<TreeScheme.IScheme>> {
+export async function load(source: File | string): Promise<Utils.Parser.ParseResult<TreeScheme.IScheme>> {
     const loadTextResult = await (typeof source === "string" ?
-        ParserUtils.loadTextFromUrl(source) :
-        ParserUtils.loadTextFromFile(source));
+        Utils.Parser.loadTextFromUrl(source) :
+        Utils.Parser.loadTextFromFile(source));
 
     if (loadTextResult.kind === "error") {
         return loadTextResult;
@@ -27,18 +26,18 @@ export async function load(source: File | string): Promise<ParseResult<TreeSchem
  * @param jsonString Json to pare.
  * @returns Tree or parse failure.
  */
-export function parseJson(jsonString: string): ParseResult<TreeScheme.IScheme> {
+export function parseJson(jsonString: string): Utils.Parser.ParseResult<TreeScheme.IScheme> {
     let jsonObj: any;
     try {
         jsonObj = JSON.parse(jsonString);
     } catch (e) {
-        return createError(`Parsing failed: ${e}`);
+        return Utils.Parser.createError(`Parsing failed: ${e}`);
     }
 
     try {
-        return createSuccess(parseScheme(jsonObj));
+        return Utils.Parser.createSuccess(parseScheme(jsonObj));
     } catch (e) {
-        return createError(`Parsing failed: ${e}`);
+        return Utils.Parser.createError(`Parsing failed: ${e}`);
     }
 }
 
@@ -47,7 +46,7 @@ function parseScheme(obj: any): TreeScheme.IScheme {
         throw new Error("Invalid input obj");
     }
 
-    const rootAliasIdentifier = ParserUtils.validateString(obj.rootAlias);
+    const rootAliasIdentifier = Utils.Parser.validateString(obj.rootAlias);
     if (rootAliasIdentifier === undefined) {
         throw new Error(`Root-alias identifier '${obj.rootAlias}' of scheme is invalid`);
     }
@@ -59,20 +58,20 @@ function parseScheme(obj: any): TreeScheme.IScheme {
 }
 
 function parseAliases(schemeBuilder: TreeScheme.ISchemeBuilder, obj: any): void {
-    if (!ParserUtils.isArray(obj.aliases)) {
+    if (!Utils.Parser.isArray(obj.aliases)) {
         return;
     }
 
     (obj.aliases as any[]).forEach(aliasObj => {
 
         // Parse identifier
-        const identifier = ParserUtils.validateString(aliasObj.identifier);
+        const identifier = Utils.Parser.validateString(aliasObj.identifier);
         if (identifier === undefined) {
             throw new Error(`Identifier '${identifier}' of alias is invalid`);
         }
 
         // Parse values
-        const values = ParserUtils.validateStringArray(aliasObj.values);
+        const values = Utils.Parser.validateStringArray(aliasObj.values);
         if (values === undefined) {
             throw new Error(`Values array '${values}' of alias is invalid`);
         }
@@ -85,14 +84,14 @@ function parseAliases(schemeBuilder: TreeScheme.ISchemeBuilder, obj: any): void 
 }
 
 function parseNodes(schemeBuilder: TreeScheme.ISchemeBuilder, obj: any): void {
-    if (!ParserUtils.isArray(obj.nodes)) {
+    if (!Utils.Parser.isArray(obj.nodes)) {
         return;
     }
 
     (obj.nodes as any[]).forEach(nodeObj => {
 
         // Parse identifier
-        const nodeType = ParserUtils.validateString(nodeObj.nodeType);
+        const nodeType = Utils.Parser.validateString(nodeObj.nodeType);
         if (nodeType === undefined) {
             throw new Error(`NodeType '${nodeType}' of node is invalid`);
         }
@@ -100,17 +99,17 @@ function parseNodes(schemeBuilder: TreeScheme.ISchemeBuilder, obj: any): void {
         schemeBuilder.pushNodeDefinition(nodeType, nodeBuilder => {
 
             // Parse fields
-            if (!ParserUtils.isArray(nodeObj.fields)) {
+            if (!Utils.Parser.isArray(nodeObj.fields)) {
                 return;
             }
             (nodeObj.fields as any[]).forEach(fieldObj => {
-                const name = ParserUtils.validateString(fieldObj.name);
+                const name = Utils.Parser.validateString(fieldObj.name);
                 if (name === undefined) {
                     throw new Error(`Node '${nodeType}' has field that is missing a name`);
                 }
 
                 const valueType = parseValueType(schemeBuilder, fieldObj.valueType);
-                const isArray = ParserUtils.isBoolean(fieldObj.isArray) ? fieldObj.isArray as boolean : false;
+                const isArray = Utils.Parser.isBoolean(fieldObj.isArray) ? fieldObj.isArray as boolean : false;
 
                 if (!nodeBuilder.pushField(name, valueType, isArray)) {
                     throw new Error(`Unable to push field '${name}' on node '${nodeType}', is it a duplicate?`);
@@ -121,7 +120,7 @@ function parseNodes(schemeBuilder: TreeScheme.ISchemeBuilder, obj: any): void {
 }
 
 function parseValueType(schemeBuilder: TreeScheme.ISchemeBuilder, obj: any): TreeScheme.FieldValueType {
-    const str = ParserUtils.validateString(obj);
+    const str = Utils.Parser.validateString(obj);
     if (str === undefined) {
         throw new Error("Invalid value type");
     }

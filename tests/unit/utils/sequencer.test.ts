@@ -1,12 +1,11 @@
 /**
- * @file Jest tests for sequencer.ts
+ * @file Jest tests for utils/sequencer.ts
  */
 
-import * as Sequencer from "../../src/sequencer";
-import { sleep } from "../../src/utils";
+import * as Utils from "../../../src/utils";
 
 test("stopEndsTheUntilEndPromise", () => {
-    const sequencer = Sequencer.createRunner();
+    const sequencer = Utils.Sequencer.createRunner();
     expect(sequencer.running).toBe(true);
     expect(sequencer.idle).toBe(true);
 
@@ -17,7 +16,7 @@ test("stopEndsTheUntilEndPromise", () => {
 });
 
 test("allItemsGetExecuted", () => {
-    const sequencer = Sequencer.createRunner();
+    const sequencer = Utils.Sequencer.createRunner();
     let counter = 0;
 
     sequencer.enqueue(async () => { counter++; });
@@ -26,19 +25,19 @@ test("allItemsGetExecuted", () => {
     sequencer.enqueue(async () => { counter++; });
     sequencer.enqueue(async () => { counter++; });
 
-    return sleep(5).then(() => expect(counter).toBe(5));
+    return Utils.sleep(5).then(() => expect(counter).toBe(5));
 });
 
 test("idlePromiseIsResolved", () => {
-    const sequencer = Sequencer.createRunner();
+    const sequencer = Utils.Sequencer.createRunner();
 
     let executed = false;
-    sequencer.enqueue(async () => { await sleep(5); executed = true; });
+    sequencer.enqueue(async () => { await Utils.sleep(5); executed = true; });
 
     return waitAndAssert();
 
     async function waitAndAssert(): Promise<void> {
-        await sleep(1);
+        await Utils.sleep(1);
         await sequencer.untilIdle;
         expect(executed).toBe(true);
     }

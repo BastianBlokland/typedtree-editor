@@ -2,10 +2,8 @@
  * @file Responsible for creating svg display elements and updating them.
  */
 
-import * as DomUtils from "./domutils";
-import { ClassName } from "./domutils";
 import * as Utils from "./utils";
-import * as Vec from "./vector";
+import { Vector } from "./utils";
 
 /** Builder that display elements can be added to. */
 export interface IBuilder {
@@ -15,7 +13,7 @@ export interface IBuilder {
      * @param  position Position to place the element at.
      * @returns Newly created element.
      */
-    addElement(className: ClassName, position: Vec.Position): IElement;
+    addElement(className: Utils.Dom.ClassName, position: Vector.Position): IElement;
 }
 
 /** Display element that content can be added to. */
@@ -27,29 +25,33 @@ export interface IElement {
      * Position of this element.
      * Note: This does NOT need to match screen pixels as the canvas can be zoomed.
      */
-    readonly position: Vec.Position;
+    readonly position: Vector.Position;
 
     /** Add a child element */
-    addElement(className: ClassName, position: Vec.Position): IElement;
+    addElement(className: Utils.Dom.ClassName, position: Vector.Position): IElement;
 
     /** Add a rectangle graphic to this element. */
-    addRect(className: ClassName, size: Vec.Size, position: Vec.Position): void;
+    addRect(className: Utils.Dom.ClassName, size: Vector.Size, position: Vector.Position): void;
 
     /**
      * Add a text graphic to this element.
      * Note: Position is vertically centered.
      */
-    addText(className: ClassName, value: string, position: Vec.Position, size: Vec.Size): void;
+    addText(
+        className: Utils.Dom.ClassName,
+        value: string,
+        position: Vector.Position,
+        size: Vector.Size): void;
 
     /**
      * Add a editable text graphic to this element.
      * Note: Position is vertically centered.
      */
     addEditableText(
-        className: ClassName,
+        className: Utils.Dom.ClassName,
         value: string,
-        position: Vec.Position,
-        size: Vec.Size,
+        position: Vector.Position,
+        size: Vector.Size,
         callback: (newValue: string) => void): void;
 
     /**
@@ -57,10 +59,10 @@ export interface IElement {
      * Note: Position is vertically centered.
      */
     addEditableNumber(
-        className: ClassName,
+        className: Utils.Dom.ClassName,
         value: number,
-        position: Vec.Position,
-        size: Vec.Size,
+        position: Vector.Position,
+        size: Vector.Size,
         callback: (newValue: number) => void): void;
 
     /**
@@ -68,10 +70,10 @@ export interface IElement {
      * Note: Position is vertically centered.
      */
     addEditableBoolean(
-        className: ClassName,
+        className: Utils.Dom.ClassName,
         value: boolean,
-        position: Vec.Position,
-        size: Vec.Size,
+        position: Vector.Position,
+        size: Vector.Size,
         callback: (newValue: boolean) => void): void;
 
     /**
@@ -79,21 +81,26 @@ export interface IElement {
      * Note: Position is vertically centered.
      */
     addDropdown(
-        className: ClassName,
+        className: Utils.Dom.ClassName,
         currentIndex: number,
         options: ReadonlyArray<string>,
-        position: Vec.Position,
-        size: Vec.Size,
+        position: Vector.Position,
+        size: Vector.Size,
         callback: (newIndex: number) => void): void;
 
     /** Add a bezier graphic to this element. */
-    addBezier(className: ClassName, from: Vec.Position, c1: Vec.Position, c2: Vec.Position, to: Vec.Position): void;
+    addBezier(
+        className: Utils.Dom.ClassName,
+        from: Vector.Position,
+        c1: Vector.Position,
+        c2: Vector.Position,
+        to: Vector.Position): void;
 
     /** Add a external graphic to this element. */
     addGraphics(
-        className: ClassName,
+        className: Utils.Dom.ClassName,
         graphicsId: string,
-        position: Vec.Position,
+        position: Vector.Position,
         clickCallback?: (() => void)): void;
 }
 
@@ -158,20 +165,20 @@ export function initialize(): void {
     // Subscribe to the desktop 'scrollwheel' event.
     displayRoot.addEventListener("wheel", event => {
         const scrollDelta = -(event as WheelEvent).deltaY * scrollScaleSpeed;
-        const pointerPos: Vec.Position = { x: (event as WheelEvent).pageX, y: (event as WheelEvent).pageY };
+        const pointerPos: Vector.Position = { x: (event as WheelEvent).pageX, y: (event as WheelEvent).pageY };
         handleScroll(scrollDelta, pointerPos);
     }, { passive: true });
 
-    function handleMoveStart(pointerPos: Vec.Position): void {
-        if (DomUtils.isInputFocussed()) {
+    function handleMoveStart(pointerPos: Vector.Position): void {
+        if (Utils.Dom.isInputFocussed()) {
             return;
         }
-        dragOffset = Vec.subtract(viewOffset, pointerPos);
+        dragOffset = Vector.subtract(viewOffset, pointerPos);
         dragging = true;
     }
 
-    function handleMoveUpdate(pointerPos: Vec.Position): void {
-        if (DomUtils.isInputFocussed()) {
+    function handleMoveUpdate(pointerPos: Vector.Position): void {
+        if (Utils.Dom.isInputFocussed()) {
             dragging = false;
             return;
         }
@@ -179,7 +186,7 @@ export function initialize(): void {
             if (inputBlocker !== null) {
                 inputBlocker.className = "order-front";
             }
-            setOffset(Vec.add(dragOffset, pointerPos));
+            setOffset(Vector.add(dragOffset, pointerPos));
         }
     }
 
@@ -190,8 +197,8 @@ export function initialize(): void {
         }
     }
 
-    function handleScroll(scrollDelta: number, pointerPos: Vec.Position): void {
-        if (DomUtils.isInputFocussed()) {
+    function handleScroll(scrollDelta: number, pointerPos: Vector.Position): void {
+        if (Utils.Dom.isInputFocussed()) {
             return;
         }
         zoom(scrollDelta, pointerPos);
@@ -214,7 +221,7 @@ export function setContent(callback?: (builder: IBuilder) => void): void {
 
     // Replace existing content
     const newContent = builder.build();
-    DomUtils.clearChildren(svgRoot!);
+    Utils.Dom.clearChildren(svgRoot!);
     svgRoot!.appendChild(newContent);
 }
 
@@ -222,14 +229,14 @@ export function setContent(callback?: (builder: IBuilder) => void): void {
  * Provide a root offset of the content. (Will be used for centering)
  * @param offset Offset to use for centering content
  */
-export function setContentOffset(offset: Vec.Position): void {
+export function setContentOffset(offset: Vector.Position): void {
     contentOffset = offset;
 }
 
 /** Focus on the current content (Will be centered and scaled to fit). */
 export function focusContent(maxScale?: number): void {
     assertInitialized();
-    const displaySize = Vec.subtract(getDisplaySize(), displayMargin);
+    const displaySize = Vector.subtract(getDisplaySize(), displayMargin);
     const contentSize = getContentSize();
 
     // Calculate new scale
@@ -240,12 +247,12 @@ export function focusContent(maxScale?: number): void {
     setScale(targetScale);
 
     // Calculate offset to center the content
-    const scaledContentSize = Vec.multiply(contentSize, scale);
-    const scaledContentOffset = Vec.multiply(contentOffset, scale);
-    const centeringOffset = Vec.add(
-        Vec.half(Vec.subtract(displaySize, scaledContentSize)),
-        Vec.invert(scaledContentOffset));
-    setOffset(Vec.add(halfDisplayMargin, centeringOffset));
+    const scaledContentSize = Vector.multiply(contentSize, scale);
+    const scaledContentOffset = Vector.multiply(contentOffset, scale);
+    const centeringOffset = Vector.add(
+        Vector.half(Vector.subtract(displaySize, scaledContentSize)),
+        Vector.invert(scaledContentOffset));
+    setOffset(Vector.add(halfDisplayMargin, centeringOffset));
 }
 
 /**
@@ -253,20 +260,20 @@ export function focusContent(maxScale?: number): void {
  * @param delta Number indicating how far to zoom. (Use negative numbers for zooming out)
  * @param focalPoint Point to focus on when zooming. (defaults to page center)
  */
-export function zoom(delta: number = 0.1, focalPoint?: Vec.Position): void {
+export function zoom(delta: number = 0.1, focalPoint?: Vector.Position): void {
     if (focalPoint === undefined) {
         // Default the focalPoint to the page center
-        focalPoint = Vec.half(Vec.createVector(window.innerWidth, window.innerHeight));
+        focalPoint = Vector.half(Vector.createVector(window.innerWidth, window.innerHeight));
     }
 
     // Calculate new-scale and offset to zoom-in to where the user was pointing
     const newScale = clampScale(scale + delta);
     const zoomFactor = (newScale - scale) / scale;
-    const offsetToPointer = Vec.subtract(focalPoint, viewOffset);
-    const offsetDelta = Vec.multiply(offsetToPointer, -zoomFactor);
+    const offsetToPointer = Vector.subtract(focalPoint, viewOffset);
+    const offsetDelta = Vector.multiply(offsetToPointer, -zoomFactor);
 
     // Apply new scale and offset
-    viewOffset = Vec.add(viewOffset, offsetDelta);
+    viewOffset = Vector.add(viewOffset, offsetDelta);
     scale = newScale;
     updateRootTransform();
 }
@@ -276,16 +283,16 @@ const inputBlockerDomElementId = "input-blocker";
 const minScale = 0.05;
 const maxScale = 3;
 const scrollScaleSpeed = 0.001;
-const displayMargin: Vec.IVector2 = { x: 75, y: 75 };
-const halfDisplayMargin = Vec.half(displayMargin);
+const displayMargin: Vector.IVector2 = { x: 75, y: 75 };
+const halfDisplayMargin = Vector.half(displayMargin);
 
 let svgDocument: SVGElement | undefined;
 let svgRoot: SVGGElement | undefined;
-let viewOffset = Vec.zeroVector;
-let contentOffset = Vec.zeroVector;
+let viewOffset = Vector.zeroVector;
+let contentOffset = Vector.zeroVector;
 let scale = 1;
 let dragging = false;
-let dragOffset = Vec.zeroVector;
+let dragOffset = Vector.zeroVector;
 
 class Builder implements IBuilder {
     private readonly _parent: SVGGElement;
@@ -294,7 +301,7 @@ class Builder implements IBuilder {
         this._parent = document.createElementNS("http://www.w3.org/2000/svg", "g");
     }
 
-    public addElement(className: ClassName, position: Vec.Position): IElement {
+    public addElement(className: Utils.Dom.ClassName, position: Vector.Position): IElement {
         return new GroupElement(this._parent, className, position);
     }
 
@@ -305,10 +312,10 @@ class Builder implements IBuilder {
 
 class GroupElement implements IElement {
     private readonly _svgGroup: SVGElement;
-    private readonly _className: ClassName;
-    private readonly _position: Vec.Position;
+    private readonly _className: Utils.Dom.ClassName;
+    private readonly _position: Vector.Position;
 
-    constructor(parent: Element, className: ClassName, position: Vec.Position) {
+    constructor(parent: Element, className: Utils.Dom.ClassName, position: Vector.Position) {
         this._svgGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
         this._svgGroup.setAttribute("transform", `translate(${position.x}, ${position.y})`);
         parent.appendChild(this._svgGroup);
@@ -317,19 +324,19 @@ class GroupElement implements IElement {
         this._position = position;
     }
 
-    get className(): ClassName {
+    get className(): Utils.Dom.ClassName {
         return this._className;
     }
 
-    get position(): Vec.Position {
+    get position(): Vector.Position {
         return this._position;
     }
 
-    public addElement(className: ClassName, position: Vec.Position): IElement {
+    public addElement(className: Utils.Dom.ClassName, position: Vector.Position): IElement {
         return new GroupElement(this._svgGroup, className, position);
     }
 
-    public addRect(className: ClassName, size: Vec.Size, position: Vec.Position): void {
+    public addRect(className: Utils.Dom.ClassName, size: Vector.Size, position: Vector.Position): void {
         const pathElem = document.createElementNS("http://www.w3.org/2000/svg", "rect");
         pathElem.setAttribute("class", className);
         pathElem.setAttribute("x", position.x.toString());
@@ -340,67 +347,72 @@ class GroupElement implements IElement {
         this._svgGroup.appendChild(pathElem);
     }
 
-    public addText(className: ClassName, value: string, position: Vec.Position, size: Vec.Size): void {
-        const textElement = DomUtils.createWithText("code", value);
+    public addText(
+        className: Utils.Dom.ClassName,
+        value: string,
+        position: Vector.Position,
+        size: Vector.Size): void {
+
+        const textElement = Utils.Dom.createWithText("code", value);
         textElement.className = `noselect ${className}`;
         this.addForeignObject(position, size, textElement);
     }
 
     public addEditableText(
-        className: ClassName,
+        className: Utils.Dom.ClassName,
         value: string,
-        position: Vec.Position,
-        size: Vec.Size,
+        position: Vector.Position,
+        size: Vector.Size,
         callback: (newValue: string) => void): void {
 
-        const inputElement = DomUtils.createTextInput(value, callback);
+        const inputElement = Utils.Dom.createTextInput(value, callback);
         inputElement.className = className;
         this.addForeignObject(position, size, inputElement);
     }
 
     public addEditableNumber(
-        className: ClassName,
+        className: Utils.Dom.ClassName,
         value: number,
-        position: Vec.Position,
-        size: Vec.Size,
+        position: Vector.Position,
+        size: Vector.Size,
         callback: (newValue: number) => void): void {
 
-        const inputElement = DomUtils.createNumberInput(value, callback);
+        const inputElement = Utils.Dom.createNumberInput(value, callback);
         inputElement.className = className;
         this.addForeignObject(position, size, inputElement);
     }
 
     public addEditableBoolean(
-        className: ClassName,
+        className: Utils.Dom.ClassName,
         value: boolean,
-        position: Vec.Position,
-        size: Vec.Size,
+        position: Vector.Position,
+        size: Vector.Size,
         callback: (newValue: boolean) => void): void {
 
-        const inputElement = DomUtils.createBooleanInput(value, callback);
+        const inputElement = Utils.Dom.createBooleanInput(value, callback);
         inputElement.className = className;
         this.addForeignObject(position, size, inputElement);
     }
 
     public addDropdown(
-        className: ClassName,
+        className: Utils.Dom.ClassName,
         currentIndex: number,
         options: ReadonlyArray<string>,
-        position: Vec.Position,
-        size: Vec.Size,
+        position: Vector.Position,
+        size: Vector.Size,
         callback: (newIndex: number) => void): void {
 
-        const selectElement = DomUtils.createSelectInput(currentIndex, options, callback);
+        const selectElement = Utils.Dom.createSelectInput(currentIndex, options, callback);
         selectElement.className = className;
         this.addForeignObject(position, size, selectElement);
     }
 
     public addBezier(
-        className: ClassName,
-        from: Vec.Position,
-        c1: Vec.Position,
-        c2: Vec.Position,
-        to: Vec.Position): void {
+        className: Utils.Dom.ClassName,
+        from: Vector.Position,
+        c1: Vector.Position,
+        c2: Vector.Position,
+        to: Vector.Position): void {
 
         const pathElem = document.createElementNS("http://www.w3.org/2000/svg", "path");
         pathElem.setAttribute("class", className);
@@ -410,9 +422,9 @@ class GroupElement implements IElement {
     }
 
     public addGraphics(
-        className: ClassName,
+        className: Utils.Dom.ClassName,
         graphicsId: string,
-        position: Vec.Position,
+        position: Vector.Position,
         clickCallback?: () => void): void {
 
         const useElem = document.createElementNS("http://www.w3.org/2000/svg", "use");
@@ -426,7 +438,7 @@ class GroupElement implements IElement {
         this._svgGroup.appendChild(useElem);
     }
 
-    private addForeignObject(position: Vec.Position, size: Vec.Size, htmlElement: HTMLElement): void {
+    private addForeignObject(position: Vector.Position, size: Vector.Size, htmlElement: HTMLElement): void {
         const foreignObject = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
         foreignObject.setAttribute("x", position.x.toString());
         // + 3 here because the foreign objects seem to render too low on most browsers.
@@ -440,14 +452,14 @@ class GroupElement implements IElement {
 }
 
 /** Get the size of the current window */
-function getDisplaySize(): Vec.IVector2 {
+function getDisplaySize(): Vector.IVector2 {
     assertInitialized();
     const bounds = svgDocument!.getBoundingClientRect();
     return { x: bounds.width, y: bounds.height };
 }
 
 /** Get the total size of the current content */
-function getContentSize(): Vec.IVector2 {
+function getContentSize(): Vector.IVector2 {
     assertInitialized();
     const contentSize = svgRoot!.getBBox();
     return { x: contentSize.width, y: contentSize.height };
@@ -467,7 +479,7 @@ function setScale(newScale: number): void {
  * Set the new global offset (Can be used to pan the content).
  * @param newOffset New global offset.
  */
-function setOffset(newOffset: Vec.IVector2): void {
+function setOffset(newOffset: Vector.IVector2): void {
     assertInitialized();
     viewOffset = newOffset;
     updateRootTransform();

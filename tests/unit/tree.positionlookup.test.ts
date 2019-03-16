@@ -4,7 +4,7 @@
 
 import * as Tree from "../../src/tree";
 import * as TreePositionLookup from "../../src/tree.positionlookup";
-import * as Vec from "../../src/vector";
+import * as Utils from "../../src/utils";
 
 test("allChildNodeExists", () => {
     const testTree = createTestTree();
@@ -18,7 +18,7 @@ test("allNodesHaveSizes", () => {
     const testTree = createTestTree();
     const positionLookup = TreePositionLookup.createPositionLookup(testTree);
     Tree.getAllChildren(testTree).forEach(_ => {
-        expect(positionLookup.getSize(testTree)).not.toBe(Vec.zeroVector);
+        expect(positionLookup.getSize(testTree)).not.toBe(Utils.Vector.zeroVector);
     });
 });
 
@@ -26,7 +26,7 @@ test("allNodesHaveAreas", () => {
     const testTree = createTestTree();
     const positionLookup = TreePositionLookup.createPositionLookup(testTree);
     Tree.getAllChildren(testTree).forEach(_ => {
-        expect(positionLookup.getArea(testTree)).not.toBe(Vec.zeroVector);
+        expect(positionLookup.getArea(testTree)).not.toBe(Utils.Vector.zeroVector);
     });
 });
 
@@ -34,7 +34,7 @@ test("allNodesHavePositions", () => {
     const testTree = createTestTree();
     const positionLookup = TreePositionLookup.createPositionLookup(testTree);
     Tree.getAllChildren(testTree).forEach(_ => {
-        expect(positionLookup.getPosition(testTree)).not.toBe(Vec.zeroVector);
+        expect(positionLookup.getPosition(testTree)).not.toBe(Utils.Vector.zeroVector);
     });
 });
 

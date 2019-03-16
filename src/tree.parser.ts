@@ -2,19 +2,18 @@
  * @file Responsible for parsing tree's from json.
  */
 
-import * as ParserUtils from "./parserutils";
-import { createError, createSuccess, ParseResult } from "./parserutils";
 import * as Tree from "./tree";
+import * as Utils from "./utils";
 
 /**
  * Load a tree as json from the given file or url.
  * @param source Source to get the json from (Can be a file or a url).
  * @returns Tree or parse failure.
  */
-export async function load(source: File | string): Promise<ParseResult<Tree.INode>> {
+export async function load(source: File | string): Promise<Utils.Parser.ParseResult<Tree.INode>> {
     const loadTextResult = await (typeof source === "string" ?
-        ParserUtils.loadTextFromUrl(source) :
-        ParserUtils.loadTextFromFile(source));
+        Utils.Parser.loadTextFromUrl(source) :
+        Utils.Parser.loadTextFromFile(source));
 
     if (loadTextResult.kind === "error") {
         return loadTextResult;
@@ -27,18 +26,18 @@ export async function load(source: File | string): Promise<ParseResult<Tree.INod
  * @param jsonString Json to pare.
  * @returns Tree or parse failure.
  */
-export function parseJson(jsonString: string): ParseResult<Tree.INode> {
+export function parseJson(jsonString: string): Utils.Parser.ParseResult<Tree.INode> {
     let jsonObj: any;
     try {
         jsonObj = JSON.parse(jsonString);
     } catch (e) {
-        return createError(`Parsing failed: ${e}`);
+        return Utils.Parser.createError(`Parsing failed: ${e}`);
     }
 
     try {
-        return createSuccess(parseNode(jsonObj));
+        return Utils.Parser.createSuccess(parseNode(jsonObj));
     } catch (e) {
-        return createError(`Parsing failed: ${e}`);
+        return Utils.Parser.createError(`Parsing failed: ${e}`);
     }
 }
 
@@ -78,7 +77,7 @@ function parseField(name: string, value: any): Tree.Field | undefined {
         case "number": return { kind: "number", name, value };
         case "boolean": return { kind: "boolean", name, value };
         case "object": {
-            if (ParserUtils.isArray(value)) {
+            if (Utils.Parser.isArray(value)) {
                 const array: any[] = value;
                 if (array.length === 0) {
                     return undefined;
