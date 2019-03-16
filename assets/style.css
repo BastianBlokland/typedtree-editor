@@ -81,6 +81,22 @@ body button {
     height: 25px;
 }
 
+#undo-button {
+    position: absolute;
+    left: 380px;
+    bottom: 5px;
+    width: 125px;
+    height: 25px;
+}
+
+#redo-button {
+    position: absolute;
+    left: 510px;
+    bottom: 5px;
+    width: 125px;
+    height: 25px;
+}
+
 #svg-display {
     width: 100%;
     height: 100%;
