@@ -100,3 +100,17 @@ test("tooLongHistoryGetsTruncated", () => {
     history.undo();
     expect(history.current).toBe(3);
 });
+
+test("clearWipesAllHistory", () => {
+    const history = Utils.History.createHistoryStack<number>(3);
+    expect(history.current).toBe(undefined);
+
+    history.push(1);
+    history.push(2);
+    history.push(3);
+
+    expect(history.current).toBe(3);
+
+    history.clear();
+    expect(history.current).toBe(undefined);
+});

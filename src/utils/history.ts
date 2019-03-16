@@ -27,6 +27,9 @@ export interface IHistoryStack<T> {
 
     /** Move the current item forward to one later. */
     redo(): void;
+
+    /** Clear all the items from the history */
+    clear(): void;
 }
 
 /**
@@ -86,5 +89,10 @@ class HistoryStackImpl<T> implements IHistoryStack<T> {
         if (this._items.length > 0 && this._currentIndex < (this._items.length - 1)) {
             this._currentIndex++;
         }
+    }
+
+    public clear(): void {
+        this._items = [];
+        this._currentIndex = -1;
     }
 }
