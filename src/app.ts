@@ -9,13 +9,13 @@ import * as Utils from "./utils";
 
 /** Function to run the main app logic in. */
 export async function run(): Promise<void> {
-    sequencer = Utils.Sequencer.createRunner();
-
     window.onkeydown = onDomKeyPress;
     Utils.Dom.subscribeToClick("toolbox-toggle", toggleToolbox);
     Utils.Dom.subscribeToClick("focus-button", focusTree);
     Utils.Dom.subscribeToClick("zoomin-button", () => { Display.Tree.zoom(0.1); });
     Utils.Dom.subscribeToClick("zoomout-button", () => { Display.Tree.zoom(-0.1); });
+    Utils.Dom.subscribeToClick("undo-button", enqueueUndo);
+    Utils.Dom.subscribeToClick("redo-button", enqueueRedo);
 
     Utils.Dom.subscribeToFileInput("openscheme-file", enqueueLoadScheme);
     Utils.Dom.subscribeToClick("savescheme-button", enqueueSaveScheme);
@@ -41,20 +41,21 @@ export function getCurrentSchemeJson(): string | undefined {
 
 /** Return a json export of the currently loaded tree. Useful for interop with other JavaScript. */
 export function getCurrentTreeJson(): string | undefined {
-    return currentTree === undefined ? undefined : Tree.Serializer.composeJson(currentTree);
+    return treeHistory.current === undefined ? undefined : Tree.Serializer.composeJson(treeHistory.current);
 }
 
-let sequencer: Utils.Sequencer.ISequenceRunner | undefined;
+const sequencer = Utils.Sequencer.createRunner();
+
+const maxTreeHistory: number = 100;
+const treeHistory: Utils.History.IHistoryStack<Tree.INode> = Utils.History.createHistoryStack(maxTreeHistory);
 
 let currentScheme: TreeScheme.IScheme | undefined;
 let currentSchemeName: string | undefined;
-
-let currentTree: Tree.INode | undefined;
 let currentTreeName: string | undefined;
 
 function enqueueLoadScheme(source: string | File): void {
     const name = typeof source === "string" ? source : source.name;
-    sequencer!.enqueue(async () => {
+    sequencer.enqueue(async () => {
         const result = await TreeScheme.Parser.load(source);
         if (result.kind === "error") {
             alert(`Failed to load. Error: ${result.errorMessage}`);
@@ -66,7 +67,7 @@ function enqueueLoadScheme(source: string | File): void {
 }
 
 function enqueueNewTree(): void {
-    sequencer!.enqueue(async () => {
+    sequencer.enqueue(async () => {
         if (currentScheme === undefined) {
             alert("Failed to create a new tree. Error: No scheme loaded");
             return;
@@ -75,17 +76,15 @@ function enqueueNewTree(): void {
         const newRoot = TreeScheme.Instantiator.instantiateDefaultNode(defaultRoot);
 
         console.log(`Successfully created new tree. Scheme: ${currentSchemeName}`);
-        setCurrentTree(newRoot, "New tree");
+        treeHistory.push(newRoot);
+        updateTree("New tree");
         Display.Tree.focusTree(1);
     });
 }
 
 function enqueueLoadTree(source: string | File): void {
     const name = typeof source === "string" ? source : source.name;
-    sequencer!.enqueue(async () => {
-        // Start by clearing the current loaded tree.
-        setCurrentTree(undefined, undefined);
-
+    sequencer.enqueue(async () => {
         // Download and pars the tree from the given source.
         const result = await Tree.Parser.load(source);
         if (result.kind === "error") {
@@ -104,14 +103,15 @@ function enqueueLoadTree(source: string | File): void {
             const completeTree = TreeScheme.Instantiator.duplicateWithMissingFields(currentScheme, result.value);
 
             console.log(`Successfully loaded tree: ${name}`);
-            setCurrentTree(completeTree, name);
+            treeHistory.push(completeTree);
+            updateTree(name);
             Display.Tree.focusTree(1);
         }
     });
 }
 
 function enqueueSaveScheme(): void {
-    sequencer!.enqueue(async () => {
+    sequencer.enqueue(async () => {
         if (currentScheme !== undefined) {
             const treeJson = TreeScheme.Serializer.composeJson(currentScheme);
             Utils.Dom.saveJsonText(treeJson, currentSchemeName!);
@@ -120,19 +120,25 @@ function enqueueSaveScheme(): void {
 }
 
 function enqueueSaveTree(): void {
-    sequencer!.enqueue(async () => {
-        if (currentTree !== undefined) {
-            const treeJson = Tree.Serializer.composeJson(currentTree);
+    sequencer.enqueue(async () => {
+        if (treeHistory.current !== undefined) {
+            const treeJson = Tree.Serializer.composeJson(treeHistory.current);
             Utils.Dom.saveJsonText(treeJson, currentTreeName!);
         }
     });
 }
 
-function enqueueUpdateTree(oldTree: Tree.INode, newTree?: Tree.INode, name?: string): void {
-    sequencer!.enqueue(async () => {
-        if (oldTree === currentTree) {
-            setCurrentTree(newTree, name);
-        }
+function enqueueUndo(): void {
+    sequencer.enqueue(async () => {
+        treeHistory.undo();
+        updateTree();
+    });
+}
+
+function enqueueRedo(): void {
+    sequencer.enqueue(async () => {
+        treeHistory.redo();
+        updateTree();
     });
 }
 
@@ -143,21 +149,22 @@ function setCurrentScheme(scheme: TreeScheme.IScheme, name: string): void {
 
     // Loading a new scheme invalidates the current tree. (In theory we could support checking if the
     // previously loaded tree is still compatible with the new scheme)
-    setCurrentTree(undefined, undefined);
+    treeHistory.clear();
+    updateTree(undefined);
 }
 
-function setCurrentTree(tree: Tree.INode | undefined, name?: string): void {
+function updateTree(name?: string): void {
     if (currentScheme === undefined) {
         throw new Error("Unable to update tree. Error: No scheme loaded");
     }
 
-    currentTree = tree;
     currentTreeName = name;
     Utils.Dom.setText("tree-title", name === undefined ? "" : name);
-    Display.Tree.setTree(currentScheme, tree, newTree => {
-        if (tree !== undefined) {
-            enqueueUpdateTree(tree, newTree, name);
-        }
+    Display.Tree.setTree(currentScheme, treeHistory.current, newTree => {
+        sequencer.enqueue(async () => {
+            treeHistory.push(newTree);
+            updateTree(name);
+        });
     });
 }
 
@@ -174,7 +181,7 @@ function toggleToolbox(): void {
 }
 
 function focusTree(): void {
-    if (currentTree !== undefined) {
+    if (treeHistory.current !== undefined) {
         Display.Tree.focusTree(2);
     }
 }
