@@ -129,18 +129,40 @@ export function getPrettyFieldValueType(valueType: FieldValueType, isArray: bool
 }
 
 /**
- * Check if the given 'fieldValueType' is an Alias type.
+ * Validate that the given 'fieldValueType' is an Alias.
  * @param fieldValueType FieldValueType to check.
- * @returns True if the field value is a Alias, otherwise False.
+ * @returns IAlias if the field value is a Alias, otherwise undefined.
  */
-export function isAliasType(fieldValueType: FieldValueType): boolean {
+export function validateAliasType(fieldValueType: FieldValueType): IAlias | undefined {
     switch (fieldValueType) {
         case "string":
         case "number":
         case "boolean":
-            return false;
+            return undefined;
         default:
-            return fieldValueType.type === "alias";
+            if (fieldValueType.type !== "alias") {
+                return undefined;
+            }
+            return fieldValueType;
+    }
+}
+
+/**
+ * Validate that the given 'fieldValueType' is an Enum.
+ * @param fieldValueType FieldValueType to check.
+ * @returns IEnum if the field value is a Enum, otherwise undefined.
+ */
+export function validateEnumType(fieldValueType: FieldValueType): IEnum | undefined {
+    switch (fieldValueType) {
+        case "string":
+        case "number":
+        case "boolean":
+            return undefined;
+        default:
+            if (fieldValueType.type !== "enum") {
+                return undefined;
+            }
+            return fieldValueType;
     }
 }
 

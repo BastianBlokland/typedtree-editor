@@ -73,6 +73,11 @@
     width: 90%;
 }
 
+#svg-display .enum-value {
+    background-color: #DDD;
+    width: 90%;
+}
+
 #svg-display .boolean-value {
     background-color: #DDD;
     cursor: pointer;

@@ -70,6 +70,7 @@ function createNode(
     positionLookup: Tree.PositionLookup.IPositionLookup,
     changed: nodeChangedCallback): void {
 
+    const definition = typeLookup.getDefinition(node);
     const typeOptions = getTypeOptions(typeLookup, node);
     const typeOptionsIndex = typeOptions.findIndex(a => a === node.type);
     const size = positionLookup.getSize(node);
@@ -92,7 +93,7 @@ function createNode(
 
     let yOffset = nodeHeaderHeight;
     node.fieldNames.forEach(fieldName => {
-        yOffset += createField(node, fieldName, nodeElement, positionLookup, yOffset, newField => {
+        yOffset += createField(node, definition, fieldName, nodeElement, positionLookup, yOffset, newField => {
             changed(Tree.Modifications.nodeWithField(node, newField));
         });
     });
@@ -102,6 +103,7 @@ type fieldChangedCallback<T extends Tree.Field> = (newField: T) => void;
 
 function createField(
     node: Tree.INode,
+    nodeDefinition: TreeScheme.INodeDefinition,
     fieldName: string,
     parent: Svg.IElement,
     positionLookup: Tree.PositionLookup.IPositionLookup,
@@ -109,7 +111,8 @@ function createField(
     changed: fieldChangedCallback<Tree.Field>): number {
 
     const field = node.getField(fieldName);
-    if (field === undefined) {
+    const fieldDefinition = nodeDefinition.getField(fieldName);
+    if (field === undefined || fieldDefinition === undefined) {
         return 0;
     }
 
@@ -224,7 +227,18 @@ function createField(
         size: Vector.Size,
         changed: elementChangedCallback<number>): void {
 
-        parent.addEditableNumber("number-value", value, pos, size, changed);
+        // If the number is an enumeration then display it as a dropdown,
+        // otherwise show it as a number input.
+        const enumeration = TreeScheme.validateEnumType(fieldDefinition!.valueType);
+        if (enumeration === undefined) {
+            parent.addEditableNumber("number-value", value, pos, size, changed);
+        } else {
+            const currentIndex = enumeration.values.findIndex(entry => entry.value === value);
+            const options = enumeration.values.map(entry => entry.name);
+            parent.addDropdown("enum-value", currentIndex, options, pos, size, newIndex => {
+                changed(enumeration.values[newIndex].value);
+            });
+        }
     }
 
     function createBooleanValue(

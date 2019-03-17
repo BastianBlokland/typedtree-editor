@@ -198,7 +198,7 @@ test("fieldKindMatchesExpectedOutput", () => {
     expect(TreeScheme.getFieldKind(node!.getField("field10")!)).toBe("numberArray");
 });
 
-test("aliasFieldsAreIdentifiedCorrectly", () => {
+test("aliasAndEnumFieldsAreIdentifiedCorrectly", () => {
     const scheme = TreeScheme.createScheme("Alias1", b => {
         const alias = b.pushAlias("Alias1", ["Node1"]);
         const enumeration = b.pushEnum("Enum1", [{ value: 0, name: "A" }, { value: 1, name: "B" }]);
@@ -211,11 +211,20 @@ test("aliasFieldsAreIdentifiedCorrectly", () => {
         });
     });
     const node = scheme.getNode("Node1");
-    expect(TreeScheme.isAliasType(node!.getField("field1")!.valueType)).toBe(false);
-    expect(TreeScheme.isAliasType(node!.getField("field2")!.valueType)).toBe(false);
-    expect(TreeScheme.isAliasType(node!.getField("field3")!.valueType)).toBe(false);
-    expect(TreeScheme.isAliasType(node!.getField("field4")!.valueType)).toBe(true);
-    expect(TreeScheme.isAliasType(node!.getField("field5")!.valueType)).toBe(false);
+    expect(TreeScheme.validateAliasType(node!.getField("field1")!.valueType)).toBe(undefined);
+    expect(TreeScheme.validateEnumType(node!.getField("field1")!.valueType)).toBe(undefined);
+
+    expect(TreeScheme.validateAliasType(node!.getField("field2")!.valueType)).toBe(undefined);
+    expect(TreeScheme.validateEnumType(node!.getField("field2")!.valueType)).toBe(undefined);
+
+    expect(TreeScheme.validateAliasType(node!.getField("field3")!.valueType)).toBe(undefined);
+    expect(TreeScheme.validateEnumType(node!.getField("field3")!.valueType)).toBe(undefined);
+
+    expect(TreeScheme.validateAliasType(node!.getField("field4")!.valueType)).not.toBe(undefined);
+    expect(TreeScheme.validateEnumType(node!.getField("field4")!.valueType)).toBe(undefined);
+
+    expect(TreeScheme.validateAliasType(node!.getField("field5")!.valueType)).toBe(undefined);
+    expect(TreeScheme.validateEnumType(node!.getField("field5")!.valueType)).not.toBe(undefined);
 });
 
 test("aliasDefaultReturnsAsExpected", () => {
