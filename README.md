@@ -35,6 +35,15 @@ This editor runs purely client-side and any content you load into it stays purel
       ]
     }
   ],
+  "enums": [
+    {
+      "identifier": "AI.Target",
+      "values": [
+        { "value": 0, "name": "Ground" }
+        { "value": 1, "name": "Air" }
+      ]
+    }
+  ],
   "nodes": [
     {
       "nodeType": "AI.Items.Selector",
@@ -61,6 +70,7 @@ This editor runs purely client-side and any content you load into it stays purel
 Elements in the scheme:
 * `rootAlias`: Alias that the root-node has to be part of.
 * `aliases`: Definition of all the aliases in the scheme. An alias is a named group of node types.
+* `enums`: Definition of all the enums in the scheme. An enum is a named set of numbers.
 * `nodes`: Definition of all the node-types in the scheme. Each node defines a type-name and a set
 of fields that this node can have.
 
@@ -69,10 +79,11 @@ Possible field value types are:
 * `number`
 * `string`
 * `Alias` (Alias has to be defined in the `aliases` section of the scheme)
+* `Enum` (Enum has to be defined in the `enums` section of the scheme)
 
-Currently only field types that are easily expressed in json are supported. I'm considering
-adding more specialized types like `enum`, `int`, `float` etc, which would have their input filtered
-accordingly.
+Enums are a special type as they only live in the scheme, in the actual tree data they are represented
+by numbers. The fact that the field is an enum in the scheme will make the editor validate the number
+and show it as a dropdown in the ui.
 
 ### Example of the tree output format
 ```json
