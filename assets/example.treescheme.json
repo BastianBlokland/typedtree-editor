@@ -31,11 +31,11 @@
       "identifier": "AI.Target",
       "values": [
         {
-          "value": 0,
+          "value": 1,
           "name": "Ground"
         },
         {
-          "value": 1,
+          "value": 2,
           "name": "Air"
         }
       ]

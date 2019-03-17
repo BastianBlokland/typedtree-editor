@@ -39,8 +39,8 @@ This editor runs purely client-side and any content you load into it stays purel
     {
       "identifier": "AI.Target",
       "values": [
-        { "value": 0, "name": "Ground" }
-        { "value": 1, "name": "Air" }
+        { "value": 1, "name": "Ground" }
+        { "value": 2, "name": "Air" }
       ]
     }
   ],
