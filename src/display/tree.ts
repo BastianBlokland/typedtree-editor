@@ -161,7 +161,7 @@ function createField(
 
         // Add element button
         parent.addGraphics("fieldvalue-button", "arrayAdd", { x: nameWidth - 15, y: centeredYOffset }, () => {
-            const newElement = TreeScheme.Instantiator.createNewElement(field.kind);
+            const newElement = TreeScheme.Instantiator.createNewElement(fieldDefinition!.valueType);
             const newArray = array.concat(newElement as Tree.FieldElementType<T>);
             changed(Tree.Modifications.fieldWithValue(field, newArray as unknown as Tree.FieldValueType<T>));
         });

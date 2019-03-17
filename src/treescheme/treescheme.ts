@@ -8,6 +8,25 @@ import * as Utils from "../utils";
 /** Possible types a field can have */
 export type FieldValueType = "string" | "number" | "boolean" | IAlias | IEnum;
 
+/** Extract an identifier out of a FieldValueType */
+export type FieldValueTypeIdentifier<T extends FieldValueType> =
+    T extends string ? T : (T extends IAlias | IEnum ? T["type"] : never);
+
+/** Identifiers for the possible types a field can have */
+export type FieldValueTypeIdentifiers = FieldValueTypeIdentifier<FieldValueType>;
+
+/** Convert a scheme FieldValueType to the corresponding tree field type. */
+export type TreeType<T extends FieldValueType> = ITreeTypeMap[FieldValueTypeIdentifier<T>];
+
+/** Mapping from scheme FieldValueType to types on the tree */
+interface ITreeTypeMap {
+    "string": string;
+    "number": number;
+    "boolean": boolean;
+    "alias": Tree.INode;
+    "enum": number;
+}
+
 /**
  * Tree scheme.
  * Consists out of aliases, enums and nodes.
