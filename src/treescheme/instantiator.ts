@@ -3,6 +3,7 @@
  */
 
 import * as Tree from "../tree";
+import * as Utils from "../utils";
 import * as TreeScheme from "./treescheme";
 import * as TreeSchemeValidator from "./validator";
 
@@ -136,24 +137,42 @@ export function instantiateDefaultField(fieldDefinition: TreeScheme.IFieldDefini
                 { kind: "booleanArray", name: fieldDefinition.name, value: [] } :
                 { kind: "boolean", name: fieldDefinition.name, value: false };
         default:
-            return fieldDefinition.isArray ?
-                { kind: "nodeArray", name: fieldDefinition.name, value: [] } :
-                { kind: "node", name: fieldDefinition.name, value: Tree.createNoneNode() };
+            switch (fieldDefinition.valueType.type) {
+                case "alias":
+                    return fieldDefinition.isArray ?
+                        { kind: "nodeArray", name: fieldDefinition.name, value: [] } :
+                        { kind: "node", name: fieldDefinition.name, value: Tree.createNoneNode() };
+                case "enum":
+                    return fieldDefinition.isArray ?
+                        { kind: "numberArray", name: fieldDefinition.name, value: [] } :
+                        {
+                            kind: "number",
+                            name: fieldDefinition.name,
+                            value: fieldDefinition.valueType.values[0].value,
+                        };
+                default: Utils.assertNever(fieldDefinition.valueType);
+            }
     }
+    throw new Error("Unexpected value type");
 }
 
 /**
- * Create a new default element for a given array-type.
- * @param kind Array-kind to create a new value for.
+ * Create a new default element for a given FieldValueType.
+ * @param valueType FieldValueType to create a new element for.
  * @returns Newly created default element.
  */
-export function createNewElement<T extends Tree.ArrayField>(kind: Tree.FieldValueKind<T>): Tree.FieldElementType<T> {
-    switch (kind) {
-        case "stringArray": return "" as Tree.FieldElementType<T>;
-        case "numberArray": return 0 as Tree.FieldElementType<T>;
-        case "booleanArray": return false as Tree.FieldElementType<T>;
-        case "nodeArray": return Tree.createNoneNode() as Tree.FieldElementType<T>;
+export function createNewElement<T extends TreeScheme.FieldValueType>(valueType: T): TreeScheme.TreeType<T> {
+    const typedValueType = valueType as TreeScheme.FieldValueType;
+    switch (typedValueType) {
+        case "string": return "";
+        case "number": return 0;
+        case "boolean": return false;
         default:
-            throw new Error(`Unknown array value kind: ${kind}`);
+            switch (typedValueType.type) {
+                case "alias": return Tree.createNoneNode();
+                case "enum": return typedValueType.values[0].value;
+                default: Utils.assertNever(typedValueType);
+            }
     }
+    throw new Error("Unexpected value type");
 }

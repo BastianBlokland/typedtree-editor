@@ -93,17 +93,21 @@ class TypeLookupImpl implements ITypeLookup {
         }
         node.fields.forEach(field => {
             const fieldDefinition = definition.getField(field.name);
-            if (fieldDefinition === undefined || !TreeScheme.isAliasType(fieldDefinition.valueType)) {
+            if (fieldDefinition === undefined) {
+                return;
+            }
+            const alias = TreeScheme.validateAliasType(fieldDefinition.valueType);
+            if (alias === undefined) {
                 return;
             }
             switch (field.kind) {
                 case "node":
-                    this._aliases.set(field.value, fieldDefinition.valueType as TreeScheme.IAlias);
+                    this._aliases.set(field.value, alias);
                     this.setAliases(field.value);
                     break;
                 case "nodeArray":
                     field.value.forEach(child => {
-                        this._aliases.set(child, fieldDefinition.valueType as TreeScheme.IAlias);
+                        this._aliases.set(child, alias);
                         this.setAliases(child);
                     });
                     break;

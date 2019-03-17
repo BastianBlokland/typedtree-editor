@@ -10,15 +10,21 @@ test("basicSchemeIsParsedSuccessfully", () => {
         "aliases": [
             { "identifier": "Alias", "values": [ "NodeA", "NodeB" ] }
         ],
+        "enums": [
+            { "identifier": "Enum", "values": [
+                { "value": 0, "name": "A" }, { "value": 1, "name": "B" }
+            ]}
+        ],
         "nodes": [
             { "nodeType": "NodeA" },
             {
                 "nodeType": "NodeB",
                 "fields": [
-                    { "name": "field1", "valueType": "Alias", "isArray": true },
-                    { "name": "field2", "valueType": "boolean" },
-                    { "name": "field3", "valueType": "string" },
-                    { "name": "field4", "valueType": "number", "isArray": true }
+                    { "name": "field1", "valueType": "boolean" },
+                    { "name": "field2", "valueType": "string" },
+                    { "name": "field3", "valueType": "number", "isArray": true },
+                    { "name": "field4", "valueType": "Alias", "isArray": true },
+                    { "name": "field5", "valueType": "Enum", "isArray": true }
                 ]
             }
         ]
@@ -29,12 +35,14 @@ test("basicSchemeIsParsedSuccessfully", () => {
     if (parseResult.kind === "success") {
         expect(parseResult.value).toEqual(TreeScheme.createScheme("Alias", b => {
             const alias = b.pushAlias("Alias", ["NodeA", "NodeB"]);
+            const enumeration = b.pushEnum("Enum", [{ value: 0, name: "A" }, { value: 1, name: "B" }]);
             b.pushNodeDefinition("NodeA");
             b.pushNodeDefinition("NodeB", b => {
-                b.pushField("field1", alias!, true);
-                b.pushField("field2", "boolean");
-                b.pushField("field3", "string");
-                b.pushField("field4", "number", true);
+                b.pushField("field1", "boolean");
+                b.pushField("field2", "string");
+                b.pushField("field3", "number", true);
+                b.pushField("field4", alias!, true);
+                b.pushField("field5", enumeration!, true);
             });
         }));
     }

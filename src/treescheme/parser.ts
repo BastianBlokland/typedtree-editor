@@ -53,6 +53,7 @@ function parseScheme(obj: any): TreeScheme.IScheme {
 
     return TreeScheme.createScheme(rootAliasIdentifier, schemeBuilder => {
         parseAliases(schemeBuilder, obj);
+        parseEnums(schemeBuilder, obj);
         parseNodes(schemeBuilder, obj);
     });
 }
@@ -83,6 +84,43 @@ function parseAliases(schemeBuilder: TreeScheme.ISchemeBuilder, obj: any): void 
     });
 }
 
+function parseEnums(schemeBuilder: TreeScheme.ISchemeBuilder, obj: any): void {
+    if (!Utils.Parser.isArray(obj.enums)) {
+        return;
+    }
+
+    (obj.enums as any[]).forEach(enumObj => {
+
+        // Parse identifier
+        const identifier = Utils.Parser.validateString(enumObj.identifier);
+        if (identifier === undefined) {
+            throw new Error(`Identifier '${identifier}' of enum is invalid`);
+        }
+
+        // Parse values
+        const values: TreeScheme.IEnumEntry[] = [];
+        if (!Utils.Parser.isArray(enumObj.values)) {
+            throw new Error(`Enum '${identifier}' has no values`);
+        }
+        (enumObj.values as any[]).forEach(valueObj => {
+            const value = Utils.Parser.validateNumber(valueObj.value);
+            if (value === undefined) {
+                throw new Error(`Enum '${identifier}' has a entry that is missing a 'value' field`);
+            }
+            const name = Utils.Parser.validateString(valueObj.name);
+            if (name === undefined) {
+                throw new Error(`Enum '${identifier}' has a entry that is missing a 'name' field`);
+            }
+            values.push({ value, name });
+        });
+
+        // Add to scheme
+        if (schemeBuilder.pushEnum(identifier, values) === undefined) {
+            throw new Error(`Unable to push enum '${identifier}', is it a duplicate?`);
+        }
+    });
+}
+
 function parseNodes(schemeBuilder: TreeScheme.ISchemeBuilder, obj: any): void {
     if (!Utils.Parser.isArray(obj.nodes)) {
         return;
@@ -97,7 +135,6 @@ function parseNodes(schemeBuilder: TreeScheme.ISchemeBuilder, obj: any): void {
         }
 
         schemeBuilder.pushNodeDefinition(nodeType, nodeBuilder => {
-
             // Parse fields
             if (!Utils.Parser.isArray(nodeObj.fields)) {
                 return;
@@ -130,10 +167,10 @@ function parseValueType(schemeBuilder: TreeScheme.ISchemeBuilder, obj: any): Tre
         case "boolean":
             return str;
         default:
-            const alias = schemeBuilder.getAlias(str);
-            if (alias === undefined) {
-                throw new Error(`No alias found with identifier: '${str}'`);
+            const aliasOrEnum = schemeBuilder.getAliasOrEnum(str);
+            if (aliasOrEnum === undefined) {
+                throw new Error(`No alias/enum found with identifier: '${str}'`);
             }
-            return alias;
+            return aliasOrEnum;
     }
 }

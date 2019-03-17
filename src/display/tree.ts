@@ -70,6 +70,10 @@ function createNode(
     positionLookup: Tree.PositionLookup.IPositionLookup,
     changed: nodeChangedCallback): void {
 
+    let definition: TreeScheme.INodeDefinition | undefined;
+    if (node.type !== Tree.noneNodeType) {
+        definition = typeLookup.getDefinition(node);
+    }
     const typeOptions = getTypeOptions(typeLookup, node);
     const typeOptionsIndex = typeOptions.findIndex(a => a === node.type);
     const size = positionLookup.getSize(node);
@@ -92,7 +96,7 @@ function createNode(
 
     let yOffset = nodeHeaderHeight;
     node.fieldNames.forEach(fieldName => {
-        yOffset += createField(node, fieldName, nodeElement, positionLookup, yOffset, newField => {
+        yOffset += createField(node, definition, fieldName, nodeElement, positionLookup, yOffset, newField => {
             changed(Tree.Modifications.nodeWithField(node, newField));
         });
     });
@@ -102,6 +106,7 @@ type fieldChangedCallback<T extends Tree.Field> = (newField: T) => void;
 
 function createField(
     node: Tree.INode,
+    nodeDefinition: TreeScheme.INodeDefinition | undefined,
     fieldName: string,
     parent: Svg.IElement,
     positionLookup: Tree.PositionLookup.IPositionLookup,
@@ -112,7 +117,10 @@ function createField(
     if (field === undefined) {
         return 0;
     }
-
+    let fieldDefinition: TreeScheme.IFieldDefinition | undefined;
+    if (nodeDefinition !== undefined) {
+        fieldDefinition = nodeDefinition.getField(fieldName);
+    }
     const fieldSize = { x: positionLookup.getSize(node).x, y: Tree.PositionLookup.getFieldHeight(field) };
     const centeredYOffset = yOffset + Utils.half(nodeFieldHeight);
     const nameWidth = Utils.half(fieldSize.x) + 20;
@@ -158,7 +166,10 @@ function createField(
 
         // Add element button
         parent.addGraphics("fieldvalue-button", "arrayAdd", { x: nameWidth - 15, y: centeredYOffset }, () => {
-            const newElement = TreeScheme.Instantiator.createNewElement(field.kind);
+            if (fieldDefinition === undefined) {
+                throw new Error("Unable to create a new element without a FieldDefinition");
+            }
+            const newElement = TreeScheme.Instantiator.createNewElement(fieldDefinition.valueType);
             const newArray = array.concat(newElement as Tree.FieldElementType<T>);
             changed(Tree.Modifications.fieldWithValue(field, newArray as unknown as Tree.FieldValueType<T>));
         });
@@ -224,6 +235,20 @@ function createField(
         size: Vector.Size,
         changed: elementChangedCallback<number>): void {
 
+        // If the number is an enumeration then display it as a dropdown.
+        if (fieldDefinition !== undefined) {
+            const enumeration = TreeScheme.validateEnumType(fieldDefinition.valueType);
+            if (enumeration !== undefined) {
+                const currentIndex = enumeration.values.findIndex(entry => entry.value === value);
+                const options = enumeration.values.map(entry => entry.name);
+                parent.addDropdown("enum-value", currentIndex, options, pos, size, newIndex => {
+                    changed(enumeration.values[newIndex].value);
+                });
+                return;
+            }
+        }
+
+        // Otherwise display it as a number input.
         parent.addEditableNumber("number-value", value, pos, size, changed);
     }
 

@@ -18,11 +18,19 @@ function createSchemeObject(scheme: TreeScheme.IScheme): object {
     const obj: any = {};
     obj.rootAlias = scheme.rootAlias.identifier;
     obj.aliases = scheme.aliases.map(createAliasObject);
+    obj.enums = scheme.enums.map(createEnumObject);
     obj.nodes = scheme.nodes.map(createNodeObject);
     return obj;
 }
 
 function createAliasObject(alias: TreeScheme.IAlias): object {
+    const obj: any = {};
+    obj.identifier = alias.identifier;
+    obj.values = alias.values;
+    return obj;
+}
+
+function createEnumObject(alias: TreeScheme.IEnum): object {
     const obj: any = {};
     obj.identifier = alias.identifier;
     obj.values = alias.values;
@@ -40,7 +48,9 @@ function createFieldObject(field: TreeScheme.IFieldDefinition): object {
     const obj: any = {};
     obj.name = field.name;
     obj.valueType = createValueTypeString(field.valueType);
-    obj.isArray = field.isArray;
+    if (field.isArray) {
+        obj.isArray = true;
+    }
     return obj;
 }
 
