@@ -79,23 +79,44 @@ export function validateField(
     }
 
     // Validate value
-    switch (field.kind) {
+    switch (fieldDefinition.valueType) {
         case "string": return true;
         case "number": return true;
         case "boolean": return true;
-        case "node": return validateNode(scheme, fieldDefinition.valueType as TreeScheme.IAlias, field.value);
-        case "stringArray": return true;
-        case "numberArray": return true;
-        case "booleanArray": return true;
-        case "nodeArray":
-            const result = field.value.map(node =>
-                validateNode(scheme, fieldDefinition.valueType as TreeScheme.IAlias, node)).
-                find(r => r !== true);
-            return result === undefined ? true : result;
-        default: Utils.assertNever(field);
+        default:
+            switch (fieldDefinition.valueType.type) {
+                case "alias":
+                    const alias = fieldDefinition.valueType;
+                    if (fieldDefinition.isArray) {
+                        const result = (field.value as ReadonlyArray<Tree.INode>).map(node =>
+                            validateNode(scheme, alias, node)).
+                            find(r => r !== true);
+                        return result === undefined ? true : result;
+                    } else {
+                        return validateNode(scheme, alias, field.value as Tree.INode);
+                    }
+                case "enum":
+                    const enumeration = fieldDefinition.valueType;
+                    if (fieldDefinition.isArray) {
+                        const result = (field.value as ReadonlyArray<number>).map(value =>
+                            validateEnum(enumeration, value)).
+                            find(r => r !== true);
+                        return result === undefined ? true : result;
+                    } else {
+                        return validateEnum(enumeration, field.value as number);
+                    }
+                default:
+                    Utils.assertNever(fieldDefinition.valueType);
+            }
     }
-
     throw new Error("Unexpected field-type");
+}
+
+function validateEnum(enumeration: TreeScheme.IEnum, value: number): Result {
+    if (enumeration.values.some(e => e.value === value)) {
+        return true;
+    }
+    return createInvalidEnumValueFailure(enumeration, value);
 }
 
 function createInvalidNodeTypeFailure(expectedAlias: TreeScheme.IAlias, givenType: Tree.NodeType): IFailure {
@@ -110,6 +131,11 @@ function createInvalidFieldFailure(nodeDefinition: TreeScheme.INodeDefinition, g
 
 function createInvalidFieldTypeFailure(expectedKind: Tree.FieldKind, field: Tree.Field): IFailure {
     return createFailure(`Field '${field.name}' has unexpected type: '${field.kind}', expected: '${expectedKind}'`);
+}
+
+function createInvalidEnumValueFailure(expectedEnum: TreeScheme.IEnum, givenValue: number): IFailure {
+    return createFailure(`Invalid enum value '${givenValue}', Valid options: [${
+        expectedEnum.values.map(e => `${e.value}: ${e.name}`).join(", ")}]`);
 }
 
 function createFailure(message: string): IFailure {
