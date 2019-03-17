@@ -6,31 +6,48 @@ import * as Tree from "../tree";
 import * as Utils from "../utils";
 
 /** Possible types a field can have */
-export type FieldValueType = "string" | "number" | "boolean" | IAlias;
+export type FieldValueType = "string" | "number" | "boolean" | IAlias | IEnum;
 
 /**
  * Tree scheme.
- * Consists out of aliases and nodes.
- * Nodes are the types of nodes that are in this scheme and what kind of fields those nodes have.
- * Aliases are named groups of nodes, for example you can make a 'Conditions' alias that groups
- * all 'Condition' node types, and then you can use that alias in a field of a node. So a node can
- * define a field of type 'Condition' that can then contain any node from the alias.
+ * Consists out of aliases, enums and nodes.
+ * Aliases: Named group of nodes. (For example 'Condition' alias can contain all condition like nodes)
+ * Enums: Named set of numbers. (Same as in many programming languages)
+ * Nodes: Schemes for all the nodes that can be on this tree, including what fields they have.
  */
 export interface IScheme {
     readonly rootAlias: IAlias;
     readonly aliases: ReadonlyArray<IAlias>;
+    readonly enums: ReadonlyArray<IEnum>;
     readonly nodes: ReadonlyArray<INodeDefinition>;
 
-    getAlias(identifier: string): ReadonlyArray<string> | undefined;
+    getAlias(identifier: string): IAlias | undefined;
+    getEnum(identifier: string): IEnum | undefined;
     getNode(nodeType: Tree.NodeType): INodeDefinition | undefined;
 }
 
 /** Named group of nodes */
 export interface IAlias {
+    readonly type: "alias";
     readonly identifier: string;
     readonly values: ReadonlyArray<Tree.NodeType>;
 
     containsValue(identifier: Tree.NodeType): boolean;
+}
+
+/** Enum entry (Named number) */
+export interface IEnumEntry {
+    readonly value: number;
+    readonly name: string;
+}
+
+/** Enumeration (Set of named numbers)  */
+export interface IEnum {
+    readonly type: "enum";
+    readonly identifier: string;
+    readonly values: ReadonlyArray<IEnumEntry>;
+
+    getName(value: number): string | undefined;
 }
 
 /** Definition of a node (what kind of fields it has) */
@@ -51,7 +68,11 @@ export interface IFieldDefinition {
 /** Builder that can be used to create a scheme */
 export interface ISchemeBuilder {
     pushAlias(identifier: string, values: ReadonlyArray<Tree.NodeType>): IAlias | undefined;
+    pushEnum(identifier: string, values: ReadonlyArray<IEnumEntry>): IEnum | undefined;
+
     getAlias(identifier: string): IAlias | undefined;
+    getEnum(identifier: string): IEnum | undefined;
+
     pushNodeDefinition(nodeType: Tree.NodeType, callback?: (builder: INodeDefinitionBuilder) => void): boolean;
 }
 
@@ -101,7 +122,7 @@ export function getPrettyFieldValueType(valueType: FieldValueType, isArray: bool
         case "number":
         case "boolean":
             return `${valueType}${isArray ? "[]" : ""}`;
-        default: // In this case its actually an alias so we return its identifier
+        default: // In this case its an alias or enum, for both we run their identifiers.
             return `${valueType.identifier}${isArray ? "[]" : ""}`;
     }
 }
@@ -118,7 +139,7 @@ export function isAliasType(fieldValueType: FieldValueType): boolean {
         case "boolean":
             return false;
         default:
-            return true;
+            return fieldValueType.type === "alias";
     }
 }
 
@@ -132,8 +153,18 @@ export function getFieldKind(field: IFieldDefinition): Tree.FieldKind {
         case "string": return field.isArray ? "stringArray" : "string";
         case "number": return field.isArray ? "numberArray" : "number";
         case "boolean": return field.isArray ? "booleanArray" : "boolean";
-        default: return field.isArray ? "nodeArray" : "node";
+        default:
+            switch (field.valueType.type) {
+                case "alias":
+                    return field.isArray ? "nodeArray" : "node";
+                case "enum":
+                    // Enums are actually represented by numbers (as they are just named numbers)
+                    return field.isArray ? "numberArray" : "number";
+                default:
+                    Utils.assertNever(field.valueType);
+            }
     }
+    throw new Error("Unexpected field-kind");
 }
 
 /**
@@ -168,6 +199,13 @@ export function printScheme(
         a.values.forEach(aVal => printLine(aVal, indent + 2));
     });
 
+    // Enums
+    printLine(`Enums: (${scheme.enums.length})`, indent);
+    scheme.enums.forEach(e => {
+        printLine(`-${e.identifier} (${e.values.length})`, indent + 1);
+        e.values.forEach(eEntry => printLine(`${eEntry.value}: ${eEntry.name}`, indent + 2));
+    });
+
     // Node definitions
     printLine(`Nodes: (${scheme.nodes.length})`, indent);
     scheme.nodes.forEach(n => {
@@ -181,21 +219,28 @@ export function printScheme(
 class SchemeImpl implements IScheme {
     private readonly _rootAlias: IAlias;
     private readonly _aliases: ReadonlyArray<IAlias>;
+    private readonly _enums: ReadonlyArray<IEnum>;
     private readonly _nodes: ReadonlyArray<INodeDefinition>;
 
-    constructor(rootAlias: IAlias, aliases: ReadonlyArray<IAlias>, nodes: ReadonlyArray<INodeDefinition>) {
+    constructor(
+        rootAlias: IAlias,
+        aliases: ReadonlyArray<IAlias>,
+        enums: ReadonlyArray<IEnum>,
+        nodes: ReadonlyArray<INodeDefinition>) {
+
         // Verify that root-alias exists in the aliases array.
         if (!aliases.some(a => a === rootAlias)) {
             throw new Error("RootAlias must exist in aliases array");
         }
-        // Verify that there are no duplicate aliases.
-        if (Utils.hasDuplicates(aliases.map(a => a.identifier))) {
-            throw new Error("Aliases must be unique");
+        // Verify that there are no duplicate alias/enum identifiers.
+        if (Utils.hasDuplicates(aliases.map(a => a.identifier).concat(enums.map(e => e.identifier)))) {
+            throw new Error("Alias/Enum identifiers must be unique");
         }
         // Verify that there are no duplicate nodes.
         if (Utils.hasDuplicates(nodes.map(a => a.nodeType))) {
             throw new Error("Nodetype must be unique");
         }
+
         // Verify that aliases only reference nodes that actually exist.
         if (aliases.length > 0) {
             aliases.map(a => a.values).reduce((a, b) => a.concat(b)).forEach(aliasVal => {
@@ -207,6 +252,7 @@ class SchemeImpl implements IScheme {
 
         this._rootAlias = rootAlias;
         this._aliases = aliases;
+        this._enums = enums;
         this._nodes = nodes;
     }
 
@@ -218,13 +264,22 @@ class SchemeImpl implements IScheme {
         return this._aliases;
     }
 
+    get enums(): ReadonlyArray<IEnum> {
+        return this._enums;
+    }
+
     get nodes(): ReadonlyArray<INodeDefinition> {
         return this._nodes;
     }
 
-    public getAlias(identifier: string): ReadonlyArray<string> | undefined {
+    public getAlias(identifier: string): IAlias | undefined {
         const alias = Utils.find(this._aliases, a => a.identifier === identifier);
-        return alias === undefined ? undefined : alias.values;
+        return alias === undefined ? undefined : alias;
+    }
+
+    public getEnum(identifier: string): IEnum | undefined {
+        const enumEntry = Utils.find(this._enums, e => e.identifier === identifier);
+        return enumEntry === undefined ? undefined : enumEntry;
     }
 
     public getNode(nodeType: string): INodeDefinition | undefined {
@@ -253,6 +308,10 @@ class AliasImpl implements IAlias {
         this._values = values;
     }
 
+    get type(): "alias" {
+        return "alias";
+    }
+
     get identifier(): string {
         return this._identifier;
     }
@@ -263,6 +322,48 @@ class AliasImpl implements IAlias {
 
     public containsValue(nodeType: Tree.NodeType): boolean {
         return this._values.indexOf(nodeType) >= 0;
+    }
+}
+
+class EnumImpl implements IEnum {
+    private readonly _identifier: string;
+    private readonly _values: ReadonlyArray<IEnumEntry>;
+
+    constructor(identifier: string, values: ReadonlyArray<IEnumEntry>) {
+        // Verify that this enum has a identifier
+        if (identifier === "") {
+            throw new Error("Enum must have a identifier");
+        }
+        // Verify that the values at least contain 1 entry and no duplicates
+        if (values.length === 0) {
+            throw new Error("Enum must have at least one value");
+        }
+        if (Utils.hasDuplicates(values.map(entry => entry.value))) {
+            throw new Error("Enum values must be unique");
+        }
+
+        this._identifier = identifier;
+        this._values = values;
+    }
+
+    get type(): "enum" {
+        return "enum";
+    }
+
+    get identifier(): string {
+        return this._identifier;
+    }
+
+    get values(): ReadonlyArray<IEnumEntry> {
+        return this._values;
+    }
+
+    public getName(value: number): string | undefined {
+        const index = this._values.findIndex(entry => entry.value === value);
+        if (index < 0) {
+            return undefined;
+        }
+        return this._values[index].name;
     }
 }
 
@@ -300,12 +401,14 @@ class NodeDefinitionImpl implements INodeDefinition {
 class SchemeBuilderImpl implements ISchemeBuilder {
     private _rootAliasIdentifier: string;
     private _aliases: IAlias[];
+    private _enums: IEnum[];
     private _nodes: INodeDefinition[];
     private _build: boolean;
 
     constructor(rootAliasIdentifier: string) {
         this._rootAliasIdentifier = rootAliasIdentifier;
         this._aliases = [];
+        this._enums = [];
         this._nodes = [];
     }
 
@@ -315,8 +418,9 @@ class SchemeBuilderImpl implements ISchemeBuilder {
             return undefined;
         }
 
-        // Aliases have to unique
-        if (this._aliases.some(existingAlias => existingAlias.identifier === identifier)) {
+        // Aliases/Enums have to unique
+        if (this._aliases.some(existingAlias => existingAlias.identifier === identifier) ||
+            this._enums.some(existingEnum => existingEnum.identifier === identifier)) {
             return undefined;
         }
 
@@ -325,8 +429,29 @@ class SchemeBuilderImpl implements ISchemeBuilder {
         return alias;
     }
 
+    public pushEnum(identifier: string, values: ReadonlyArray<IEnumEntry>): IEnum | undefined {
+        // New content cannot be pushed after building the scheme
+        if (this._build) {
+            return undefined;
+        }
+
+        // Aliases/Enums have to unique
+        if (this._enums.some(existingEnum => existingEnum.identifier === identifier) ||
+            this._aliases.some(existingAlias => existingAlias.identifier === identifier)) {
+            return undefined;
+        }
+
+        const enumEntry = new EnumImpl(identifier, values);
+        this._enums.push(enumEntry);
+        return enumEntry;
+    }
+
     public getAlias(identifier: string): IAlias | undefined {
         return Utils.find(this._aliases, a => a.identifier === identifier);
+    }
+
+    public getEnum(identifier: string): IEnum | undefined {
+        return Utils.find(this._enums, e => e.identifier === identifier);
     }
 
     public pushNodeDefinition(
@@ -359,7 +484,7 @@ class SchemeBuilderImpl implements ISchemeBuilder {
         if (rootAlias === undefined) {
             throw new Error(`Root alias '${this._rootAliasIdentifier}' not found in alias set`);
         }
-        return new SchemeImpl(rootAlias, this._aliases, this._nodes);
+        return new SchemeImpl(rootAlias, this._aliases, this._enums, this._nodes);
     }
 }
 
