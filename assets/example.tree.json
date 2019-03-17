@@ -53,8 +53,8 @@
         {
           "$type": "AI.Items.FindTarget",
           "allowedTargets": [
-            "Ground",
-            "Air"
+            0,
+            1
           ],
           "targetRange": 25,
           "includeBosses": true

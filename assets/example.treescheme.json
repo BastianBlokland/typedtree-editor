@@ -26,6 +26,21 @@
       ]
     }
   ],
+  "enums": [
+    {
+      "identifier": "AI.Target",
+      "values": [
+        {
+          "value": 0,
+          "name": "Ground"
+        },
+        {
+          "value": 1,
+          "name": "Air"
+        }
+      ]
+    }
+  ],
   "nodes": [
     {
       "nodeType": "AI.Items.Selector",
@@ -97,7 +112,7 @@
       "fields": [
         {
           "name": "allowedTargets",
-          "valueType": "string",
+          "valueType": "AI.Target",
           "isArray": true
         },
         {
