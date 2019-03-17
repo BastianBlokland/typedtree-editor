@@ -11,6 +11,11 @@ test("savedJsonIsIdenticalToReadJson", () => {
         "aliases": [
             { "identifier": "Alias", "values": [ "NodeA", "NodeB" ] }
         ],
+        "enums": [
+            { "identifier": "Enum", "values": [
+                { "value": 0, "name": "A" }, { "value": 1, "name": "B" }
+            ]}
+        ],
         "nodes": [
             {
                 "nodeType": "NodeA",
@@ -19,10 +24,11 @@ test("savedJsonIsIdenticalToReadJson", () => {
             {
                 "nodeType": "NodeB",
                 "fields": [
-                    { "name": "field1", "valueType": "Alias", "isArray": true },
-                    { "name": "field2", "valueType": "boolean", "isArray": false},
-                    { "name": "field3", "valueType": "string", "isArray": false},
-                    { "name": "field4", "valueType": "number", "isArray": true }
+                    { "name": "field1", "valueType": "boolean" },
+                    { "name": "field2", "valueType": "string" },
+                    { "name": "field3", "valueType": "number", "isArray": true },
+                    { "name": "field4", "valueType": "Alias", "isArray": true },
+                    { "name": "field5", "valueType": "Enum", "isArray": true }
                 ]
             }
         ]
