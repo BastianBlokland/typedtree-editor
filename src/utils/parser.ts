@@ -113,6 +113,18 @@ export function validateString(obj: any): string | undefined {
 }
 
 /**
+ * Validate if an object is a number.
+ * @param obj Input to validate.
+ * @returns A number if obj was a number otherwise undefined.
+ */
+export function validateNumber(obj: any): number | undefined {
+    if (obj === undefined || obj === null || typeof obj !== "number") {
+        return undefined;
+    }
+    return obj;
+}
+
+/**
  * Validate if an object is a boolean.
  * @param obj Input to validate.
  * @returns A boolean if obj was a boolean otherwise undefined.

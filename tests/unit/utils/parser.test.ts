@@ -32,6 +32,13 @@ test("validateString", () => {
     expect(Utils.Parser.validateString("test")).toEqual("test");
 });
 
+test("validateNumber", () => {
+    expect(Utils.Parser.validateNumber(null)).toBe(undefined);
+    expect(Utils.Parser.validateNumber(undefined)).toBe(undefined);
+    expect(Utils.Parser.validateNumber(true)).toEqual(undefined);
+    expect(Utils.Parser.validateNumber(1)).toBe(1);
+});
+
 test("validateBoolean", () => {
     expect(Utils.Parser.validateBoolean(null)).toBe(undefined);
     expect(Utils.Parser.validateBoolean(undefined)).toBe(undefined);

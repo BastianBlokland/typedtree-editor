@@ -72,6 +72,7 @@ export interface ISchemeBuilder {
 
     getAlias(identifier: string): IAlias | undefined;
     getEnum(identifier: string): IEnum | undefined;
+    getAliasOrEnum(identifier: string): IAlias | IEnum | undefined;
 
     pushNodeDefinition(nodeType: Tree.NodeType, callback?: (builder: INodeDefinitionBuilder) => void): boolean;
 }
@@ -452,6 +453,14 @@ class SchemeBuilderImpl implements ISchemeBuilder {
 
     public getEnum(identifier: string): IEnum | undefined {
         return Utils.find(this._enums, e => e.identifier === identifier);
+    }
+
+    public getAliasOrEnum(identifier: string): IAlias | IEnum | undefined {
+        const alias = this.getAlias(identifier);
+        if (alias !== undefined) {
+            return alias;
+        }
+        return this.getEnum(identifier);
     }
 
     public pushNodeDefinition(
