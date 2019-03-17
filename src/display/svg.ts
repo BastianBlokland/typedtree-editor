@@ -429,7 +429,7 @@ class GroupElement implements IElement {
 
         const useElem = document.createElementNS("http://www.w3.org/2000/svg", "use");
         useElem.setAttribute("class", className);
-        useElem.setAttribute("href", `#${graphicsId}`);
+        useElem.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", `#${graphicsId}`);
         useElem.setAttribute("x", position.x.toString());
         useElem.setAttribute("y", position.y.toString());
         if (clickCallback !== undefined) {
