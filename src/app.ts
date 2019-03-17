@@ -131,14 +131,14 @@ function enqueueSaveTree(): void {
 function enqueueUndo(): void {
     sequencer.enqueue(async () => {
         treeHistory.undo();
-        updateTree();
+        updateTree(currentTreeName);
     });
 }
 
 function enqueueRedo(): void {
     sequencer.enqueue(async () => {
         treeHistory.redo();
-        updateTree();
+        updateTree(currentTreeName);
     });
 }
 
