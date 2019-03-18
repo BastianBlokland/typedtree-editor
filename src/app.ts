@@ -184,7 +184,7 @@ function updateTree(): void {
 function updateTreeTitle(): void {
     Utils.Dom.setText("tree-title",
         (currentTreeName === undefined ? "" : currentTreeName) +
-        (hasUnsavedChanged ? " (*)" : ""));
+        (hasUnsavedChanged ? " 🔴" : ""));
 }
 
 function toggleToolbox(): void {
