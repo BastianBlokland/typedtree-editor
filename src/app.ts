@@ -212,6 +212,7 @@ function onDomKeyPress(event: KeyboardEvent): void {
     switch (event.key) {
         case "t": toggleToolbox(); break;
         case "f": focusTree(); break;
+        case "s": enqueueSaveTree(); break;
         case "+": case "=": Display.Tree.zoom(0.1); break;
         case "-": case "_": Display.Tree.zoom(-0.1); break;
         case "z":
