@@ -53,7 +53,7 @@ const treeHistory: Utils.History.IHistoryStack<Tree.INode> = Utils.History.creat
 let currentScheme: TreeScheme.IScheme | undefined;
 let currentSchemeName: string | undefined;
 let currentTreeName: string | undefined;
-let hasUnsavedChanged: boolean = false;
+let hasUnsavedChanges: boolean = false;
 
 function enqueueLoadScheme(source: string | File): void {
     const name = typeof source === "string" ? source : source.name;
@@ -79,7 +79,7 @@ function enqueueNewTree(): void {
 
         console.log(`Successfully created new tree. Scheme: ${currentSchemeName}`);
         treeHistory.push(newRoot);
-        hasUnsavedChanged = false;
+        hasUnsavedChanges = false;
         currentTreeName = "New tree";
         updateTree();
         Display.Tree.focusTree(1);
@@ -108,7 +108,7 @@ function enqueueLoadTree(source: string | File): void {
 
             console.log(`Successfully loaded tree: ${name}`);
             treeHistory.push(completeTree);
-            hasUnsavedChanged = false;
+            hasUnsavedChanges = false;
             currentTreeName = name;
             updateTree();
             Display.Tree.focusTree(1);
@@ -130,7 +130,7 @@ function enqueueSaveTree(): void {
         if (treeHistory.current !== undefined) {
             const treeJson = Tree.Serializer.composeJson(treeHistory.current);
             Utils.Dom.saveJsonText(treeJson, currentTreeName!);
-            hasUnsavedChanged = false;
+            hasUnsavedChanges = false;
             updateTreeTitle();
         }
     });
@@ -171,7 +171,7 @@ function updateTree(): void {
     Display.Tree.setTree(currentScheme, treeHistory.current, newTree => {
         sequencer.enqueue(async () => {
             treeHistory.push(newTree);
-            hasUnsavedChanged = true;
+            hasUnsavedChanges = true;
             updateTree();
         });
     });
@@ -184,7 +184,7 @@ function updateTree(): void {
 function updateTreeTitle(): void {
     Utils.Dom.setText("tree-title",
         (currentTreeName === undefined ? "" : currentTreeName) +
-        (hasUnsavedChanged ? " 🔴" : ""));
+        (hasUnsavedChanges ? " 🔴" : ""));
 }
 
 function toggleToolbox(): void {
@@ -227,7 +227,7 @@ function onDomKeyPress(event: KeyboardEvent): void {
 }
 
 function onBeforeUnload(): string | undefined {
-    if (hasUnsavedChanged) {
+    if (hasUnsavedChanges) {
         return "Are your sure you want to quit without saving?";
     }
     return undefined;
