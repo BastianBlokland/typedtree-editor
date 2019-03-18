@@ -16,7 +16,8 @@
     "./build"
   ],
   "dependencies": {
-    "file-saver": "^2.0.1"
+    "file-saver": "^2.0.1",
+    "normalize-wheel": "^1.0.1"
   },
   "devDependencies": {
     "@types/expect-puppeteer": "^3.3.1",
