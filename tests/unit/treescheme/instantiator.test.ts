@@ -67,6 +67,7 @@ test("whenChangingNodeTypeCompatibleFieldsAreReused", () => {
             Tree.createNode("Node1", b => {
                 b.pushStringArrayField("field6", ["elem1", "elem2"]);
             }),
+            Tree.createNoneNode(),
         ]);
     });
     expect(TreeScheme.Instantiator.changeNodeType(scheme, node, "Node1")).
@@ -83,6 +84,7 @@ test("whenChangingNodeTypeCompatibleFieldsAreReused", () => {
                 Tree.createNode("Node1", b => {
                     b.pushStringArrayField("field6", ["elem1", "elem2"]);
                 }),
+                Tree.createNoneNode(),
             ]);
             b.pushNumberArrayField("field10", []);
         }));

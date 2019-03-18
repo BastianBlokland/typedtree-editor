@@ -32,6 +32,11 @@ export function validate(scheme: TreeScheme.IScheme, tree: Tree.INode): Result {
  * @returns True if the node conforms to the scheme otherwise a failure object containing the failure reason.
  */
 export function validateNode(scheme: TreeScheme.IScheme, alias: TreeScheme.IAlias, node: Tree.INode): Result {
+    // The 'none' node can be used as a default for all NodeDefinitions, so its always valid.
+    if (node.type === Tree.noneNodeType) {
+        return true;
+    }
+
     // Validate type.
     if (!alias.containsValue(node.type)) {
         return createInvalidNodeTypeFailure(alias, node.type);
