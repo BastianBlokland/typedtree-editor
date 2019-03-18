@@ -2,7 +2,12 @@
  * @file Utilities for interacting with the browser dom.
  */
 
+import * as Vec from "./vector";
+
+// External node-plugins
 import "file-saver";
+// @ts-ignore (No types available)
+import normalizeWheel from "normalize-wheel";
 
 /** Html class identifier */
 export type ClassName = string;
@@ -15,6 +20,21 @@ export type ClassName = string;
 export function saveJsonText(json: string, fileName: string): void {
     const blob = new Blob([json], { type: "application/json;charset=utf-8" });
     saveAs(blob, fileName);
+}
+
+/**
+ * Get the mouse-wheel delta normalized across browsers. Tries to estimate how far was scrolled
+ * relative to the wheel (1 = a single spin of the wheel) This allows for consistent scroll speeds
+ * across different browsers.
+ * @param event Wheel-event to normalize.
+ * @returns Normalized vector representing the wheel movements in spins.
+ */
+export function getMouseWheelDelta(event: WheelEvent): Vec.IVector2 {
+    /* Implemented using: https://github.com/basilfx/normalize-wheel/
+    which in turn is based on code used by Facebook to attempt to normalize the mouse-scroll speeds
+    across browsers. */
+    const norm = normalizeWheel(event);
+    return Vec.createVector(norm.spinX, norm.spinY);
 }
 
 /**

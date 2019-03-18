@@ -164,7 +164,7 @@ export function initialize(): void {
 
     // Subscribe to the desktop 'scrollwheel' event.
     displayRoot.addEventListener("wheel", event => {
-        const scrollDelta = -(event as WheelEvent).deltaY * scrollScaleSpeed;
+        const scrollDelta = Utils.Dom.getMouseWheelDelta(event).y * -scrollScaleSpeed;
         const pointerPos: Vector.Position = { x: (event as WheelEvent).pageX, y: (event as WheelEvent).pageY };
         handleScroll(scrollDelta, pointerPos);
     }, { passive: true });
@@ -282,7 +282,7 @@ const displayRootElementId = "svg-display";
 const inputBlockerDomElementId = "input-blocker";
 const minScale = 0.05;
 const maxScale = 3;
-const scrollScaleSpeed = 0.001;
+const scrollScaleSpeed = 0.075;
 const displayMargin: Vector.IVector2 = { x: 75, y: 75 };
 const halfDisplayMargin = Vector.half(displayMargin);
 
