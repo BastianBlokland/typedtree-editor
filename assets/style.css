@@ -110,6 +110,7 @@ body button:disabled {
     position: absolute;
     width: 100%;
     top: 10px;
+    line-height: 25px;
     font-size: 15pt;
     font-weight: bold;
     text-align: center;
