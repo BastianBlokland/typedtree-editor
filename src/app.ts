@@ -10,6 +10,7 @@ import * as Utils from "./utils";
 /** Function to run the main app logic in. */
 export async function run(): Promise<void> {
     window.onkeydown = onDomKeyPress;
+    window.onbeforeunload = onBeforeUnload;
     Utils.Dom.subscribeToClick("toolbox-toggle", toggleToolbox);
     Utils.Dom.subscribeToClick("focus-button", focusTree);
     Utils.Dom.subscribeToClick("zoomin-button", () => { Display.Tree.zoom(0.1); });
@@ -222,4 +223,11 @@ function onDomKeyPress(event: KeyboardEvent): void {
             break;
         case "Z": enqueueRedo(); break;
     }
+}
+
+function onBeforeUnload(): string | undefined {
+    if (hasUnsavedChanged) {
+        return "Are your sure you want to quit without saving?";
+    }
+    return undefined;
 }
