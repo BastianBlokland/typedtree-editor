@@ -7,6 +7,10 @@ import * as Tree from "../../src/tree";
 import * as TreeScheme from "../../src/treescheme";
 
 describe("app", () => {
+    page.on("dialog", async dialog => {
+        await dialog.accept();
+    });
+
     beforeEach(async () => {
         await page.goto("http://localhost:3000");
         await page.waitFor(100); // Give the page some time to load.

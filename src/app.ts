@@ -10,6 +10,7 @@ import * as Utils from "./utils";
 /** Function to run the main app logic in. */
 export async function run(): Promise<void> {
     window.onkeydown = onDomKeyPress;
+    window.onbeforeunload = onBeforeUnload;
     Utils.Dom.subscribeToClick("toolbox-toggle", toggleToolbox);
     Utils.Dom.subscribeToClick("focus-button", focusTree);
     Utils.Dom.subscribeToClick("zoomin-button", () => { Display.Tree.zoom(0.1); });
@@ -52,6 +53,7 @@ const treeHistory: Utils.History.IHistoryStack<Tree.INode> = Utils.History.creat
 let currentScheme: TreeScheme.IScheme | undefined;
 let currentSchemeName: string | undefined;
 let currentTreeName: string | undefined;
+let hasUnsavedChanged: boolean = false;
 
 function enqueueLoadScheme(source: string | File): void {
     const name = typeof source === "string" ? source : source.name;
@@ -77,7 +79,9 @@ function enqueueNewTree(): void {
 
         console.log(`Successfully created new tree. Scheme: ${currentSchemeName}`);
         treeHistory.push(newRoot);
-        updateTree("New tree");
+        hasUnsavedChanged = false;
+        currentTreeName = "New tree";
+        updateTree();
         Display.Tree.focusTree(1);
     });
 }
@@ -104,7 +108,9 @@ function enqueueLoadTree(source: string | File): void {
 
             console.log(`Successfully loaded tree: ${name}`);
             treeHistory.push(completeTree);
-            updateTree(name);
+            hasUnsavedChanged = false;
+            currentTreeName = name;
+            updateTree();
             Display.Tree.focusTree(1);
         }
     });
@@ -124,6 +130,8 @@ function enqueueSaveTree(): void {
         if (treeHistory.current !== undefined) {
             const treeJson = Tree.Serializer.composeJson(treeHistory.current);
             Utils.Dom.saveJsonText(treeJson, currentTreeName!);
+            hasUnsavedChanged = false;
+            updateTreeTitle();
         }
     });
 }
@@ -131,14 +139,14 @@ function enqueueSaveTree(): void {
 function enqueueUndo(): void {
     sequencer.enqueue(async () => {
         treeHistory.undo();
-        updateTree(currentTreeName);
+        updateTree();
     });
 }
 
 function enqueueRedo(): void {
     sequencer.enqueue(async () => {
         treeHistory.redo();
-        updateTree(currentTreeName);
+        updateTree();
     });
 }
 
@@ -150,26 +158,33 @@ function setCurrentScheme(scheme: TreeScheme.IScheme, name: string): void {
     // Loading a new scheme invalidates the current tree. (In theory we could support checking if the
     // previously loaded tree is still compatible with the new scheme)
     treeHistory.clear();
-    updateTree(undefined);
+    currentTreeName = undefined;
+    updateTree();
 }
 
-function updateTree(name?: string): void {
+function updateTree(): void {
     if (currentScheme === undefined) {
         throw new Error("Unable to update tree. Error: No scheme loaded");
     }
 
-    currentTreeName = name;
-    Utils.Dom.setText("tree-title", name === undefined ? "" : name);
+    updateTreeTitle();
     Display.Tree.setTree(currentScheme, treeHistory.current, newTree => {
         sequencer.enqueue(async () => {
             treeHistory.push(newTree);
-            updateTree(name);
+            hasUnsavedChanged = true;
+            updateTree();
         });
     });
 
     // Update undo / button disabled state
     Utils.Dom.setButtonDisabled("undo-button", !treeHistory.hasUndo);
     Utils.Dom.setButtonDisabled("redo-button", !treeHistory.hasRedo);
+}
+
+function updateTreeTitle(): void {
+    Utils.Dom.setText("tree-title",
+        (currentTreeName === undefined ? "" : currentTreeName) +
+        (hasUnsavedChanged ? " (*)" : ""));
 }
 
 function toggleToolbox(): void {
@@ -197,6 +212,7 @@ function onDomKeyPress(event: KeyboardEvent): void {
     switch (event.key) {
         case "t": toggleToolbox(); break;
         case "f": focusTree(); break;
+        case "s": enqueueSaveTree(); break;
         case "+": case "=": Display.Tree.zoom(0.1); break;
         case "-": case "_": Display.Tree.zoom(-0.1); break;
         case "z":
@@ -208,4 +224,11 @@ function onDomKeyPress(event: KeyboardEvent): void {
             break;
         case "Z": enqueueRedo(); break;
     }
+}
+
+function onBeforeUnload(): string | undefined {
+    if (hasUnsavedChanged) {
+        return "Are your sure you want to quit without saving?";
+    }
+    return undefined;
 }
