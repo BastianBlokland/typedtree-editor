@@ -23,6 +23,7 @@ export async function run(): Promise<void> {
 
     Utils.Dom.subscribeToClick("newtree-button", enqueueNewTree);
     Utils.Dom.subscribeToFileInput("opentree-file", enqueueLoadTree);
+    Utils.Dom.subscribeToClick("pastetree-button", enqueuePasteTree);
     Utils.Dom.subscribeToClick("savetree-button", enqueueSaveTree);
     Utils.Dom.subscribeToClick("copytree-button", enqueueCopyTreeToClipboard);
 
@@ -95,24 +96,28 @@ function enqueueLoadTree(source: string | File): void {
         if (result.kind === "error") {
             alert(`Failed to parse tree. Error: ${result.errorMessage}`);
         } else {
-            if (currentScheme === undefined) {
-                alert("Failed to load tree. Error: No scheme loaded");
-                return;
-            }
-            // Validated the parsed tree against the current scheme.
-            const validateResult = TreeScheme.Validator.validate(currentScheme, result.value);
-            if (validateResult !== true) {
-                alert(`Failed to validate tree. Error: ${validateResult.errorMessage}`);
-                return;
-            }
-            const completeTree = TreeScheme.Instantiator.duplicateWithMissingFields(currentScheme, result.value);
-
-            console.log(`Successfully loaded tree: ${name}`);
-            treeHistory.push(completeTree);
-            hasUnsavedChanges = false;
             currentTreeName = name;
-            updateTree();
-            Display.Tree.focusTree(1);
+            openTree(result.value);
+        }
+    });
+}
+
+function enqueuePasteTree(): void {
+    sequencer.enqueue(async () => {
+        let json: string | undefined;
+        try {
+            json = await Utils.Dom.readClipboardText();
+        } catch (e) {
+            alert(`Unable to paste: ${e}`);
+        }
+        if (json !== undefined) {
+            const result = await Tree.Parser.parseJson(json);
+            if (result.kind === "error") {
+                alert(`Failed to parse tree. Error: ${result.errorMessage}`);
+            } else {
+                currentTreeName = "pasted.tree.json";
+                openTree(result.value);
+            }
         }
     });
 }
@@ -178,6 +183,25 @@ function setCurrentScheme(scheme: TreeScheme.IScheme, name: string): void {
     updateTree();
 }
 
+function openTree(tree: Tree.INode): void {
+    if (currentScheme === undefined) {
+        alert("Failed to open tree. Error: No scheme loaded");
+        return;
+    }
+    // Validated the tree against the current scheme.
+    const validateResult = TreeScheme.Validator.validate(currentScheme, tree);
+    if (validateResult !== true) {
+        alert(`Failed to validate tree. Error: ${validateResult.errorMessage}`);
+        return;
+    }
+    const completeTree = TreeScheme.Instantiator.duplicateWithMissingFields(currentScheme, tree);
+
+    treeHistory.push(completeTree);
+    hasUnsavedChanges = false;
+    updateTree();
+    Display.Tree.focusTree(1);
+}
+
 function updateTree(): void {
     if (currentScheme === undefined) {
         throw new Error("Unable to update tree. Error: No scheme loaded");
@@ -230,6 +254,7 @@ function onDomKeyPress(event: KeyboardEvent): void {
         case "f": focusTree(); break;
         case "s": enqueueSaveTree(); break;
         case "c": enqueueCopyTreeToClipboard(); break;
+        case "v": enqueuePasteTree(); break;
         case "+": case "=": Display.Tree.zoom(0.1); break;
         case "-": case "_": Display.Tree.zoom(-0.1); break;
         case "z":

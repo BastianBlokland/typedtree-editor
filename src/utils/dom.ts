@@ -29,7 +29,7 @@ export function saveJsonText(json: string, fileName: string): void {
  */
 export function readClipboardText(): Promise<string> {
     const clipboard = (navigator as any).clipboard;
-    if (clipboard === undefined) {
+    if (clipboard === undefined || typeof clipboard.readText !== "function") {
         throw new Error("Clipboard api not supported");
     }
     return clipboard.readText();
@@ -43,7 +43,7 @@ export function readClipboardText(): Promise<string> {
  */
 export function writeClipboardText(data: string): Promise<void> {
     const clipboard = (navigator as any).clipboard;
-    if (clipboard === undefined) {
+    if (clipboard === undefined || typeof clipboard.writeText !== "function") {
         throw new Error("Clipboard api not supported");
     }
     return clipboard.writeText(data);
