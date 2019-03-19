@@ -82,7 +82,7 @@ function enqueueNewTree(): void {
         console.log(`Successfully created new tree. Scheme: ${currentSchemeName}`);
         treeHistory.push(newRoot);
         hasUnsavedChanges = false;
-        currentTreeName = "New tree";
+        currentTreeName = "new.tree.json";
         updateTree();
         Display.Tree.focusTree(1);
     });
