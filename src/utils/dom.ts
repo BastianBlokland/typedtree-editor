@@ -27,12 +27,16 @@ export function saveJsonText(json: string, fileName: string): void {
  * Note: Not supported on all browsers.
  * @returns Promise that contains the string that was read.
  */
-export function readClipboardText(): Promise<string> {
+export async function readClipboardText(): Promise<string> {
     const clipboard = (navigator as any).clipboard;
     if (clipboard === undefined || typeof clipboard.readText !== "function") {
         throw new Error("Clipboard api not supported");
     }
-    return clipboard.readText();
+    try {
+        return await (clipboard.readText() as Promise<string>);
+    } catch (e) {
+        throw new Error("Clipboard api returned error. Are permissions provided?");
+    }
 }
 
 /**
@@ -41,12 +45,16 @@ export function readClipboardText(): Promise<string> {
  * @param data Data to write to the clipboard.
  * @returns Promise that completes when the data is written.
  */
-export function writeClipboardText(data: string): Promise<void> {
+export async function writeClipboardText(data: string): Promise<void> {
     const clipboard = (navigator as any).clipboard;
     if (clipboard === undefined || typeof clipboard.writeText !== "function") {
         throw new Error("Clipboard api not supported");
     }
-    return clipboard.writeText(data);
+    try {
+        return await (clipboard.writeText(data) as Promise<void>);
+    } catch (e) {
+        throw new Error("Clipboard api returned error. Are permissions provided?");
+    }
 }
 
 /**
