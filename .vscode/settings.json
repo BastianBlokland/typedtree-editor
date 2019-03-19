@@ -10,6 +10,7 @@
     "callout",
     "classname",
     "codecov",
+    "copytree",
     "crossorigin",
     "devops",
     "domutils",
@@ -34,6 +35,7 @@
     "openscheme",
     "opentree",
     "parserutils",
+    "pastetree",
     "polyfill",
     "positionlookup",
     "rbox",
@@ -59,7 +61,7 @@
     "xlink",
     "zoomin",
     "zoomout"
-],
+  ],
   // Search settings
   "search.useIgnoreFiles": false,
   "search.exclude": {},

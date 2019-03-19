@@ -23,6 +23,33 @@ export function saveJsonText(json: string, fileName: string): void {
 }
 
 /**
+ * Read string from clipboard. User is prompted for permission first, throws if permission was not provided.
+ * Note: Not supported on all browsers.
+ * @returns Promise that contains the string that was read.
+ */
+export function readClipboardText(): Promise<string> {
+    const clipboard = (navigator as any).clipboard;
+    if (clipboard === undefined || typeof clipboard.readText !== "function") {
+        throw new Error("Clipboard api not supported");
+    }
+    return clipboard.readText();
+}
+
+/**
+ * Write string to clipboard. User is prompted for permission first, throws if permission was not provided.
+ * Note: Not supported on all browsers.
+ * @param data Data to write to the clipboard.
+ * @returns Promise that completes when the data is written.
+ */
+export function writeClipboardText(data: string): Promise<void> {
+    const clipboard = (navigator as any).clipboard;
+    if (clipboard === undefined || typeof clipboard.writeText !== "function") {
+        throw new Error("Clipboard api not supported");
+    }
+    return clipboard.writeText(data);
+}
+
+/**
  * Get the mouse-wheel delta normalized across browsers. Tries to estimate how far was scrolled
  * relative to the wheel (1 = a single spin of the wheel) This allows for consistent scroll speeds
  * across different browsers.
