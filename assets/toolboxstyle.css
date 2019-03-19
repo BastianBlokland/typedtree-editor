@@ -8,7 +8,7 @@
     background-color: #888;
 }
 
-#toolbox > .element {
+#toolbox .element {
     margin-top: 5px;
     margin-bottom: 5px;
     margin-left: 2.5%;
@@ -16,28 +16,32 @@
     width: 95%;
     background-color: #DDD;
     border-radius: 4px;
-    font-weight: bold;
 }
 
 /* Show cursor on buttons in the toolbox */
 #toolbox button {
     cursor: pointer;
     color: #000;
+    line-height: 15px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 2.5%;
+    margin-right: 2.5%;
+    width: 95%;
 }
 
-#toolbox #openscheme-container, #toolbox #opentree-container {
+#toolbox input {
+    display: inline-block;
+    width: 200px;
+    min-width: 200px;
+    font-size: 10pt;
+    margin-left: 2.5%;
+    margin-right: 2.5%;
+}
+
+#toolbox #openscheme-container, #toolbox #opentree-container, #toolbox #savetree-container {
     display: flex;
     align-items: center;
-    text-align: center;
-    font-size: 10pt;
-}
-
-#toolbox #openscheme-container #openscheme-header, #toolbox #opentree-container #opentree-header {
-    width: 30%
-}
-
-#toolbox #openscheme-container #openscheme-file, #toolbox #opentree-container #opentree-file {
-    width: 70%;
 }
 
 #toolbox > .header {

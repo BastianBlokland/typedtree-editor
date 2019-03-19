@@ -35,20 +35,22 @@
   <!-- Toolbox containing the main ways to interact with the app -->
   <div id="toolbox">
     <div class="header">Scheme</div>
-    <div id="scheme-display"></div>
     <div class="element" id="openscheme-container">
-      <div id="openscheme-header">Open scheme</div>
       <input type="file" id="openscheme-file" accept=".json" />
+      <button type="button" id="savescheme-button">Save</button>
     </div>
-    <button type="button" class="element" id="savescheme-button">Save scheme</button>
+    <div id="scheme-display"></div>
 
     <div class="header">Tree</div>
-    <button type="button" class="element" id="newtree-button">New tree</button>
     <div class="element" id="opentree-container">
-      <div id="opentree-header">Open tree</div>
+      <button type="button" id="newtree-button">New</button>
       <input type="file" id="opentree-file" accept=".json" />
     </div>
-    <button type="button" class="element" id="savetree-button">Save tree (s)</button>
+    <div class="element" id="savetree-container">
+      <button type="button" id="savetree-button">Save (s)</button>
+      <button type="button" id="copytree-button">Copy 📋</button>
+    </div>
+  </div>
   </div>
 
   <!-- Svg tree content -->

@@ -24,6 +24,7 @@ export async function run(): Promise<void> {
     Utils.Dom.subscribeToClick("newtree-button", enqueueNewTree);
     Utils.Dom.subscribeToFileInput("opentree-file", enqueueLoadTree);
     Utils.Dom.subscribeToClick("savetree-button", enqueueSaveTree);
+    Utils.Dom.subscribeToClick("copytree-button", enqueueCopyTreeToClipboard);
 
     console.log("Started running");
 
@@ -136,6 +137,21 @@ function enqueueSaveTree(): void {
     });
 }
 
+function enqueueCopyTreeToClipboard(): void {
+    sequencer.enqueue(async () => {
+        if (treeHistory.current !== undefined) {
+            const treeJson = Tree.Serializer.composeJson(treeHistory.current);
+            try {
+                await Utils.Dom.writeClipboardText(treeJson);
+            } catch (e) {
+                alert(`Unable to copy: ${e}`);
+            }
+            hasUnsavedChanges = false;
+            updateTreeTitle();
+        }
+    });
+}
+
 function enqueueUndo(): void {
     sequencer.enqueue(async () => {
         treeHistory.undo();
@@ -213,6 +229,7 @@ function onDomKeyPress(event: KeyboardEvent): void {
         case "t": toggleToolbox(); break;
         case "f": focusTree(); break;
         case "s": enqueueSaveTree(); break;
+        case "c": enqueueCopyTreeToClipboard(); break;
         case "+": case "=": Display.Tree.zoom(0.1); break;
         case "-": case "_": Display.Tree.zoom(-0.1); break;
         case "z":
