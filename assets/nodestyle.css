@@ -17,6 +17,7 @@
 #svg-display .node-type {
     font-weight: bold;
     margin-left: 5%;
+    font-size: 10px;
     width: 90%;
     height: 90%;
     background-color: #DDD;
