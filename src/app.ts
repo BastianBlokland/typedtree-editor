@@ -180,11 +180,18 @@ function setCurrentScheme(scheme: TreeScheme.IScheme, name: string): void {
     currentSchemeName = name;
     Display.TreeScheme.setScheme(currentScheme);
 
-    // Loading a new scheme invalidates the current tree. (In theory we could support checking if the
-    // previously loaded tree is still compatible with the new scheme)
+    // Loading a new scheme invalidates the current tree so we clear the tree history.
     treeHistory.clear();
-    currentTreeName = undefined;
+
+    // Create a new default tree based on the newly loaded scheme.
+    const defaultRoot = TreeScheme.getDefaultDefinition(scheme, scheme.rootAlias);
+    const newRoot = TreeScheme.Instantiator.instantiateDefaultNode(defaultRoot);
+    treeHistory.push(newRoot);
+
+    hasUnsavedChanges = false;
+    currentTreeName = "new.tree.json";
     updateTree();
+    Display.Tree.focusTree(1);
 }
 
 function openTree(tree: Tree.INode): void {
