@@ -9,6 +9,10 @@ import * as Utils from "./utils";
 
 /** Function to run the main app logic in. */
 export async function run(): Promise<void> {
+    window.ondragenter = onDrag;
+    window.ondragover = onDrag;
+    window.ondragleave = onDrag;
+    window.ondrop = onDrag;
     window.onkeydown = onDomKeyPress;
     window.onbeforeunload = onBeforeUnload;
     Utils.Dom.subscribeToClick("toolbox-toggle", toggleToolbox);
@@ -243,6 +247,19 @@ function focusTree(): void {
     if (treeHistory.current !== undefined) {
         Display.Tree.focusTree(2);
     }
+}
+
+function onDrag(event: DragEvent): void {
+    // If a file was dropped then load it as a tree.
+    if (event.dataTransfer !== null && event.dataTransfer.files !== null && event.dataTransfer.files.length) {
+        // Note: It would actually be possible to conditionally load a tree or a scheme based on a file
+        // naming convention, need to give it some more thought wether or not thats a good idea.
+        enqueueLoadTree(event.dataTransfer.files[0]);
+    }
+
+    // Prevent default drag and drop behaviour
+    event.preventDefault();
+    event.stopPropagation();
 }
 
 function onDomKeyPress(event: KeyboardEvent): void {
