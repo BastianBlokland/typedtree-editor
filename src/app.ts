@@ -252,9 +252,12 @@ function focusTree(): void {
 function onDrag(event: DragEvent): void {
     // If a file was dropped then load it as a tree.
     if (event.dataTransfer !== null && event.dataTransfer.files !== null && event.dataTransfer.files.length) {
-        // Note: It would actually be possible to conditionally load a tree or a scheme based on a file
-        // naming convention, need to give it some more thought wether or not thats a good idea.
-        enqueueLoadTree(event.dataTransfer.files[0]);
+        const file = event.dataTransfer.files[0];
+        if (file.name.includes("scheme")) {
+            enqueueLoadScheme(file);
+        } else {
+            enqueueLoadTree(file);
+        }
     }
 
     // Prevent default drag and drop behaviour
