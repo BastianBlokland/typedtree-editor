@@ -39,7 +39,7 @@
     margin-right: 1%;
 }
 
-#toolbox #openscheme-container, #toolbox #opentree-container, #toolbox #savetree-container {
+#toolbox #openscheme-container, #toolbox #opentree-container, #toolbox #exporttree-container {
     display: flex;
     align-items: center;
 }

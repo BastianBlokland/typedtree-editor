@@ -23,12 +23,12 @@ export async function run(): Promise<void> {
     Utils.Dom.subscribeToClick("redo-button", enqueueRedo);
 
     Utils.Dom.subscribeToFileInput("openscheme-file", enqueueLoadScheme);
-    Utils.Dom.subscribeToClick("savescheme-button", enqueueSaveScheme);
+    Utils.Dom.subscribeToClick("exportscheme-button", enqueueExportScheme);
 
     Utils.Dom.subscribeToClick("newtree-button", enqueueNewTree);
     Utils.Dom.subscribeToFileInput("opentree-file", enqueueLoadTree);
     Utils.Dom.subscribeToClick("pastetree-button", enqueuePasteTree);
-    Utils.Dom.subscribeToClick("savetree-button", enqueueSaveTree);
+    Utils.Dom.subscribeToClick("exporttree-button", enqueueExportTree);
     Utils.Dom.subscribeToClick("copytree-button", enqueueCopyTreeToClipboard);
 
     console.log("Started running");
@@ -126,7 +126,7 @@ function enqueuePasteTree(): void {
     });
 }
 
-function enqueueSaveScheme(): void {
+function enqueueExportScheme(): void {
     sequencer.enqueue(async () => {
         if (currentScheme !== undefined) {
             const treeJson = TreeScheme.Serializer.composeJson(currentScheme);
@@ -135,7 +135,7 @@ function enqueueSaveScheme(): void {
     });
 }
 
-function enqueueSaveTree(): void {
+function enqueueExportTree(): void {
     sequencer.enqueue(async () => {
         if (treeHistory.current !== undefined) {
             const treeJson = Tree.Serializer.composeJson(treeHistory.current);
@@ -279,7 +279,7 @@ function onDomKeyPress(event: KeyboardEvent): void {
     switch (event.key) {
         case "t": toggleToolbox(); break;
         case "f": focusTree(); break;
-        case "s": enqueueSaveTree(); break;
+        case "e": enqueueExportTree(); break;
         case "c": enqueueCopyTreeToClipboard(); break;
         case "v": enqueuePasteTree(); break;
         case "+": case "=": Display.Tree.zoom(0.1); break;
