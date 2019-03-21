@@ -21,7 +21,10 @@ export async function run(): Promise<void> {
     Utils.Dom.subscribeToClick("undo-button", enqueueUndo);
     Utils.Dom.subscribeToClick("redo-button", enqueueRedo);
 
-    Utils.Dom.subscribeToFileInput("openscheme-file", enqueueLoadScheme);
+    Utils.Dom.subscribeToFileInput("openscheme-file", file => {
+        enqueueLoadScheme(file);
+        enqueueNewTree();
+    });
     Utils.Dom.subscribeToClick("exportscheme-button", enqueueExportScheme);
 
     Utils.Dom.subscribeToClick("newtree-button", enqueueNewTree);
@@ -191,7 +194,6 @@ function setCurrentScheme(scheme: TreeScheme.IScheme): void {
 
     // Loading a new scheme invalidates the current tree
     treeHistory.clear();
-    currentTreeName = undefined;
     updateTree();
 }
 
@@ -260,6 +262,7 @@ function onDrag(event: DragEvent): void {
         const file = event.dataTransfer.files[0];
         if (file.name.includes("scheme")) {
             enqueueLoadScheme(file);
+            enqueueNewTree();
         } else {
             enqueueLoadTree(file);
         }
