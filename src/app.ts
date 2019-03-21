@@ -14,7 +14,6 @@ export async function run(): Promise<void> {
     window.ondragleave = onDrag;
     window.ondrop = onDrag;
     window.onkeydown = onDomKeyPress;
-    window.onbeforeunload = onBeforeUnload;
     Utils.Dom.subscribeToClick("toolbox-toggle", toggleToolbox);
     Utils.Dom.subscribeToClick("focus-button", focusTree);
     Utils.Dom.subscribeToClick("zoomin-button", () => { Display.Tree.zoom(0.1); });
@@ -212,9 +211,6 @@ function openTree(tree: Tree.INode): void {
     treeHistory.push(completeTree);
     updateTree();
     Display.Tree.focusTree(1);
-
-    // Save the tree to storage
-    Utils.Dom.trySaveToStorage("tree", Tree.Serializer.composeJson(completeTree));
 }
 
 function updateTree(): void {
@@ -229,6 +225,11 @@ function updateTree(): void {
             updateTree();
         });
     });
+
+    // Save the new tree to local-storage
+    if (treeHistory.current !== undefined) {
+        Utils.Dom.trySaveToStorage("tree", Tree.Serializer.composeJson(treeHistory.current));
+    }
 
     // Update undo / button disabled state
     Utils.Dom.setButtonDisabled("undo-button", !treeHistory.hasUndo);
@@ -289,12 +290,5 @@ function onDomKeyPress(event: KeyboardEvent): void {
             }
             break;
         case "Z": enqueueRedo(); break;
-    }
-}
-
-function onBeforeUnload(): void {
-    // Save the current tree before unloading
-    if (treeHistory.current !== undefined) {
-        Utils.Dom.trySaveToStorage("tree", Tree.Serializer.composeJson(treeHistory.current));
     }
 }
