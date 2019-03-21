@@ -59,7 +59,6 @@ const treeHistory: Utils.History.IHistoryStack<Tree.INode> = Utils.History.creat
 let currentScheme: TreeScheme.IScheme | undefined;
 let currentSchemeName: string | undefined;
 let currentTreeName: string | undefined;
-let hasUnsavedChanges: boolean = false;
 
 function enqueueLoadScheme(source: string | File): void {
     const name = typeof source === "string" ? source : source.name;
@@ -85,7 +84,6 @@ function enqueueNewTree(): void {
 
         console.log(`Successfully created new tree. Scheme: ${currentSchemeName}`);
         treeHistory.push(newRoot);
-        hasUnsavedChanges = false;
         currentTreeName = "new.tree.json";
         updateTree();
         Display.Tree.focusTree(1);
@@ -140,8 +138,6 @@ function enqueueExportTree(): void {
         if (treeHistory.current !== undefined) {
             const treeJson = Tree.Serializer.composeJson(treeHistory.current);
             Utils.Dom.saveJsonText(treeJson, currentTreeName!);
-            hasUnsavedChanges = false;
-            updateTreeTitle();
         }
     });
 }
@@ -155,8 +151,6 @@ function enqueueCopyTreeToClipboard(): void {
             } catch (e) {
                 alert(`Unable to copy: ${e}`);
             }
-            hasUnsavedChanges = false;
-            updateTreeTitle();
         }
     });
 }
@@ -188,7 +182,6 @@ function setCurrentScheme(scheme: TreeScheme.IScheme, name: string): void {
     const newRoot = TreeScheme.Instantiator.instantiateDefaultNode(defaultRoot);
     treeHistory.push(newRoot);
 
-    hasUnsavedChanges = false;
     currentTreeName = "new.tree.json";
     updateTree();
     Display.Tree.focusTree(1);
@@ -208,7 +201,6 @@ function openTree(tree: Tree.INode): void {
     const completeTree = TreeScheme.Instantiator.duplicateWithMissingFields(currentScheme, tree);
 
     treeHistory.push(completeTree);
-    hasUnsavedChanges = false;
     updateTree();
     Display.Tree.focusTree(1);
 }
@@ -218,11 +210,10 @@ function updateTree(): void {
         throw new Error("Unable to update tree. Error: No scheme loaded");
     }
 
-    updateTreeTitle();
+    Utils.Dom.setText("tree-title", currentTreeName === undefined ? "" : currentTreeName);
     Display.Tree.setTree(currentScheme, treeHistory.current, newTree => {
         sequencer.enqueue(async () => {
             treeHistory.push(newTree);
-            hasUnsavedChanges = true;
             updateTree();
         });
     });
@@ -230,12 +221,6 @@ function updateTree(): void {
     // Update undo / button disabled state
     Utils.Dom.setButtonDisabled("undo-button", !treeHistory.hasUndo);
     Utils.Dom.setButtonDisabled("redo-button", !treeHistory.hasRedo);
-}
-
-function updateTreeTitle(): void {
-    Utils.Dom.setText("tree-title",
-        (currentTreeName === undefined ? "" : currentTreeName) +
-        (hasUnsavedChanges ? " 🔴" : ""));
 }
 
 function toggleToolbox(): void {
@@ -296,8 +281,6 @@ function onDomKeyPress(event: KeyboardEvent): void {
 }
 
 function onBeforeUnload(): string | undefined {
-    if (hasUnsavedChanges) {
-        return "Are your sure you want to quit without saving?";
-    }
+    // TODO: Save current tree to local-storage
     return undefined;
 }
