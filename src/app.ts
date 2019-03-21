@@ -38,6 +38,7 @@ export async function run(): Promise<void> {
     // Load scheme and tree (either from storage or the example)
     const schemeJson = Utils.Dom.tryGetFromStorage("scheme");
     const schemeParseResult = schemeJson === null ? null : TreeScheme.Parser.parseJson(schemeJson);
+    const treeName = Utils.Dom.tryGetFromStorage("treename");
     const treeJson = Utils.Dom.tryGetFromStorage("tree");
     const treeParseResult = treeJson === null ? null : Tree.Parser.parseJson(treeJson);
 
@@ -47,7 +48,7 @@ export async function run(): Promise<void> {
 
         if (treeParseResult != null && treeParseResult.kind === "success") {
             console.log("Loaded tree from storage.");
-            openTree(treeParseResult.value);
+            openTree(treeParseResult.value, treeName === null ? currentTreeName : treeName);
         }
     } else {
         console.log("No scheme found in storage, loading example.");
@@ -75,7 +76,7 @@ const maxTreeHistory: number = 100;
 const treeHistory: Utils.History.IHistoryStack<Tree.INode> = Utils.History.createHistoryStack(maxTreeHistory);
 
 let currentScheme: TreeScheme.IScheme | undefined;
-let currentTreeName: string | undefined;
+let currentTreeName = "unknown.tree.json";
 
 function enqueueLoadScheme(source: string | File): void {
     sequencer.enqueue(async () => {
@@ -103,8 +104,7 @@ function enqueueNewTree(): void {
 
         console.log("Successfully created new tree");
         treeHistory.push(newRoot);
-        currentTreeName = "new.tree.json";
-        updateTree();
+        updateTree("new.tree.json");
         Display.Tree.focusTree(1);
     });
 }
@@ -117,8 +117,7 @@ function enqueueLoadTree(source: string | File): void {
         if (result.kind === "error") {
             alert(`Failed to parse tree. Error: ${result.errorMessage}`);
         } else {
-            currentTreeName = name;
-            openTree(result.value);
+            openTree(result.value, name);
         }
     });
 }
@@ -136,8 +135,7 @@ function enqueuePasteTree(): void {
             if (result.kind === "error") {
                 alert(`Failed to parse tree. Error: ${result.errorMessage}`);
             } else {
-                currentTreeName = "pasted.tree.json";
-                openTree(result.value);
+                openTree(result.value, "pasted.tree.json");
             }
         }
     });
@@ -177,14 +175,14 @@ function enqueueCopyTreeToClipboard(): void {
 function enqueueUndo(): void {
     sequencer.enqueue(async () => {
         treeHistory.undo();
-        updateTree();
+        updateTree(currentTreeName);
     });
 }
 
 function enqueueRedo(): void {
     sequencer.enqueue(async () => {
         treeHistory.redo();
-        updateTree();
+        updateTree(currentTreeName);
     });
 }
 
@@ -194,10 +192,10 @@ function setCurrentScheme(scheme: TreeScheme.IScheme): void {
 
     // Loading a new scheme invalidates the current tree
     treeHistory.clear();
-    updateTree();
+    updateTree(currentTreeName);
 }
 
-function openTree(tree: Tree.INode): void {
+function openTree(tree: Tree.INode, name: string): void {
     if (currentScheme === undefined) {
         alert("Failed to open tree. Error: No scheme loaded");
         return;
@@ -211,25 +209,27 @@ function openTree(tree: Tree.INode): void {
     const completeTree = TreeScheme.Instantiator.duplicateWithMissingFields(currentScheme, tree);
 
     treeHistory.push(completeTree);
-    updateTree();
+    updateTree(name);
     Display.Tree.focusTree(1);
 }
 
-function updateTree(): void {
+function updateTree(name: string): void {
     if (currentScheme === undefined) {
         throw new Error("Unable to update tree. Error: No scheme loaded");
     }
 
-    Utils.Dom.setText("tree-title", currentTreeName === undefined ? "" : currentTreeName);
+    Utils.Dom.setText("tree-title", name);
+    currentTreeName = name;
     Display.Tree.setTree(currentScheme, treeHistory.current, newTree => {
         sequencer.enqueue(async () => {
             treeHistory.push(newTree);
-            updateTree();
+            updateTree(name);
         });
     });
 
     // Save the new tree to local-storage
     if (treeHistory.current !== undefined) {
+        Utils.Dom.trySaveToStorage("treename", name);
         Utils.Dom.trySaveToStorage("tree", Tree.Serializer.composeJson(treeHistory.current));
     }
 

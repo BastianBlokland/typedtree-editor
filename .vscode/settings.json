@@ -49,6 +49,7 @@
     "transpiled",
     "treedisplay",
     "treemodifications",
+    "treename",
     "treeparser",
     "treepath",
     "treescheme",
@@ -63,7 +64,7 @@
     "xlink",
     "zoomin",
     "zoomout"
-],
+  ],
   // Search settings
   "search.useIgnoreFiles": false,
   "search.exclude": {},
