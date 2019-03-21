@@ -63,10 +63,10 @@ export async function writeClipboardText(data: string): Promise<void> {
  * @returns String if data was found, otherwise null.
  */
 export function tryGetFromStorage(key: string): string | null {
-    if (localStorage === undefined) {
-        return null;
-    }
     try {
+        if (localStorage === undefined) {
+            return null;
+        }
         return localStorage.getItem(key);
     } catch {
         return null;
@@ -80,10 +80,10 @@ export function tryGetFromStorage(key: string): string | null {
  * @returns True if saved successfully, otherwise False.
  */
 export function trySaveToStorage(key: string, value: string): boolean {
-    if (localStorage === undefined) {
-        return false;
-    }
     try {
+        if (localStorage === undefined) {
+            return false;
+        }
         localStorage.setItem(key, value);
         return true;
     } catch {
