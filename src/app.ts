@@ -81,8 +81,11 @@ function enqueueLoadScheme(source: string | File): void {
         if (result.kind === "error") {
             alert(`Failed to load. Error: ${result.errorMessage}`);
         } else {
-            console.log(`Successfully loaded scheme: ${name}`);
+            console.log("Successfully loaded scheme");
+            // Activate scheme
             setCurrentScheme(result.value);
+            // Save the scheme in storage
+            Utils.Dom.trySaveToStorage("scheme", TreeScheme.Serializer.composeJson(result.value));
         }
     });
 }
@@ -187,17 +190,10 @@ function setCurrentScheme(scheme: TreeScheme.IScheme): void {
     currentScheme = scheme;
     Display.TreeScheme.setScheme(currentScheme);
 
-    // Loading a new scheme invalidates the current tree so we clear the tree history.
+    // Loading a new scheme invalidates the current tree
     treeHistory.clear();
-
-    // Create a new default tree based on the newly loaded scheme.
-    const defaultRoot = TreeScheme.getDefaultDefinition(scheme, scheme.rootAlias);
-    const newRoot = TreeScheme.Instantiator.instantiateDefaultNode(defaultRoot);
-    treeHistory.push(newRoot);
-
-    currentTreeName = "new.tree.json";
+    currentTreeName = undefined;
     updateTree();
-    Display.Tree.focusTree(1);
 }
 
 function openTree(tree: Tree.INode): void {
@@ -216,6 +212,9 @@ function openTree(tree: Tree.INode): void {
     treeHistory.push(completeTree);
     updateTree();
     Display.Tree.focusTree(1);
+
+    // Save the tree to storage
+    Utils.Dom.trySaveToStorage("tree", Tree.Serializer.composeJson(completeTree));
 }
 
 function updateTree(): void {
@@ -293,7 +292,9 @@ function onDomKeyPress(event: KeyboardEvent): void {
     }
 }
 
-function onBeforeUnload(): string | undefined {
-    // TODO: Save current tree to local-storage
-    return undefined;
+function onBeforeUnload(): void {
+    // Save the current tree before unloading
+    if (treeHistory.current !== undefined) {
+        Utils.Dom.trySaveToStorage("tree", Tree.Serializer.composeJson(treeHistory.current));
+    }
 }
