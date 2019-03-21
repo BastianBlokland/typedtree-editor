@@ -16,6 +16,10 @@ describe("app", () => {
         await page.waitFor(100); // Give the page some time to load.
     });
 
+    afterEach(async () => {
+        await page.evaluate(() => localStorage.clear());
+    });
+
     it("should load", async () => {
         expect(await page.title()).toBe("TypedTree");
         await saveScreenshot("load");

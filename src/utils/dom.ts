@@ -58,6 +58,40 @@ export async function writeClipboardText(data: string): Promise<void> {
 }
 
 /**
+ * Try to get a string from the local-storage.
+ * @param key Key to get the data with.
+ * @returns String if data was found, otherwise null.
+ */
+export function tryGetFromStorage(key: string): string | null {
+    try {
+        if (localStorage === undefined) {
+            return null;
+        }
+        return localStorage.getItem(key);
+    } catch {
+        return null;
+    }
+}
+
+/**
+ * Try to save a string to the local-storage.
+ * @param key Key to save the data under.
+ * @param value Data to save.
+ * @returns True if saved successfully, otherwise False.
+ */
+export function trySaveToStorage(key: string, value: string): boolean {
+    try {
+        if (localStorage === undefined) {
+            return false;
+        }
+        localStorage.setItem(key, value);
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+/**
  * Get the mouse-wheel delta normalized across browsers. Tries to estimate how far was scrolled
  * relative to the wheel (1 = a single spin of the wheel) This allows for consistent scroll speeds
  * across different browsers.

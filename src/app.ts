@@ -14,7 +14,6 @@ export async function run(): Promise<void> {
     window.ondragleave = onDrag;
     window.ondrop = onDrag;
     window.onkeydown = onDomKeyPress;
-    window.onbeforeunload = onBeforeUnload;
     Utils.Dom.subscribeToClick("toolbox-toggle", toggleToolbox);
     Utils.Dom.subscribeToClick("focus-button", focusTree);
     Utils.Dom.subscribeToClick("zoomin-button", () => { Display.Tree.zoom(0.1); });
@@ -22,20 +21,40 @@ export async function run(): Promise<void> {
     Utils.Dom.subscribeToClick("undo-button", enqueueUndo);
     Utils.Dom.subscribeToClick("redo-button", enqueueRedo);
 
-    Utils.Dom.subscribeToFileInput("openscheme-file", enqueueLoadScheme);
-    Utils.Dom.subscribeToClick("savescheme-button", enqueueSaveScheme);
+    Utils.Dom.subscribeToFileInput("openscheme-file", file => {
+        enqueueLoadScheme(file);
+        enqueueNewTree();
+    });
+    Utils.Dom.subscribeToClick("exportscheme-button", enqueueExportScheme);
 
     Utils.Dom.subscribeToClick("newtree-button", enqueueNewTree);
     Utils.Dom.subscribeToFileInput("opentree-file", enqueueLoadTree);
     Utils.Dom.subscribeToClick("pastetree-button", enqueuePasteTree);
-    Utils.Dom.subscribeToClick("savetree-button", enqueueSaveTree);
+    Utils.Dom.subscribeToClick("exporttree-button", enqueueExportTree);
     Utils.Dom.subscribeToClick("copytree-button", enqueueCopyTreeToClipboard);
 
     console.log("Started running");
 
-    console.log("Start loading example scheme and tree");
-    enqueueLoadScheme("example.treescheme.json");
-    enqueueLoadTree("example.tree.json");
+    // Load scheme and tree (either from storage or the example)
+    const schemeJson = Utils.Dom.tryGetFromStorage("scheme");
+    const schemeParseResult = schemeJson === null ? null : TreeScheme.Parser.parseJson(schemeJson);
+    const treeName = Utils.Dom.tryGetFromStorage("treename");
+    const treeJson = Utils.Dom.tryGetFromStorage("tree");
+    const treeParseResult = treeJson === null ? null : Tree.Parser.parseJson(treeJson);
+
+    if (schemeParseResult !== null && schemeParseResult.kind === "success") {
+        console.log("Loaded scheme from storage.");
+        setCurrentScheme(schemeParseResult.value);
+
+        if (treeParseResult != null && treeParseResult.kind === "success") {
+            console.log("Loaded tree from storage.");
+            openTree(treeParseResult.value, treeName === null ? currentTreeName : treeName);
+        }
+    } else {
+        console.log("No scheme found in storage, loading example.");
+        enqueueLoadScheme("example.treescheme.json");
+        enqueueLoadTree("example.tree.json");
+    }
 
     await sequencer.untilEnd;
     console.log("Stopped running");
@@ -57,19 +76,19 @@ const maxTreeHistory: number = 100;
 const treeHistory: Utils.History.IHistoryStack<Tree.INode> = Utils.History.createHistoryStack(maxTreeHistory);
 
 let currentScheme: TreeScheme.IScheme | undefined;
-let currentSchemeName: string | undefined;
-let currentTreeName: string | undefined;
-let hasUnsavedChanges: boolean = false;
+let currentTreeName = "unknown.tree.json";
 
 function enqueueLoadScheme(source: string | File): void {
-    const name = typeof source === "string" ? source : source.name;
     sequencer.enqueue(async () => {
         const result = await TreeScheme.Parser.load(source);
         if (result.kind === "error") {
             alert(`Failed to load. Error: ${result.errorMessage}`);
         } else {
-            console.log(`Successfully loaded scheme: ${name}`);
-            setCurrentScheme(result.value, name);
+            console.log("Successfully loaded scheme");
+            // Activate scheme
+            setCurrentScheme(result.value);
+            // Save the scheme in storage
+            Utils.Dom.trySaveToStorage("scheme", TreeScheme.Serializer.composeJson(result.value));
         }
     });
 }
@@ -83,11 +102,9 @@ function enqueueNewTree(): void {
         const defaultRoot = TreeScheme.getDefaultDefinition(currentScheme, currentScheme.rootAlias);
         const newRoot = TreeScheme.Instantiator.instantiateDefaultNode(defaultRoot);
 
-        console.log(`Successfully created new tree. Scheme: ${currentSchemeName}`);
+        console.log("Successfully created new tree");
         treeHistory.push(newRoot);
-        hasUnsavedChanges = false;
-        currentTreeName = "new.tree.json";
-        updateTree();
+        updateTree("new.tree.json");
         Display.Tree.focusTree(1);
     });
 }
@@ -100,8 +117,7 @@ function enqueueLoadTree(source: string | File): void {
         if (result.kind === "error") {
             alert(`Failed to parse tree. Error: ${result.errorMessage}`);
         } else {
-            currentTreeName = name;
-            openTree(result.value);
+            openTree(result.value, name);
         }
     });
 }
@@ -119,29 +135,26 @@ function enqueuePasteTree(): void {
             if (result.kind === "error") {
                 alert(`Failed to parse tree. Error: ${result.errorMessage}`);
             } else {
-                currentTreeName = "pasted.tree.json";
-                openTree(result.value);
+                openTree(result.value, "pasted.tree.json");
             }
         }
     });
 }
 
-function enqueueSaveScheme(): void {
+function enqueueExportScheme(): void {
     sequencer.enqueue(async () => {
         if (currentScheme !== undefined) {
             const treeJson = TreeScheme.Serializer.composeJson(currentScheme);
-            Utils.Dom.saveJsonText(treeJson, currentSchemeName!);
+            Utils.Dom.saveJsonText(treeJson, "export.treescheme.json"!);
         }
     });
 }
 
-function enqueueSaveTree(): void {
+function enqueueExportTree(): void {
     sequencer.enqueue(async () => {
         if (treeHistory.current !== undefined) {
             const treeJson = Tree.Serializer.composeJson(treeHistory.current);
             Utils.Dom.saveJsonText(treeJson, currentTreeName!);
-            hasUnsavedChanges = false;
-            updateTreeTitle();
         }
     });
 }
@@ -155,8 +168,6 @@ function enqueueCopyTreeToClipboard(): void {
             } catch (e) {
                 alert(`Unable to copy: ${e}`);
             }
-            hasUnsavedChanges = false;
-            updateTreeTitle();
         }
     });
 }
@@ -164,37 +175,27 @@ function enqueueCopyTreeToClipboard(): void {
 function enqueueUndo(): void {
     sequencer.enqueue(async () => {
         treeHistory.undo();
-        updateTree();
+        updateTree(currentTreeName);
     });
 }
 
 function enqueueRedo(): void {
     sequencer.enqueue(async () => {
         treeHistory.redo();
-        updateTree();
+        updateTree(currentTreeName);
     });
 }
 
-function setCurrentScheme(scheme: TreeScheme.IScheme, name: string): void {
+function setCurrentScheme(scheme: TreeScheme.IScheme): void {
     currentScheme = scheme;
-    currentSchemeName = name;
     Display.TreeScheme.setScheme(currentScheme);
 
-    // Loading a new scheme invalidates the current tree so we clear the tree history.
+    // Loading a new scheme invalidates the current tree
     treeHistory.clear();
-
-    // Create a new default tree based on the newly loaded scheme.
-    const defaultRoot = TreeScheme.getDefaultDefinition(scheme, scheme.rootAlias);
-    const newRoot = TreeScheme.Instantiator.instantiateDefaultNode(defaultRoot);
-    treeHistory.push(newRoot);
-
-    hasUnsavedChanges = false;
-    currentTreeName = "new.tree.json";
-    updateTree();
-    Display.Tree.focusTree(1);
+    updateTree(currentTreeName);
 }
 
-function openTree(tree: Tree.INode): void {
+function openTree(tree: Tree.INode, name: string): void {
     if (currentScheme === undefined) {
         alert("Failed to open tree. Error: No scheme loaded");
         return;
@@ -208,34 +209,33 @@ function openTree(tree: Tree.INode): void {
     const completeTree = TreeScheme.Instantiator.duplicateWithMissingFields(currentScheme, tree);
 
     treeHistory.push(completeTree);
-    hasUnsavedChanges = false;
-    updateTree();
+    updateTree(name);
     Display.Tree.focusTree(1);
 }
 
-function updateTree(): void {
+function updateTree(name: string): void {
     if (currentScheme === undefined) {
         throw new Error("Unable to update tree. Error: No scheme loaded");
     }
 
-    updateTreeTitle();
+    Utils.Dom.setText("tree-title", name);
+    currentTreeName = name;
     Display.Tree.setTree(currentScheme, treeHistory.current, newTree => {
         sequencer.enqueue(async () => {
             treeHistory.push(newTree);
-            hasUnsavedChanges = true;
-            updateTree();
+            updateTree(name);
         });
     });
+
+    // Save the new tree to local-storage
+    if (treeHistory.current !== undefined) {
+        Utils.Dom.trySaveToStorage("treename", name);
+        Utils.Dom.trySaveToStorage("tree", Tree.Serializer.composeJson(treeHistory.current));
+    }
 
     // Update undo / button disabled state
     Utils.Dom.setButtonDisabled("undo-button", !treeHistory.hasUndo);
     Utils.Dom.setButtonDisabled("redo-button", !treeHistory.hasRedo);
-}
-
-function updateTreeTitle(): void {
-    Utils.Dom.setText("tree-title",
-        (currentTreeName === undefined ? "" : currentTreeName) +
-        (hasUnsavedChanges ? " 🔴" : ""));
 }
 
 function toggleToolbox(): void {
@@ -262,6 +262,7 @@ function onDrag(event: DragEvent): void {
         const file = event.dataTransfer.files[0];
         if (file.name.includes("scheme")) {
             enqueueLoadScheme(file);
+            enqueueNewTree();
         } else {
             enqueueLoadTree(file);
         }
@@ -279,7 +280,7 @@ function onDomKeyPress(event: KeyboardEvent): void {
     switch (event.key) {
         case "t": toggleToolbox(); break;
         case "f": focusTree(); break;
-        case "s": enqueueSaveTree(); break;
+        case "e": enqueueExportTree(); break;
         case "c": enqueueCopyTreeToClipboard(); break;
         case "v": enqueuePasteTree(); break;
         case "+": case "=": Display.Tree.zoom(0.1); break;
@@ -293,11 +294,4 @@ function onDomKeyPress(event: KeyboardEvent): void {
             break;
         case "Z": enqueueRedo(); break;
     }
-}
-
-function onBeforeUnload(): string | undefined {
-    if (hasUnsavedChanges) {
-        return "Are your sure you want to quit without saving?";
-    }
-    return undefined;
 }
