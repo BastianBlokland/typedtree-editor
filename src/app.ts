@@ -33,9 +33,25 @@ export async function run(): Promise<void> {
 
     console.log("Started running");
 
-    console.log("Start loading example scheme and tree");
-    enqueueLoadScheme("example.treescheme.json");
-    enqueueLoadTree("example.tree.json");
+    // Load scheme and tree (either from storage or the example)
+    const schemeJson = Utils.Dom.tryGetFromStorage("scheme");
+    const schemeParseResult = schemeJson === null ? null : TreeScheme.Parser.parseJson(schemeJson);
+    const treeJson = Utils.Dom.tryGetFromStorage("tree");
+    const treeParseResult = treeJson === null ? null : Tree.Parser.parseJson(treeJson);
+
+    if (schemeParseResult !== null && schemeParseResult.kind === "success") {
+        console.log("Loaded scheme from storage.");
+        setCurrentScheme(schemeParseResult.value);
+
+        if (treeParseResult != null && treeParseResult.kind === "success") {
+            console.log("Loaded tree from storage.");
+            openTree(treeParseResult.value);
+        }
+    } else {
+        console.log("No scheme found in storage, loading example.");
+        enqueueLoadScheme("example.treescheme.json");
+        enqueueLoadTree("example.tree.json");
+    }
 
     await sequencer.untilEnd;
     console.log("Stopped running");
@@ -57,18 +73,16 @@ const maxTreeHistory: number = 100;
 const treeHistory: Utils.History.IHistoryStack<Tree.INode> = Utils.History.createHistoryStack(maxTreeHistory);
 
 let currentScheme: TreeScheme.IScheme | undefined;
-let currentSchemeName: string | undefined;
 let currentTreeName: string | undefined;
 
 function enqueueLoadScheme(source: string | File): void {
-    const name = typeof source === "string" ? source : source.name;
     sequencer.enqueue(async () => {
         const result = await TreeScheme.Parser.load(source);
         if (result.kind === "error") {
             alert(`Failed to load. Error: ${result.errorMessage}`);
         } else {
             console.log(`Successfully loaded scheme: ${name}`);
-            setCurrentScheme(result.value, name);
+            setCurrentScheme(result.value);
         }
     });
 }
@@ -82,7 +96,7 @@ function enqueueNewTree(): void {
         const defaultRoot = TreeScheme.getDefaultDefinition(currentScheme, currentScheme.rootAlias);
         const newRoot = TreeScheme.Instantiator.instantiateDefaultNode(defaultRoot);
 
-        console.log(`Successfully created new tree. Scheme: ${currentSchemeName}`);
+        console.log("Successfully created new tree");
         treeHistory.push(newRoot);
         currentTreeName = "new.tree.json";
         updateTree();
@@ -128,7 +142,7 @@ function enqueueExportScheme(): void {
     sequencer.enqueue(async () => {
         if (currentScheme !== undefined) {
             const treeJson = TreeScheme.Serializer.composeJson(currentScheme);
-            Utils.Dom.saveJsonText(treeJson, currentSchemeName!);
+            Utils.Dom.saveJsonText(treeJson, "export.treescheme.json"!);
         }
     });
 }
@@ -169,9 +183,8 @@ function enqueueRedo(): void {
     });
 }
 
-function setCurrentScheme(scheme: TreeScheme.IScheme, name: string): void {
+function setCurrentScheme(scheme: TreeScheme.IScheme): void {
     currentScheme = scheme;
-    currentSchemeName = name;
     Display.TreeScheme.setScheme(currentScheme);
 
     // Loading a new scheme invalidates the current tree so we clear the tree history.
