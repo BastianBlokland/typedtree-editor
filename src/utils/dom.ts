@@ -225,6 +225,23 @@ export function subscribeToFileInput(inputId: string, callback: (file: File) => 
 }
 
 /**
+ * Subscribe to the input from a range-input being changed.
+ * Will throw if the element doesn't exist.
+ * @param inputId Id of the element to subscribe to.
+ * @param callback Callback to invoke when range changes.
+ */
+export function subscribeRangeInput(inputId: string, callback: (newValue: number) => void): void {
+    const element = document.getElementById(inputId);
+    if (element === null) {
+        throw new Error(`Element with id: ${inputId} not found`);
+    }
+    const inputElement = element as HTMLInputElement;
+    element.onchange = _ => {
+        callback(inputElement.valueAsNumber);
+    };
+}
+
+/**
  * Set the disabled property of a button;
  * @param elementId Id of the button to set the disabled property for.
  * @param disabled True if the button should be disabled False is the button should be enabled.
@@ -235,6 +252,19 @@ export function setButtonDisabled(elementId: string, disabled: boolean): void {
         throw new Error(`Element with id: ${elementId} not found or is not a button`);
     }
     (element as HTMLButtonElement).disabled = disabled;
+}
+
+/**
+ * Set the value property of a input element;
+ * @param elementId Id of the input to set the value property for.
+ * @param newValue Value to assign to the input element.
+ */
+export function setInputValue(elementId: string, newValue: string): void {
+    const element = document.getElementById(elementId);
+    if (element === null) {
+        throw new Error(`Element with id: ${elementId} not found`);
+    }
+    (element as HTMLInputElement).value = newValue;
 }
 
 /**
