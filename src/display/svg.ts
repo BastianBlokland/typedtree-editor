@@ -164,7 +164,8 @@ export function initialize(): void {
 
     // Subscribe to the desktop 'scrollwheel' event.
     displayRoot.addEventListener("wheel", event => {
-        const scrollDelta = Utils.Dom.getMouseWheelDelta(event).y * -scrollScaleSpeed;
+        const scrollMultiplier = Utils.lerp(minZoomMultiplier, maxZoomMultiplier, zoomSpeed);
+        const scrollDelta = Utils.Dom.getMouseWheelDelta(event).y * -scrollMultiplier;
         const pointerPos: Vector.Position = { x: (event as WheelEvent).pageX, y: (event as WheelEvent).pageY };
         handleScroll(scrollDelta, pointerPos);
     }, { passive: true });
@@ -278,11 +279,15 @@ export function zoom(delta: number = 0.1, focalPoint?: Vector.Position): void {
     updateRootTransform();
 }
 
+/** Zoom speed, 0 = minimum speed, 1 = maximum speed. */
+export let zoomSpeed = 0.5;
+
 const displayRootElementId = "svg-display";
 const inputBlockerDomElementId = "input-blocker";
 const minScale = 0.05;
 const maxScale = 3;
-const scrollScaleSpeed = 0.075;
+const minZoomMultiplier = 0.05;
+const maxZoomMultiplier = 0.1;
 const displayMargin: Vector.IVector2 = { x: 75, y: 75 };
 const halfDisplayMargin = Vector.half(displayMargin);
 
