@@ -286,8 +286,8 @@ const displayRootElementId = "svg-display";
 const inputBlockerDomElementId = "input-blocker";
 const minScale = 0.05;
 const maxScale = 3;
-const minZoomMultiplier = 0.05;
-const maxZoomMultiplier = 0.1;
+const minZoomMultiplier = 0.01;
+const maxZoomMultiplier = 0.25;
 const displayMargin: Vector.IVector2 = { x: 75, y: 75 };
 const halfDisplayMargin = Vector.half(displayMargin);
 
