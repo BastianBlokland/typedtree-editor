@@ -14,10 +14,15 @@ export async function run(): Promise<void> {
     window.ondragleave = onDrag;
     window.ondrop = onDrag;
     window.onkeydown = onDomKeyPress;
+    const zoomspeed = Utils.Dom.tryGetFromStorage("zoomspeed");
+    if (zoomspeed !== null) {
+        setZoomSpeed(parseFloat(zoomspeed));
+    }
     Utils.Dom.subscribeToClick("toolbox-toggle", toggleToolbox);
     Utils.Dom.subscribeToClick("focus-button", focusTree);
     Utils.Dom.subscribeToClick("zoomin-button", () => { Display.Tree.zoom(0.1); });
     Utils.Dom.subscribeToClick("zoomout-button", () => { Display.Tree.zoom(-0.1); });
+    Utils.Dom.subscribeRangeInput("zoomspeed-slider", setZoomSpeed);
     Utils.Dom.subscribeToClick("undo-button", enqueueUndo);
     Utils.Dom.subscribeToClick("redo-button", enqueueRedo);
 
@@ -248,6 +253,12 @@ function toggleToolbox(): void {
     } else {
         toolbox.style.visibility = "hidden";
     }
+}
+
+function setZoomSpeed(newSpeed: number): void {
+    Display.Svg.zoomSpeed = newSpeed;
+    Utils.Dom.trySaveToStorage("zoomspeed", newSpeed.toString());
+    Utils.Dom.setInputValue("zoomspeed-slider", newSpeed.toString());
 }
 
 function focusTree(): void {
