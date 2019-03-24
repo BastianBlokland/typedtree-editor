@@ -1,6 +1,6 @@
 ﻿# TypedTree-Editor
 
-[![Build Status](https://dev.azure.com/bastian-blokland/TypedTree-Editor/_apis/build/status/BastianBlokland.typedtree-editor?branchName=master)](https://dev.azure.com/bastian-blokland/TypedTree-Editor/_build/latest?definitionId=3?branchName=master)
+[![Build Status](https://dev.azure.com/bastian-blokland/TypedTree/_apis/build/status/BastianBlokland.typedtree-editor?branchName=master)](https://dev.azure.com/bastian-blokland/TypedTree/_build/latest?definitionId=3?branchName=master)
 [![codecov](https://codecov.io/gh/BastianBlokland/typedtree-editor/branch/master/graph/badge.svg)](https://codecov.io/gh/BastianBlokland/typedtree-editor)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
@@ -142,7 +142,7 @@ To make debugging easier screenshots are exported during integration test execut
 found in the `./screenshots` directory. Actually the image in this readme also comes from there.
 
 ### Continuous integration
-Builds are run in [azure-devops](https://dev.azure.com/bastian-blokland/TypedTree-Editor/_build) and
+Builds are run in [azure-devops](https://dev.azure.com/bastian-blokland/TypedTree/_build?definitionId=3) and
 output is deployed to a azure blob-storage bucket. Output can be found here:
 `bastian.tech/typedtree-editor/refs/heads/[BRANCH_NAME]/`
 
