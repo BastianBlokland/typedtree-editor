@@ -19,18 +19,23 @@
   <a href="https://github.com/BastianBlokland/typedtree-editor" id=github-button>GitHub</a>
 
   <!-- Button to toggle the toolbox -->
-  <button type="button" id="toolbox-toggle">Toolbox (t)</button>
+  <button type="button" class="bottomcontrol-element" id="toolbox-toggle">Toolbox (t)</button>
 
   <!-- Button to focus the view -->
-  <button type="button" id="focus-button">Focus (f)</button>
+  <button type="button" class="bottomcontrol-element" id="focus-button">Focus (f)</button>
 
-  <!-- Buttons to zoom the view -->
-  <button type="button" id="zoomout-button">Zoom (-)</button>
-  <button type="button" id="zoomin-button">Zoom (+)</button>
+  <!-- Zoom controls -->
+  <div class="bottomcontrol-element" id="zoomcontrols-container">
+    Zoom
+    <button type="button" id="zoomout-button">Out (-)</button>
+    <button type="button" id="zoomin-button">In (+)</button>
+    <label for="zoomspeed">Speed</label>
+    <input type="range" id="zoomspeed-slider" name="zoomspeed" min="0" max="1" step="any">
+  </div>
 
   <!-- Buttons for undo / redo -->
-  <button type="button" id="undo-button">Undo (z)</button>
-  <button type="button" id="redo-button">Redo (shift-z)</button>
+  <button type="button" class="bottomcontrol-element" id="undo-button">Undo (z)</button>
+  <button type="button" class="bottomcontrol-element" id="redo-button">Redo (shift-z)</button>
 
   <!-- Toolbox containing the main ways to interact with the app -->
   <div id="toolbox">
@@ -51,7 +56,6 @@
       <button type="button" id="exporttree-button">Export (e)</button>
       <button type="button" id="copytree-button">Copy 📋</button>
     </div>
-  </div>
   </div>
 
   <!-- Svg tree content -->
