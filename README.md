@@ -1,7 +1,9 @@
 ﻿# TypedTree-Editor
 
-[![Build Status](https://dev.azure.com/bastian-blokland/TypedTree/_apis/build/status/BastianBlokland.typedtree-editor?branchName=master)](https://dev.azure.com/bastian-blokland/TypedTree/_build/latest?definitionId=3?branchName=master)
-[![codecov](https://codecov.io/gh/BastianBlokland/typedtree-editor/branch/master/graph/badge.svg)](https://codecov.io/gh/BastianBlokland/typedtree-editor)
+
+[![Build](https://img.shields.io/azure-devops/build/bastian-blokland/TypedTree/3.svg)](https://dev.azure.com/bastian-blokland/TypedTree/_build/latest?definitionId=3&branchName=master)
+[![Tests](https://img.shields.io/azure-devops/tests/bastian-blokland/TypedTree/3.svg)](https://dev.azure.com/bastian-blokland/TypedTree/_build/latest?definitionId=3&branchName=master)
+[![CodeCov](https://codecov.io/gh/BastianBlokland/typedtree-editor/branch/master/graph/badge.svg)](https://codecov.io/gh/BastianBlokland/typedtree-editor)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 [**Web editor for typed tree structures**](https://bastian.tech/tree/)
