@@ -30,10 +30,10 @@ function createAliasObject(alias: TreeScheme.IAlias): object {
     return obj;
 }
 
-function createEnumObject(alias: TreeScheme.IEnum): object {
+function createEnumObject(enumeration: TreeScheme.IEnum): object {
     const obj: any = {};
-    obj.identifier = alias.identifier;
-    obj.values = alias.values;
+    obj.identifier = enumeration.identifier;
+    obj.values = enumeration.values;
     return obj;
 }
 
