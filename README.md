@@ -13,6 +13,13 @@
 
 ---
 
+## Generators
+To avoid having to hand write the scheme you can use one of the following generators:
+
+| Environment | Generator |
+|-------------|-----------|
+| dotnet | [typedtree-generator-dotnet](https://github.com/bastianblokland/typedtree-generator-dotnet) |
+
 ## Description
 This editor is designed to be able to build tree structures according to a scheme and then output it
 to json. You create a simple scheme file describing the possible node types, load it up in the editor
