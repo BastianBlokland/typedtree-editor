@@ -19,6 +19,7 @@ To avoid having to hand write the scheme you can use one of the following genera
 | Environment | Generator |
 |-------------|-----------|
 | dotnet | [typedtree-generator-dotnet](https://github.com/bastianblokland/typedtree-generator-dotnet) |
+| unity | [typedtree-generator-unity](https://github.com/bastianblokland/typedtree-generator-unity) |
 
 ## Description
 This editor is designed to be able to build tree structures according to a scheme and then output it
