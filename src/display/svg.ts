@@ -322,6 +322,7 @@ class GroupElement implements IElement {
 
     constructor(parent: Element, className: Utils.Dom.ClassName, position: Vector.Position) {
         this._svgGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        this._svgGroup.classList.add(className);
         this._svgGroup.setAttribute("transform", `translate(${position.x}, ${position.y})`);
         parent.appendChild(this._svgGroup);
 

@@ -71,6 +71,7 @@ export interface IEnum {
 
 /** Definition of a node (what kind of fields it has) */
 export interface INodeDefinition {
+    readonly comment: string | undefined;
     readonly nodeType: Tree.NodeType;
     readonly fields: ReadonlyArray<IFieldDefinition>;
 
@@ -425,6 +426,10 @@ class NodeDefinitionImpl implements INodeDefinition {
 
         this._nodeType = nodeType;
         this._fields = fields;
+    }
+
+    get comment(): string | undefined {
+        return undefined;
     }
 
     get nodeType(): string {
