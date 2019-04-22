@@ -59,7 +59,7 @@ const nodeHeaderHeight = Tree.PositionLookup.nodeHeaderHeight;
 const halfNodeHeaderHeight = Utils.half(nodeHeaderHeight);
 const nodeFieldHeight = Tree.PositionLookup.nodeFieldHeight;
 const nodeInputSlotOffset: Vector.IVector2 = { x: 0, y: 12.5 };
-const nodeTooltipSize: Vector.IVector2 = { x: 400, y: 150 };
+const nodeTooltipSize: Vector.IVector2 = { x: 400, y: 75 };
 const nodeConnectionCurviness = .7;
 
 type nodeChangedCallback = (newNode: Tree.INode) => void;
@@ -106,7 +106,7 @@ function createNode(
         const infoElement = nodeElement.addElement("node-info", Vector.zeroVector);
         infoElement.addGraphics("node-info-button", "info", { x: 12, y: halfNodeHeaderHeight });
 
-        const toolTipElement = infoElement.addElement("node-tooltip", { x: 25, y: -100 });
+        const toolTipElement = infoElement.addElement("node-tooltip", { x: 25, y: -26 });
         toolTipElement.addRect("node-tooltip-background", nodeTooltipSize, Vector.zeroVector);
         toolTipElement.addText(
             "node-tooltip-text",
