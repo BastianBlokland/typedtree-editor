@@ -19,6 +19,7 @@ test("basicSchemeIsParsedSuccessfully", () => {
             { "nodeType": "NodeA" },
             {
                 "nodeType": "NodeB",
+                "comment": "This is a very useful node",
                 "fields": [
                     { "name": "field1", "valueType": "boolean" },
                     { "name": "field2", "valueType": "string" },
@@ -38,6 +39,7 @@ test("basicSchemeIsParsedSuccessfully", () => {
             const enumeration = b.pushEnum("Enum", [{ value: 0, name: "A" }, { value: 1, name: "B" }]);
             b.pushNodeDefinition("NodeA");
             b.pushNodeDefinition("NodeB", b => {
+                b.comment = "This is a very useful node";
                 b.pushField("field1", "boolean");
                 b.pushField("field2", "string");
                 b.pushField("field3", "number", true);

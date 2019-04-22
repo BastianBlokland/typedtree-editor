@@ -135,6 +135,9 @@ function parseNodes(schemeBuilder: TreeScheme.ISchemeBuilder, obj: any): void {
         }
 
         schemeBuilder.pushNodeDefinition(nodeType, nodeBuilder => {
+            // Parse optional comment
+            nodeBuilder.comment = Utils.Parser.validateString(nodeObj.comment);
+
             // Parse fields
             if (!Utils.Parser.isArray(nodeObj.fields)) {
                 return;
