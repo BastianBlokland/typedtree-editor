@@ -19,6 +19,7 @@ test("savedJsonIsIdenticalToReadJson", () => {
         "nodes": [
             {
                 "nodeType": "NodeA",
+                "comment": "This is a useful node",
                 "fields": []
             },
             {
