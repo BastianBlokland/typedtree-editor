@@ -67,11 +67,15 @@ function createEnumElement(enumeration: TreeScheme.IEnum): HTMLElement {
 }
 
 function createNodeElement(nodeDefinition: TreeScheme.INodeDefinition): HTMLElement {
-    if (nodeDefinition.fields.length === 0) {
-        return Utils.Dom.createWithText("span", nodeDefinition.nodeType, "identifier");
-    }
     return Utils.Dom.createWithChildren("details",
+        // Node identifier.
         Utils.Dom.createSummary(nodeDefinition.nodeType, "identifier"),
+        // Comment.
+        Utils.Dom.createWithText(
+            "span",
+            `(${nodeDefinition.comment !== undefined ? nodeDefinition.comment : "no comment"})`,
+            "node-comment"),
+        // Fields.
         Utils.Dom.createUList(...nodeDefinition.fields.map(f =>
             Utils.Dom.createWithChildren("div",
                 Utils.Dom.createWithText("span",
