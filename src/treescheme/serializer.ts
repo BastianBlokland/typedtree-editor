@@ -40,6 +40,9 @@ function createEnumObject(enumeration: TreeScheme.IEnum): object {
 function createNodeObject(node: TreeScheme.INodeDefinition): object {
     const obj: any = {};
     obj.nodeType = node.nodeType;
+    if (node.comment !== undefined) {
+        obj.comment = node.comment;
+    }
     obj.fields = node.fields.map(createFieldObject);
     return obj;
 }
