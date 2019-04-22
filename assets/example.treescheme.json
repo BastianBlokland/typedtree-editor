@@ -44,6 +44,7 @@
   "nodes": [
     {
       "nodeType": "AI.Items.Selector",
+      "comment": "Invoke the first child that succeeds",
       "fields": [
         {
           "name": "children",
@@ -54,6 +55,7 @@
     },
     {
       "nodeType": "AI.Items.Sequence",
+      "comment": "Invoke all children in sequence (the first one that fails stops the chain)",
       "fields": [
         {
           "name": "children",
@@ -64,6 +66,7 @@
     },
     {
       "nodeType": "AI.Items.Condition",
+      "comment": "Invoke the child is the given conditions are true",
       "fields": [
         {
           "name": "conditions",
@@ -171,6 +174,7 @@
     },
     {
       "nodeType": "AI.Conditions.IsAbilityCharged",
+      "comment": "Checks if there is a ability charged",
       "fields": [
         {
           "name": "abilityId",
