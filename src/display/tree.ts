@@ -59,6 +59,7 @@ const nodeHeaderHeight = Tree.PositionLookup.nodeHeaderHeight;
 const halfNodeHeaderHeight = Utils.half(nodeHeaderHeight);
 const nodeFieldHeight = Tree.PositionLookup.nodeFieldHeight;
 const nodeInputSlotOffset: Vector.IVector2 = { x: 0, y: 12.5 };
+const nodeTooltipSize: Vector.IVector2 = { x: 400, y: 75 };
 const nodeConnectionCurviness = .7;
 
 type nodeChangedCallback = (newNode: Tree.INode) => void;
@@ -86,8 +87,8 @@ function createNode(
         typeOptionsIndex,
         typeOptions,
         /* Ugly offsets to compensate for styling of select elements */
-        { x: 0, y: halfNodeHeaderHeight - 3 },
-        { x: size.x, y: nodeHeaderHeight - 5 },
+        { x: 10, y: halfNodeHeaderHeight - 3 },
+        { x: size.x - 10, y: nodeHeaderHeight - 5 },
         newIndex => {
             const newNodeType = typeOptions[newIndex];
             const newNode = TreeScheme.Instantiator.changeNodeType(typeLookup.scheme, node, newNodeType);
@@ -100,6 +101,19 @@ function createNode(
             changed(Tree.Modifications.nodeWithField(node, newField));
         });
     });
+
+    if (definition !== undefined && definition.comment !== undefined) {
+        const infoElement = nodeElement.addElement("node-info", Vector.zeroVector);
+        infoElement.addGraphics("node-info-button", "info", { x: 12, y: halfNodeHeaderHeight });
+
+        const toolTipElement = infoElement.addElement("node-tooltip", { x: 25, y: -26 });
+        toolTipElement.addRect("node-tooltip-background", nodeTooltipSize, Vector.zeroVector);
+        toolTipElement.addText(
+            "node-tooltip-text",
+            definition.comment,
+            { x: 0, y: Utils.half(nodeTooltipSize.y) },
+            nodeTooltipSize);
+    }
 }
 
 type fieldChangedCallback<T extends Tree.Field> = (newField: T) => void;

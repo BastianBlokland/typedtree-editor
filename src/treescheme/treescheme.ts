@@ -71,6 +71,7 @@ export interface IEnum {
 
 /** Definition of a node (what kind of fields it has) */
 export interface INodeDefinition {
+    readonly comment: string | undefined;
     readonly nodeType: Tree.NodeType;
     readonly fields: ReadonlyArray<IFieldDefinition>;
 
@@ -98,6 +99,8 @@ export interface ISchemeBuilder {
 
 /** Builder that can be used to create a node definition */
 export interface INodeDefinitionBuilder {
+    comment: string | undefined;
+
     pushField(name: string, valueType: FieldValueType, isArray?: boolean): boolean;
 }
 
@@ -411,9 +414,10 @@ class EnumImpl implements IEnum {
 
 class NodeDefinitionImpl implements INodeDefinition {
     private readonly _nodeType: Tree.NodeType;
+    private readonly _comment: string | undefined;
     private readonly _fields: ReadonlyArray<IFieldDefinition>;
 
-    constructor(nodeType: Tree.NodeType, fields: ReadonlyArray<IFieldDefinition>) {
+    constructor(nodeType: Tree.NodeType, comment: string | undefined, fields: ReadonlyArray<IFieldDefinition>) {
         // Verify that this nodescheme has a nodetype
         if (nodeType === "") {
             throw new Error("NodeDefinition must have an type");
@@ -424,7 +428,12 @@ class NodeDefinitionImpl implements INodeDefinition {
         }
 
         this._nodeType = nodeType;
+        this._comment = comment;
         this._fields = fields;
+    }
+
+    get comment(): string | undefined {
+        return this._comment;
     }
 
     get nodeType(): string {
@@ -519,7 +528,7 @@ class SchemeBuilderImpl implements ISchemeBuilder {
         }
 
         if (callback === undefined) {
-            this._nodes.push(new NodeDefinitionImpl(nodeType, []));
+            this._nodes.push(new NodeDefinitionImpl(nodeType, undefined, []));
         } else {
             const builder = new NodeDefinitionBuilderImpl(nodeType);
             callback(builder);
@@ -540,12 +549,21 @@ class SchemeBuilderImpl implements ISchemeBuilder {
 
 class NodeDefinitionBuilderImpl implements INodeDefinitionBuilder {
     private readonly _nodeType: Tree.NodeType;
+    private _comment: string | undefined;
     private _fields: IFieldDefinition[];
     private _build: boolean;
 
     constructor(nodeType: Tree.NodeType) {
         this._nodeType = nodeType;
         this._fields = [];
+    }
+
+    get comment(): string | undefined {
+        return this._comment;
+    }
+
+    set comment(value: string | undefined) {
+        this._comment = value;
     }
 
     public pushField(name: string, valueType: FieldValueType, isArray?: boolean): boolean {
@@ -569,6 +587,6 @@ class NodeDefinitionBuilderImpl implements INodeDefinitionBuilder {
 
     public build(): INodeDefinition {
         this._build = true;
-        return new NodeDefinitionImpl(this._nodeType, this._fields);
+        return new NodeDefinitionImpl(this._nodeType, this._comment, this._fields);
     }
 }

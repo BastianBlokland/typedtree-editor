@@ -24,6 +24,28 @@
     cursor: pointer;
 }
 
+/* Tooltip */
+#svg-display .node-info:hover .node-tooltip {
+    visibility: visible;
+}
+
+#svg-display .node-info .node-tooltip {
+    visibility: hidden;
+}
+
+#svg-display .node-tooltip-text {
+    display: inline-block;
+    font-size: 10px;
+    line-height: 12px;
+    padding: 5px;
+}
+
+#svg-display .node-tooltip-background {
+    fill: #DDD;
+    stroke: #000;
+    stroke-width: 2px;
+}
+
 /* Field backgrounds */
 #svg-display .string-value-background, #svg-display .stringArray-value-background {
     fill: #696;
