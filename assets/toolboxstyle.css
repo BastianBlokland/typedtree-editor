@@ -80,6 +80,11 @@
     margin-right: 5px;
 }
 
+#scheme-display .node-comment {
+    font-style: italic;
+    font-size: 10pt;
+}
+
 #scheme-display .field-type {
     font-size: 10pt;
     font-weight: bolder;
