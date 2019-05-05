@@ -172,3 +172,21 @@ test("prunePastAndFuturePreservesCorrectCurrent", () => {
     expect(history.hasUndo).toBe(true);
     expect(history.hasRedo).toBe(true);
 });
+
+test("mapTransformsAllElements", () => {
+    const history = Utils.History.createHistoryStack<number>(3);
+    expect(history.current).toBe(undefined);
+
+    history.push(1);
+    history.push(2);
+    history.push(3);
+
+    // Add 10 to all items.
+    history.map(n => n + 10);
+
+    expect(history.current).toBe(13);
+    history.undo();
+    expect(history.current).toBe(12);
+    history.undo();
+    expect(history.current).toBe(11);
+});

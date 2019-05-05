@@ -33,6 +33,9 @@ export interface IHistoryStack<T> {
 
     /** Delete all items that do not match the given predicate */
     prune(predicate: (state: T) => boolean): void;
+
+    /** Perform the given mutation on all elements in the history */
+    map(mutation: (state: T) => T): void;
 }
 
 /**
@@ -111,5 +114,9 @@ class HistoryStackImpl<T> implements IHistoryStack<T> {
                 i--;
             }
         }
+    }
+
+    public map(mutation: (state: T) => T): void {
+        this._items = this._items.map(mutation);
     }
 }
