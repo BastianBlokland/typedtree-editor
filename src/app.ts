@@ -54,6 +54,9 @@ export async function run(): Promise<void> {
         if (treeParseResult != null && treeParseResult.kind === "success") {
             console.log("Loaded tree from storage.");
             openTree(treeParseResult.value, treeName === null ? currentTreeName : treeName);
+        } else {
+            console.log("No tree found in storage, creating new.");
+            enqueueNewTree();
         }
     } else {
         console.log("No scheme found in storage, loading example.");
@@ -135,7 +138,7 @@ function enqueuePasteTree(): void {
         } catch (e) {
             alert(`Unable to paste: ${e}`);
         }
-        if (json !== undefined) {
+        if (json !== undefined && json !== "") {
             const result = await Tree.Parser.parseJson(json);
             if (result.kind === "error") {
                 alert(`Failed to parse tree. Error: ${result.errorMessage}`);
