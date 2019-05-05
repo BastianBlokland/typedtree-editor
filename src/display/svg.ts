@@ -288,7 +288,7 @@ const minScale = 0.05;
 const maxScale = 3;
 const minZoomMultiplier = 0.01;
 const maxZoomMultiplier = 0.25;
-const displayMargin: Vector.IVector2 = { x: 75, y: 75 };
+const displayMargin: Vector.IVector2 = { x: 100, y: 100 };
 const halfDisplayMargin = Vector.half(displayMargin);
 
 let svgDocument: SVGElement | undefined;
