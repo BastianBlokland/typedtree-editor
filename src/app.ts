@@ -28,7 +28,7 @@ export async function run(): Promise<void> {
 
     Utils.Dom.subscribeToFileInput("openscheme-file", file => {
         enqueueLoadScheme(file);
-        enqueueNewTree();
+        enqueueEnsureTree();
     });
     Utils.Dom.subscribeToClick("exportscheme-button", enqueueExportScheme);
 
@@ -51,7 +51,8 @@ export async function run(): Promise<void> {
         console.log("Loaded scheme from storage.");
         setCurrentScheme(schemeParseResult.value);
 
-        if (treeParseResult != null && treeParseResult.kind === "success") {
+        if (treeParseResult != null && treeParseResult.kind === "success" &&
+            TreeScheme.Validator.validate(schemeParseResult.value, treeParseResult.value) === true) {
             console.log("Loaded tree from storage.");
             openTree(treeParseResult.value, treeName === null ? currentTreeName : treeName);
         } else {
@@ -97,6 +98,14 @@ function enqueueLoadScheme(source: string | File): void {
             setCurrentScheme(result.value);
             // Save the scheme in storage
             Utils.Dom.trySaveToStorage("scheme", TreeScheme.Serializer.composeJson(result.value));
+        }
+    });
+}
+
+function enqueueEnsureTree(): void {
+    sequencer.enqueue(async () => {
+        if (treeHistory.current === undefined) {
+            enqueueNewTree();
         }
     });
 }
@@ -198,8 +207,16 @@ function setCurrentScheme(scheme: TreeScheme.IScheme): void {
     currentScheme = scheme;
     Display.TreeScheme.setScheme(currentScheme);
 
-    // Loading a new scheme invalidates the current tree
-    treeHistory.clear();
+    // Prune the history of tree's that do not match the new scheme.
+    treeHistory.prune(historyTree => {
+        return TreeScheme.Validator.validate(scheme, historyTree) === true;
+    });
+
+    // Migrate all items in the history to the new scheme.
+    treeHistory.map(historyTree => {
+        return TreeScheme.Instantiator.duplicateWithMissingFields(scheme, historyTree);
+    });
+
     updateTree(currentTreeName);
 }
 
@@ -276,7 +293,7 @@ function onDrag(event: DragEvent): void {
         const file = event.dataTransfer.files[0];
         if (file.name.includes("scheme")) {
             enqueueLoadScheme(file);
-            enqueueNewTree();
+            enqueueEnsureTree();
         } else {
             enqueueLoadTree(file);
         }
