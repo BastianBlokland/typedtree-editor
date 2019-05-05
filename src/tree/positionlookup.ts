@@ -21,6 +21,12 @@ export const nodeHorizontalSpacing = 100;
 /** Vertical spacing between nodes. */
 export const nodeVerticalSpacing = 25;
 
+/**
+ * Apply extra vertical spacing the deeper in the tree we go, this visually separates the different
+ * branches.
+ */
+export const nodeExtraVerticalSpacingPerTier = 50;
+
 /** Height of a single field element on a node. (Arrays multiply this by the array length) */
 export const nodeFieldHeight = 25;
 
@@ -172,7 +178,10 @@ class PositionLookupImpl implements IPositionLookup {
             return size;
         }
 
-        let childTotalHeight = (directChildren.length - 1) * nodeVerticalSpacing;
+        let childTotalHeight =
+            ((directChildren.length - 1) * nodeVerticalSpacing) +
+            nodeExtraVerticalSpacingPerTier;
+
         let childMaxWidth = nodeHorizontalSpacing;
         directChildren.forEach(child => {
             const childSize = this.addAreas(child);
@@ -192,7 +201,7 @@ class PositionLookupImpl implements IPositionLookup {
         this._positions.set(node, position);
 
         const childX = referencePos.x + size.x + nodeHorizontalSpacing;
-        let childY = referencePos.y;
+        let childY = referencePos.y + Utils.half(nodeExtraVerticalSpacingPerTier);
         Tree.forEachDirectChild(node, child => {
             this.addPositions(child, { x: childX, y: childY });
             childY += this.getArea(child).y + nodeVerticalSpacing;
