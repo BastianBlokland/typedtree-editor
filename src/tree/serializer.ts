@@ -11,6 +11,10 @@ import * as Tree from "./tree";
  * @returns Json representing the given node.
  */
 export function composeJson(node: Tree.INode): string {
+    if (node.type === Tree.noneNodeType) {
+        return "";
+    }
+
     const obj = createObject(node);
     return JSON.stringify(obj, undefined, 2);
 }

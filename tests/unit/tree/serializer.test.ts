@@ -76,8 +76,7 @@ test("noneNodesAreFilteredOutOfNodeArrayFields", () => {
     }`));
 });
 
-test("rootNodeCannotBeNoneNode", () => {
-    expect(() => {
-        Tree.Serializer.composeJson(Tree.createNoneNode());
-    }).toThrowError();
+test("noneRootNodeLeadsToEmptyJson", () => {
+    const composedJson = Tree.Serializer.composeJson(Tree.createNoneNode());
+    expect(composedJson).toEqual("");
 });
