@@ -138,7 +138,7 @@ function enqueuePasteTree(): void {
         } catch (e) {
             alert(`Unable to paste: ${e}`);
         }
-        if (json !== undefined) {
+        if (json !== undefined && json !== "") {
             const result = await Tree.Parser.parseJson(json);
             if (result.kind === "error") {
                 alert(`Failed to parse tree. Error: ${result.errorMessage}`);
