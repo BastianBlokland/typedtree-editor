@@ -24,6 +24,11 @@ export function duplicateWithMissingFields(scheme: TreeScheme.IScheme, tree: Tre
     return instantiateNode(tree);
 
     function instantiateNode(node: Tree.INode): Tree.INode {
+        // If node is of type 'none' it cannot have any data and we leave it alone.
+        if (node.type === Tree.noneNodeType) {
+            return node;
+        }
+
         // Get the definition for this node from the scheme.
         const definition = scheme.getNode(node.type);
         if (definition === undefined) {
