@@ -54,6 +54,9 @@ export async function run(): Promise<void> {
         if (treeParseResult != null && treeParseResult.kind === "success") {
             console.log("Loaded tree from storage.");
             openTree(treeParseResult.value, treeName === null ? currentTreeName : treeName);
+        } else {
+            console.log("No tree found in storage, creating new.");
+            enqueueNewTree();
         }
     } else {
         console.log("No scheme found in storage, loading example.");
