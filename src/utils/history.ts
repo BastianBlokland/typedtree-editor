@@ -30,6 +30,9 @@ export interface IHistoryStack<T> {
 
     /** Clear all the items from the history */
     clear(): void;
+
+    /** Delete all items that do not match the given predicate */
+    prune(predicate: (state: T) => boolean): void;
 }
 
 /**
@@ -94,5 +97,19 @@ class HistoryStackImpl<T> implements IHistoryStack<T> {
     public clear(): void {
         this._items = [];
         this._currentIndex = -1;
+    }
+
+    public prune(predicate: (state: T) => boolean): void {
+        // Apply predicate to entire history.
+        for (let i: number = 0; i < this._items.length; i++) {
+            // If item does not match predicate then remove it.
+            if (!predicate(this._items[i])) {
+                if (this._currentIndex >= i) {
+                    this._currentIndex--;
+                }
+                this._items.splice(i, 1);
+                i--;
+            }
+        }
     }
 }
