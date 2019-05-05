@@ -178,9 +178,10 @@ class PositionLookupImpl implements IPositionLookup {
             return size;
         }
 
-        let childTotalHeight =
-            ((directChildren.length - 1) * nodeVerticalSpacing) +
-            nodeExtraVerticalSpacingPerTier;
+        let childTotalHeight = (directChildren.length - 1) * nodeVerticalSpacing;
+        if (node !== this._root) {
+            childTotalHeight += nodeExtraVerticalSpacingPerTier;
+        }
 
         let childMaxWidth = nodeHorizontalSpacing;
         directChildren.forEach(child => {
@@ -201,7 +202,11 @@ class PositionLookupImpl implements IPositionLookup {
         this._positions.set(node, position);
 
         const childX = referencePos.x + size.x + nodeHorizontalSpacing;
-        let childY = referencePos.y + Utils.half(nodeExtraVerticalSpacingPerTier);
+        let childY = referencePos.y;
+        if (node !== this._root) {
+            childY += Utils.half(nodeExtraVerticalSpacingPerTier);
+        }
+
         Tree.forEachDirectChild(node, child => {
             this.addPositions(child, { x: childX, y: childY });
             childY += this.getArea(child).y + nodeVerticalSpacing;
