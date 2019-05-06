@@ -18,6 +18,7 @@ export async function run(): Promise<void> {
     if (zoomspeed !== null) {
         setZoomSpeed(parseFloat(zoomspeed));
     }
+    Utils.Dom.subscribeToClick("share-button", enqueueShareToClipboard);
     Utils.Dom.subscribeToClick("toolbox-toggle", toggleToolbox);
     Utils.Dom.subscribeToClick("focus-button", focusTree);
     Utils.Dom.subscribeToClick("zoomin-button", () => { Display.Tree.zoom(0.1); });
@@ -185,6 +186,35 @@ function enqueueCopyTreeToClipboard(): void {
             } catch (e) {
                 alert(`Unable to copy: ${e}`);
             }
+        }
+    });
+}
+
+function enqueueShareToClipboard(): void {
+    sequencer.enqueue(async () => {
+        let url = location.origin + location.pathname;
+        if (url.endsWith("/")) {
+            url = `${url}index.html`;
+        } else if (!url.endsWith("index.html")) {
+            url = `${url}/index.html`;
+        }
+
+        if (currentScheme !== undefined) {
+            const schemeJson = TreeScheme.Serializer.composeJson(currentScheme, false);
+            const schemeUriComp = Utils.Compressor.compressToUriComponent(schemeJson);
+            url = `${url}?scheme=${schemeUriComp}`;
+
+            if (treeHistory.current !== undefined) {
+                const treeJson = Tree.Serializer.composeJson(treeHistory.current, false);
+                const treeUriComp = Utils.Compressor.compressToUriComponent(treeJson);
+                url = `${url}&tree=${treeUriComp}`;
+            }
+        }
+
+        try {
+            await Utils.Dom.writeClipboardText(url);
+        } catch (e) {
+            alert(`Unable to share: ${e}`);
         }
     });
 }

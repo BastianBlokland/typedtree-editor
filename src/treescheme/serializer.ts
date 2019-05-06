@@ -7,11 +7,12 @@ import * as TreeScheme from "./treescheme";
 /**
  * Compose json for the scheme.
  * @param scheme Scheme to create json for.
+ * @param prettyFormat Should the output be pretty formatted.
  * @returns Json representing the given scheme.
  */
-export function composeJson(scheme: TreeScheme.IScheme): string {
+export function composeJson(scheme: TreeScheme.IScheme, prettyFormat: boolean = true): string {
     const obj = createSchemeObject(scheme);
-    return JSON.stringify(obj, undefined, 2);
+    return JSON.stringify(obj, undefined, prettyFormat ? 2 : 0);
 }
 
 function createSchemeObject(scheme: TreeScheme.IScheme): object {
