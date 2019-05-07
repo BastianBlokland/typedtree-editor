@@ -143,6 +143,24 @@ export function getCurrentTreeJson(): string | undefined {
     return treeHistory.current === undefined ? undefined : Tree.Serializer.composeJson(treeHistory.current);
 }
 
+/** Url that contains the current loaded scheme and tree. Useful for interop with other JavaScript. */
+export function getShareUrl(): string {
+    const url = new URL("index.html", location.origin + location.pathname);
+    if (currentScheme !== undefined) {
+        const schemeJson = TreeScheme.Serializer.composeJson(currentScheme, false);
+        const schemeUriComp = Utils.Compressor.compressToUriComponent(schemeJson);
+        url.searchParams.append("scheme", schemeUriComp);
+
+        if (treeHistory.current !== undefined) {
+            const treeJson = Tree.Serializer.composeJson(treeHistory.current, false);
+            const treeUriComp = Utils.Compressor.compressToUriComponent(treeJson);
+            url.searchParams.append("tree", treeUriComp);
+            url.searchParams.append("treename", encodeURIComponent(currentTreeName));
+        }
+    }
+    return url.href;
+}
+
 const sequencer = Utils.Sequencer.createRunner();
 
 const maxTreeHistory: number = 100;
@@ -255,22 +273,9 @@ function enqueueCopyTreeToClipboard(): void {
 
 function enqueueShareToClipboard(): void {
     sequencer.enqueue(async () => {
-        const url = new URL("index.html", location.origin + location.pathname);
-        if (currentScheme !== undefined) {
-            const schemeJson = TreeScheme.Serializer.composeJson(currentScheme, false);
-            const schemeUriComp = Utils.Compressor.compressToUriComponent(schemeJson);
-            url.searchParams.append("scheme", schemeUriComp);
-
-            if (treeHistory.current !== undefined) {
-                const treeJson = Tree.Serializer.composeJson(treeHistory.current, false);
-                const treeUriComp = Utils.Compressor.compressToUriComponent(treeJson);
-                url.searchParams.append("tree", treeUriComp);
-                url.searchParams.append("treename", encodeURIComponent(currentTreeName));
-            }
-        }
-
+        const shareUrl = getShareUrl();
         try {
-            await Utils.Dom.writeClipboardText(url.href);
+            await Utils.Dom.writeClipboardText(shareUrl);
         } catch (e) {
             alert(`Unable to share: ${e}`);
         }
