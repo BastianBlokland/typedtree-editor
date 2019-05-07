@@ -41,27 +41,90 @@ export async function run(searchParams: URLSearchParams): Promise<void> {
 
     console.log("Started running");
 
-    // Load scheme and tree (either from storage or the example)
-    const schemeJson = Utils.Dom.tryGetFromStorage("scheme");
-    const schemeParseResult = schemeJson === null ? null : TreeScheme.Parser.parseJson(schemeJson);
-    const treeName = Utils.Dom.tryGetFromStorage("treename");
-    const treeJson = Utils.Dom.tryGetFromStorage("tree");
-    const treeParseResult = treeJson === null ? null : Tree.Parser.parseJson(treeJson);
+    function getSchemeFromParam(): TreeScheme.IScheme | null {
+        const paramValue = searchParams.get("scheme");
+        if (paramValue !== null) {
+            const json = Utils.Compressor.decompressFromUriComponent(paramValue);
+            const parseResult = TreeScheme.Parser.parseJson(json);
+            if (parseResult.kind === "success") {
+                return parseResult.value;
+            }
+        }
+        return null;
+    }
 
-    if (schemeParseResult !== null && schemeParseResult.kind === "success") {
-        console.log("Loaded scheme from storage.");
-        setCurrentScheme(schemeParseResult.value);
+    function getTreeFromParam(): { tree: Tree.INode, treename: string } | null {
+        const treeParamValue = searchParams.get("tree");
+        const treenameParamValue = searchParams.get("treename");
+        if (treeParamValue !== null) {
+            const json = Utils.Compressor.decompressFromUriComponent(treeParamValue);
+            const parseResult = Tree.Parser.parseJson(json);
+            if (parseResult.kind === "success") {
+                const treename = treenameParamValue == null ?
+                    "shared.tree.json" : decodeURIComponent(treenameParamValue);
+                return { tree: parseResult.value, treename };
+            }
+        }
+        return null;
+    }
 
-        if (treeParseResult != null && treeParseResult.kind === "success" &&
-            TreeScheme.Validator.validate(schemeParseResult.value, treeParseResult.value) === true) {
-            console.log("Loaded tree from storage.");
-            openTree(treeParseResult.value, treeName === null ? currentTreeName : treeName);
+    function getSchemeFromStorage(): TreeScheme.IScheme | null {
+        const json = Utils.Dom.tryGetFromStorage("scheme");
+        if (json !== null) {
+            const parseResult = TreeScheme.Parser.parseJson(json);
+            if (parseResult.kind === "success") {
+                return parseResult.value;
+            }
+        }
+        return null;
+    }
+
+    function getTreeFromStorage(): { tree: Tree.INode, treename: string } | null {
+        const treeJson = Utils.Dom.tryGetFromStorage("tree");
+        let treename = Utils.Dom.tryGetFromStorage("treename");
+        if (treename === null) {
+            treename = "unknown.tree.json";
+        }
+        if (treeJson !== null) {
+            const treeParseResult = Tree.Parser.parseJson(treeJson);
+            if (treeParseResult.kind === "success") {
+                return { tree: treeParseResult.value, treename };
+            }
+        }
+        return null;
+    }
+
+    // Load scheme. (either from params or storage)
+    let scheme = getSchemeFromParam();
+    if (scheme !== null) {
+        console.log("Loaded scheme from param.");
+        setCurrentScheme(scheme);
+    } else {
+        scheme = getSchemeFromStorage();
+        if (scheme !== null) {
+            console.log("Loaded scheme from storage.");
+            setCurrentScheme(scheme);
+        }
+    }
+
+    // If we found a scheme then attempt to load a tree. (either from params or storage)
+    if (currentScheme !== undefined) {
+        let tree = getTreeFromParam();
+        if (tree !== null && TreeScheme.Validator.validate(currentScheme, tree.tree) === true) {
+            console.log("Loaded tree from param.");
+            openTree(tree.tree, tree.treename);
         } else {
-            console.log("No tree found in storage, creating new.");
-            enqueueNewTree();
+            tree = getTreeFromStorage();
+            if (tree !== null && TreeScheme.Validator.validate(currentScheme, tree.tree) === true) {
+                console.log("Loaded tree from storage.");
+                openTree(tree.tree, tree.treename);
+            } else {
+                console.log("No existing tree found, creating new.");
+                enqueueNewTree();
+            }
         }
     } else {
-        console.log("No scheme found in storage, loading example.");
+        console.log("No existing scheme found, loading example.");
         enqueueLoadScheme("example.treescheme.json");
         enqueueLoadTree("example.tree.json");
     }
@@ -130,7 +193,7 @@ function enqueueNewTree(): void {
 function enqueueLoadTree(source: string | File): void {
     const name = typeof source === "string" ? source : source.name;
     sequencer.enqueue(async () => {
-        // Download and pars the tree from the given source.
+        // Download and parse the tree from the given source.
         const result = await Tree.Parser.load(source);
         if (result.kind === "error") {
             alert(`Failed to parse tree. Error: ${result.errorMessage}`);
@@ -193,7 +256,6 @@ function enqueueCopyTreeToClipboard(): void {
 function enqueueShareToClipboard(): void {
     sequencer.enqueue(async () => {
         const url = new URL("index.html", location.origin + location.pathname);
-
         if (currentScheme !== undefined) {
             const schemeJson = TreeScheme.Serializer.composeJson(currentScheme, false);
             const schemeUriComp = Utils.Compressor.compressToUriComponent(schemeJson);
@@ -203,6 +265,7 @@ function enqueueShareToClipboard(): void {
                 const treeJson = Tree.Serializer.composeJson(treeHistory.current, false);
                 const treeUriComp = Utils.Compressor.compressToUriComponent(treeJson);
                 url.searchParams.append("tree", treeUriComp);
+                url.searchParams.append("treename", encodeURIComponent(currentTreeName));
             }
         }
 
