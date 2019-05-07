@@ -15,7 +15,14 @@ export default {
     },
     plugins: [
         nodeResolve(),
-        commonjs()
+        commonjs({
+            namedExports: {
+                'node_modules/lz-string/libs/lz-string.js': [
+                    'compressToEncodedURIComponent',
+                    'decompressFromEncodedURIComponent'
+                ]
+            }
+        })
     ],
     onwarn(warning, warn) {
         if (warning.code === 'THIS_IS_UNDEFINED')

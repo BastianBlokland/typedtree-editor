@@ -162,6 +162,7 @@ to `bastian.tech/typedtree-editor/refs/heads/master/`
 ### Dependencies
 * [FileSaver](https://github.com/eligrey/FileSaver.js): Library for saving files that works
 consistently in almost all browsers.
+* [lz-string](https://github.com/pieroxy/lz-string): Library for compressing text.
 
 ## Troubleshooting
 * If `verify-tooling.sh` fails try removing the `./node_modules` directory.

@@ -8,15 +8,16 @@ import * as Tree from "./tree";
 /**
  * Compose json for the given node (and its children).
  * @param node Node to create json for.
+ * @param prettyFormat Should the output be pretty formatted.
  * @returns Json representing the given node.
  */
-export function composeJson(node: Tree.INode): string {
+export function composeJson(node: Tree.INode, prettyFormat: boolean = true): string {
     if (node.type === Tree.noneNodeType) {
         return "";
     }
 
     const obj = createObject(node);
-    return JSON.stringify(obj, undefined, 2);
+    return JSON.stringify(obj, undefined, prettyFormat ? 2 : 0);
 }
 
 function createObject(node: Tree.INode): object {

@@ -6,18 +6,19 @@ import * as FileSystem from "fs";
 import * as Tree from "../../src/tree";
 import * as TreeScheme from "../../src/treescheme";
 
+const url = "http://localhost:3000";
+
 describe("app", () => {
     page.on("dialog", async dialog => {
         await dialog.accept();
     });
 
     beforeEach(async () => {
-        await page.goto("http://localhost:3000");
-        await page.waitFor(100); // Give the page some time to load.
+        await loadPage(url);
     });
 
     afterEach(async () => {
-        await page.evaluate(() => localStorage.clear());
+        await clearStorage();
     });
 
     it("should load", async () => {
@@ -114,11 +115,41 @@ describe("app", () => {
         }
     });
 
+    it("can share", async () => {
+        // Create a new tree.
+        await page.click("#newtree-button");
+        const expectedTree = await getCurrentTree();
+
+        // Get the share url.
+        const shareUrl = await getShareUrl();
+        // Verify that the share url is in the correct format.
+        expect(shareUrl).toMatch(new RegExp(
+            `^${url.replace("/", "\/")}\\/index\\.html\\?scheme=.*&tree=.*&treename=new.tree.json$`));
+
+        // Refresh the page.
+        await clearStorage();
+        await loadPage(url);
+        expect(await getCurrentTree()).not.toEqual(expectedTree);
+
+        // Open share url.
+        await loadPage(shareUrl);
+        expect(await getCurrentTree()).toEqual(expectedTree);
+    });
+
     it("links to github", async () => {
         await page.click("#github-button");
         expect(page.url()).toBe("https://github.com/BastianBlokland/typedtree-editor");
     });
 });
+
+async function loadPage(url: string): Promise<void> {
+    await page.goto(url);
+    await page.waitFor(100); // Give the page some time to load.
+}
+
+async function clearStorage(): Promise<void> {
+    await page.evaluate(() => localStorage.clear());
+}
 
 async function getCurrentScheme(): Promise<TreeScheme.IScheme> {
     const schemeJson: string | undefined = await page.evaluate("getCurrentSchemeJson()");
@@ -140,6 +171,10 @@ async function getCurrentTree(): Promise<Tree.INode> {
         }
     }
     throw new Error("No valid tree found");
+}
+
+async function getShareUrl(): Promise<string> {
+    return await page.evaluate("getShareUrl()");
 }
 
 async function saveScreenshot(title: string): Promise<void> {

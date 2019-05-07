@@ -36,7 +36,15 @@ html, html > body {
     text-decoration: none;
 }
 
-body .bottomcontrol-element {
+#share-button {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    width: 80px;
+    height: 25px;
+}
+
+body .control-element {
     font-size: 12px;
     border-radius: 8px;
     border: 4px solid #000;
@@ -44,6 +52,7 @@ body .bottomcontrol-element {
     color: #FFF;
     font-weight: bold;
     text-align: center;
+    line-height: 15px;
     padding: 1px 7px 2px;
 }
 
