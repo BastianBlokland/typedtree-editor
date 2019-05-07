@@ -192,27 +192,22 @@ function enqueueCopyTreeToClipboard(): void {
 
 function enqueueShareToClipboard(): void {
     sequencer.enqueue(async () => {
-        let url = location.origin + location.pathname;
-        if (url.endsWith("/")) {
-            url = `${url}index.html`;
-        } else if (!url.endsWith("index.html")) {
-            url = `${url}/index.html`;
-        }
+        const url = new URL("index.html", location.origin + location.pathname);
 
         if (currentScheme !== undefined) {
             const schemeJson = TreeScheme.Serializer.composeJson(currentScheme, false);
             const schemeUriComp = Utils.Compressor.compressToUriComponent(schemeJson);
-            url = `${url}?scheme=${schemeUriComp}`;
+            url.searchParams.append("scheme", schemeUriComp);
 
             if (treeHistory.current !== undefined) {
                 const treeJson = Tree.Serializer.composeJson(treeHistory.current, false);
                 const treeUriComp = Utils.Compressor.compressToUriComponent(treeJson);
-                url = `${url}&tree=${treeUriComp}`;
+                url.searchParams.append("tree", treeUriComp);
             }
         }
 
         try {
-            await Utils.Dom.writeClipboardText(url);
+            await Utils.Dom.writeClipboardText(url.href);
         } catch (e) {
             alert(`Unable to share: ${e}`);
         }
