@@ -176,10 +176,7 @@ function enqueueLoadScheme(source: string | File): void {
             alert(`Failed to load. Error: ${result.errorMessage}`);
         } else {
             console.log("Successfully loaded scheme");
-            // Activate scheme
             setCurrentScheme(result.value);
-            // Save the scheme in storage
-            Utils.Dom.trySaveToStorage("scheme", TreeScheme.Serializer.composeJson(result.value));
         }
     });
 }
@@ -299,6 +296,9 @@ function enqueueRedo(): void {
 function setCurrentScheme(scheme: TreeScheme.IScheme): void {
     currentScheme = scheme;
     Display.TreeScheme.setScheme(currentScheme);
+
+    // Save the scheme in storage
+    Utils.Dom.trySaveToStorage("scheme", TreeScheme.Serializer.composeJson(scheme));
 
     // Prune the history of tree's that do not match the new scheme.
     treeHistory.prune(historyTree => {
