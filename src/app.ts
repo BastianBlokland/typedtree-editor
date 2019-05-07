@@ -8,7 +8,7 @@ import * as TreeScheme from "./treescheme";
 import * as Utils from "./utils";
 
 /** Function to run the main app logic in. */
-export async function run(): Promise<void> {
+export async function run(searchParams: URLSearchParams): Promise<void> {
     window.ondragenter = onDrag;
     window.ondragover = onDrag;
     window.ondragleave = onDrag;

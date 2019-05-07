@@ -24,5 +24,10 @@ Display.TreeScheme.initialize();
 (window as any).getCurrentSchemeJson = App.getCurrentSchemeJson;
 (window as any).getCurrentTreeJson = App.getCurrentTreeJson;
 
+// Parse the search-params from the url and cleanup browser url.
+const url = new URL(location.href);
+const searchParams = url.searchParams;
+history.replaceState("", "", url.origin + url.pathname.replace("index.html", ""));
+
 // Starting running the app.
-App.run();
+App.run(searchParams);
