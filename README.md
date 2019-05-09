@@ -113,7 +113,7 @@ the scheme this node was created from.
 ### Example of the tree-pack format
 ```json
 {
-  "scheme": ...
+  "scheme": ...,
   "tree": ...
 }
 ```
