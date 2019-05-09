@@ -23,6 +23,7 @@ Display.TreeScheme.initialize();
 // Export functions to window for interop.
 (window as any).getCurrentSchemeJson = App.getCurrentSchemeJson;
 (window as any).getCurrentTreeJson = App.getCurrentTreeJson;
+(window as any).getCurrentPackJson = App.getCurrentPackJson;
 (window as any).getShareUrl = App.getShareUrl;
 
 // Parse the search-params from the url and cleanup browser url.

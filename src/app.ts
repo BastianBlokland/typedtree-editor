@@ -147,6 +147,15 @@ export function getCurrentTreeJson(): string | undefined {
     return treeHistory.current === undefined ? undefined : Tree.Serializer.composeJson(treeHistory.current);
 }
 
+/** Return a json export of the currently loaded scheme and tree. Useful for interop with other JavaScript. */
+export function getCurrentPackJson(): string | undefined {
+    if (currentScheme === undefined || treeHistory.current === undefined) {
+        return undefined;
+    }
+    const pack = TreePack.createPack(currentScheme, treeHistory.current);
+    return TreePack.Serializer.composeJson(pack);
+}
+
 /** Url that contains the current loaded scheme and tree. Useful for interop with other JavaScript. */
 export function getShareUrl(): string {
     const url = new URL("index.html", location.origin + location.pathname);
