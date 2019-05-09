@@ -4,6 +4,7 @@
 
 import * as Display from "./display";
 import * as Tree from "./tree";
+import * as TreePack from "./treepack";
 import * as TreeScheme from "./treescheme";
 import * as Utils from "./utils";
 
@@ -38,6 +39,8 @@ export async function run(searchParams: URLSearchParams): Promise<void> {
     Utils.Dom.subscribeToClick("pastetree-button", enqueuePasteTree);
     Utils.Dom.subscribeToClick("exporttree-button", enqueueExportTree);
     Utils.Dom.subscribeToClick("copytree-button", enqueueCopyTreeToClipboard);
+
+    Utils.Dom.subscribeToClick("exportpack-button", enqueueExportPack);
 
     console.log("Started running");
 
@@ -251,6 +254,16 @@ function enqueueExportTree(): void {
         if (treeHistory.current !== undefined) {
             const treeJson = Tree.Serializer.composeJson(treeHistory.current);
             Utils.Dom.saveJsonText(treeJson, currentTreeName!);
+        }
+    });
+}
+
+function enqueueExportPack(): void {
+    sequencer.enqueue(async () => {
+        if (currentScheme !== undefined && treeHistory.current !== undefined) {
+            const pack = TreePack.createPack(currentScheme, treeHistory.current);
+            const packJson = TreePack.Serializer.composeJson(pack);
+            Utils.Dom.saveJsonText(packJson, "export.treepack.json"!);
         }
     });
 }
