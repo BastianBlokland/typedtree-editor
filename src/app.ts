@@ -40,6 +40,7 @@ export async function run(searchParams: URLSearchParams): Promise<void> {
     Utils.Dom.subscribeToClick("exporttree-button", enqueueExportTree);
     Utils.Dom.subscribeToClick("copytree-button", enqueueCopyTreeToClipboard);
 
+    Utils.Dom.subscribeToFileInput("openpack-file", enqueueLoadPack);
     Utils.Dom.subscribeToClick("exportpack-button", enqueueExportPack);
 
     console.log("Started running");
@@ -236,6 +237,21 @@ function enqueuePasteTree(): void {
             } else {
                 openTree(result.value, "pasted.tree.json");
             }
+        }
+    });
+}
+
+function enqueueLoadPack(source: string | File): void {
+    const name = typeof source === "string" ? source : source.name;
+    sequencer.enqueue(async () => {
+        // Download and parse the pack from the given source.
+        const result = await TreePack.Parser.load(source);
+        if (result.kind === "error") {
+            alert(`Failed to parse pack. Error: ${result.errorMessage}`);
+        } else {
+            console.log("Successfully loaded pack");
+            setCurrentScheme(result.value.scheme);
+            openTree(result.value.tree, name.replace("treepack.json", "tree.json"));
         }
     });
 }
