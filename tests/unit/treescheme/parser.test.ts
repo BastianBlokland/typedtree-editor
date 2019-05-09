@@ -49,3 +49,24 @@ test("basicSchemeIsParsedSuccessfully", () => {
         }));
     }
 });
+
+test("schemeCanBeParsedFromAnObject", () => {
+    const obj = {
+        rootAlias: "Alias",
+        aliases: [
+            { identifier: "Alias", values: ["NodeA"] },
+        ],
+        nodes: [
+            { nodeType: "NodeA" },
+        ],
+    };
+
+    const parseResult = TreeScheme.Parser.parseObject(obj);
+    expect(parseResult.kind).toBe("success");
+    if (parseResult.kind === "success") {
+        expect(parseResult.value).toEqual(TreeScheme.createScheme("Alias", b => {
+            b.pushAlias("Alias", ["NodeA"]);
+            b.pushNodeDefinition("NodeA");
+        }));
+    }
+});

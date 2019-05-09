@@ -11,11 +11,16 @@ import * as TreeScheme from "./treescheme";
  * @returns Json representing the given scheme.
  */
 export function composeJson(scheme: TreeScheme.IScheme, prettyFormat: boolean = true): string {
-    const obj = createSchemeObject(scheme);
+    const obj = createObject(scheme);
     return JSON.stringify(obj, undefined, prettyFormat ? 2 : 0);
 }
 
-function createSchemeObject(scheme: TreeScheme.IScheme): object {
+/**
+ * Compose a serializable object for the scheme.
+ * @param scheme Scheme to create an object for.
+ * @returns object representing the given scheme.
+ */
+export function createObject(scheme: TreeScheme.IScheme): object {
     const obj: any = {};
     obj.rootAlias = scheme.rootAlias.identifier;
     obj.aliases = scheme.aliases.map(createAliasObject);
