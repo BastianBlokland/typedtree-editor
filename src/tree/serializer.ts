@@ -20,7 +20,12 @@ export function composeJson(node: Tree.INode, prettyFormat: boolean = true): str
     return JSON.stringify(obj, undefined, prettyFormat ? 2 : 0);
 }
 
-function createObject(node: Tree.INode): object {
+/**
+ * Compose a serializable object for the given node (and its children).
+ * @param scheme Node to create an object for.
+ * @returns object representing the given node.
+ */
+export function createObject(node: Tree.INode): object {
     if (node.type === Tree.noneNodeType) {
         throw new Error(`Nodes of type ${node.type} cannot be serialized`);
     }

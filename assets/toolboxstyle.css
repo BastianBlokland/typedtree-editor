@@ -39,7 +39,10 @@
     margin-right: 1%;
 }
 
-#toolbox #openscheme-container, #toolbox #opentree-container, #toolbox #exporttree-container {
+#toolbox #openscheme-container,
+#toolbox #opentree-container,
+#toolbox #exporttree-container,
+#toolbox #pack-container {
     display: flex;
     align-items: center;
 }

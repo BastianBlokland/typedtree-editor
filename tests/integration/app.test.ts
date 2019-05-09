@@ -4,6 +4,7 @@
 
 import * as FileSystem from "fs";
 import * as Tree from "../../src/tree";
+import * as TreePack from "../../src/treepack";
 import * as TreeScheme from "../../src/treescheme";
 
 const url = "http://localhost:3000";
@@ -49,7 +50,7 @@ describe("app", () => {
 
         const testSchemeParseResult = TreeScheme.Parser.parseJson(testScheme);
         if (testSchemeParseResult.kind === "error") {
-            throw new Error(testSchemeParseResult.kind);
+            throw new Error(testSchemeParseResult.errorMessage);
         }
         await saveScreenshot("loaded-scheme");
         expect(await getCurrentScheme()).toEqual(testSchemeParseResult.value);
@@ -66,6 +67,31 @@ describe("app", () => {
 
         await saveScreenshot("loaded-tree");
         expect(await getCurrentTree()).toEqual(Tree.createNode(scheme.rootAlias.values[0]));
+    });
+
+    it("can load a treepack", async () => {
+        const testPack = `{
+            "scheme": {
+                "rootAlias": "Alias",
+                "aliases": [ { "identifier": "Alias", "values": [ "Node" ] } ],
+                "nodes": [ { "nodeType": "Node" } ]
+            },
+            "tree": {
+                "$type": "Node"
+            }
+        }`;
+
+        // Set the test-file in the pack input field.
+        FileSystem.writeFileSync("tmp/test.treepack.json", testPack);
+        (await page.$("#openpack-file"))!.uploadFile("tmp/test.treepack.json");
+        await page.waitFor(100); // Give the page some time to respond.
+
+        const testPackParseResult = TreePack.Parser.parseJson(testPack);
+        if (testPackParseResult.kind === "error") {
+            throw new Error(testPackParseResult.errorMessage);
+        }
+        await saveScreenshot("loaded-pack");
+        expect(await getCurrentPack()).toEqual(testPackParseResult.value);
     });
 
     it("can change type of a node", async () => {
@@ -171,6 +197,17 @@ async function getCurrentTree(): Promise<Tree.INode> {
         }
     }
     throw new Error("No valid tree found");
+}
+
+async function getCurrentPack(): Promise<TreePack.ITreePack> {
+    const packJson: string | undefined = await page.evaluate("getCurrentPackJson()");
+    if (packJson !== undefined) {
+        const parseResult = TreePack.Parser.parseJson(packJson);
+        if (parseResult.kind === "success") {
+            return parseResult.value;
+        }
+    }
+    throw new Error("No valid pack found");
 }
 
 async function getShareUrl(): Promise<string> {

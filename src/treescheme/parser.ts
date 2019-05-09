@@ -23,7 +23,7 @@ export async function load(source: File | string): Promise<Utils.Parser.ParseRes
 
 /**
  * Parse a scheme from a json string.
- * @param jsonString Json to pare.
+ * @param jsonString Json to parse.
  * @returns Tree or parse failure.
  */
 export function parseJson(jsonString: string): Utils.Parser.ParseResult<TreeScheme.IScheme> {
@@ -36,6 +36,19 @@ export function parseJson(jsonString: string): Utils.Parser.ParseResult<TreeSche
 
     try {
         return Utils.Parser.createSuccess(parseScheme(jsonObj));
+    } catch (e) {
+        return Utils.Parser.createError(`Parsing failed: ${e}`);
+    }
+}
+
+/**
+ * Parse a scheme from a object.
+ * @param object Object to parse.
+ * @returns Scheme or parse failure.
+ */
+export function parseObject(object: any): Utils.Parser.ParseResult<TreeScheme.IScheme> {
+    try {
+        return Utils.Parser.createSuccess(parseScheme(object));
     } catch (e) {
         return Utils.Parser.createError(`Parsing failed: ${e}`);
     }

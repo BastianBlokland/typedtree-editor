@@ -110,6 +110,15 @@ and show it as a dropdown in the ui.
 Format is plain json with the exception of the `$type` property which indicates from which type in
 the scheme this node was created from.
 
+### Example of the tree-pack format
+```json
+{
+  "scheme": ...,
+  "tree": ...
+}
+```
+TreePack is a single file containing both a scheme and a tree, can be useful for sharing purposes.
+
 ## Project setup
 This project is written in [TypeScript](https://github.com/Microsoft/TypeScript) and is transpiled
 into es5 JavaScript. Tree is rendered with a combination of plain html and svg.

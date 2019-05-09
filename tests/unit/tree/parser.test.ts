@@ -188,3 +188,18 @@ test("nodeArrayIsParsedSuccessfully", () => {
         );
     }
 });
+
+test("nodeCanBeParsedFromAnObject", () => {
+    const obj = {
+        $type: "node1",
+        child: { $type: "node2" },
+    };
+
+    const parseResult = Tree.Parser.parseObject(obj);
+    expect(parseResult.kind).toBe("success");
+    if (parseResult.kind === "success") {
+        expect(parseResult.value).toEqual(Tree.createNode("node1", b => {
+            b.pushNodeField("child", Tree.createNode("node2"));
+        }));
+    }
+});

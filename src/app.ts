@@ -4,6 +4,7 @@
 
 import * as Display from "./display";
 import * as Tree from "./tree";
+import * as TreePack from "./treepack";
 import * as TreeScheme from "./treescheme";
 import * as Utils from "./utils";
 
@@ -38,6 +39,9 @@ export async function run(searchParams: URLSearchParams): Promise<void> {
     Utils.Dom.subscribeToClick("pastetree-button", enqueuePasteTree);
     Utils.Dom.subscribeToClick("exporttree-button", enqueueExportTree);
     Utils.Dom.subscribeToClick("copytree-button", enqueueCopyTreeToClipboard);
+
+    Utils.Dom.subscribeToFileInput("openpack-file", enqueueLoadPack);
+    Utils.Dom.subscribeToClick("exportpack-button", enqueueExportPack);
 
     console.log("Started running");
 
@@ -143,6 +147,15 @@ export function getCurrentTreeJson(): string | undefined {
     return treeHistory.current === undefined ? undefined : Tree.Serializer.composeJson(treeHistory.current);
 }
 
+/** Return a json export of the currently loaded scheme and tree. Useful for interop with other JavaScript. */
+export function getCurrentPackJson(): string | undefined {
+    if (currentScheme === undefined || treeHistory.current === undefined) {
+        return undefined;
+    }
+    const pack = TreePack.createPack(currentScheme, treeHistory.current);
+    return TreePack.Serializer.composeJson(pack);
+}
+
 /** Url that contains the current loaded scheme and tree. Useful for interop with other JavaScript. */
 export function getShareUrl(): string {
     const url = new URL("index.html", location.origin + location.pathname);
@@ -237,6 +250,21 @@ function enqueuePasteTree(): void {
     });
 }
 
+function enqueueLoadPack(source: string | File): void {
+    const name = typeof source === "string" ? source : source.name;
+    sequencer.enqueue(async () => {
+        // Download and parse the pack from the given source.
+        const result = await TreePack.Parser.load(source);
+        if (result.kind === "error") {
+            alert(`Failed to parse pack. Error: ${result.errorMessage}`);
+        } else {
+            console.log("Successfully loaded pack");
+            setCurrentScheme(result.value.scheme);
+            openTree(result.value.tree, name.replace("treepack.json", "tree.json"));
+        }
+    });
+}
+
 function enqueueExportScheme(): void {
     sequencer.enqueue(async () => {
         if (currentScheme !== undefined) {
@@ -251,6 +279,16 @@ function enqueueExportTree(): void {
         if (treeHistory.current !== undefined) {
             const treeJson = Tree.Serializer.composeJson(treeHistory.current);
             Utils.Dom.saveJsonText(treeJson, currentTreeName!);
+        }
+    });
+}
+
+function enqueueExportPack(): void {
+    sequencer.enqueue(async () => {
+        if (currentScheme !== undefined && treeHistory.current !== undefined) {
+            const pack = TreePack.createPack(currentScheme, treeHistory.current);
+            const packJson = TreePack.Serializer.composeJson(pack);
+            Utils.Dom.saveJsonText(packJson, "export.treepack.json"!);
         }
     });
 }
@@ -384,7 +422,9 @@ function onDrag(event: DragEvent): void {
     // If a file was dropped then load it as a tree.
     if (event.dataTransfer !== null && event.dataTransfer.files !== null && event.dataTransfer.files.length) {
         const file = event.dataTransfer.files[0];
-        if (file.name.includes("scheme")) {
+        if (file.name.includes("treepack")) {
+            enqueueLoadPack(file);
+        } else if (file.name.includes("scheme")) {
             enqueueLoadScheme(file);
             enqueueEnsureTree();
         } else {
