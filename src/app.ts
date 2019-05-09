@@ -413,7 +413,9 @@ function onDrag(event: DragEvent): void {
     // If a file was dropped then load it as a tree.
     if (event.dataTransfer !== null && event.dataTransfer.files !== null && event.dataTransfer.files.length) {
         const file = event.dataTransfer.files[0];
-        if (file.name.includes("scheme")) {
+        if (file.name.includes("treepack")) {
+            enqueueLoadPack(file);
+        } else if (file.name.includes("scheme")) {
             enqueueLoadScheme(file);
             enqueueEnsureTree();
         } else {
