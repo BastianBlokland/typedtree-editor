@@ -52,6 +52,8 @@ export async function run(searchParams: URLSearchParams): Promise<void> {
             const parseResult = TreeScheme.Parser.parseJson(json);
             if (parseResult.kind === "success") {
                 return parseResult.value;
+            } else {
+                alert(`Unable to parse scheme from url-arg: ${parseResult.errorMessage}`);
             }
         }
         return null;
@@ -67,6 +69,8 @@ export async function run(searchParams: URLSearchParams): Promise<void> {
                 const treename = treenameParamValue == null ?
                     "shared.tree.json" : decodeURIComponent(treenameParamValue);
                 return { tree: parseResult.value, treename };
+            } else {
+                alert(`Unable to parse tree from url-arg: ${parseResult.errorMessage}`);
             }
         }
         return null;
