@@ -7,7 +7,7 @@ import * as Tree from "../../src/tree";
 import * as TreePack from "../../src/treepack";
 import * as TreeScheme from "../../src/treescheme";
 
-const url = "http://localhost:3000";
+const url = "http://127.0.0.1:3000";
 
 describe("app", () => {
     page.on("dialog", async dialog => {
