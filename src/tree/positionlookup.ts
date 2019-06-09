@@ -13,10 +13,10 @@ import * as Tree from "./tree";
 export const nodeHeaderHeight = 25;
 
 /** Width of a node. */
-export const nodeWidth = 370;
+export const nodeWidth = 400;
 
 /** Horizontal spaces between nodes. */
-export const nodeHorizontalSpacing = 100;
+export const nodeHorizontalSpacing = 150;
 
 /** Vertical spacing between nodes. */
 export const nodeVerticalSpacing = 25;
