@@ -254,7 +254,7 @@ function createField(
             const enumeration = TreeScheme.validateEnumType(fieldDefinition.valueType);
             if (enumeration !== undefined) {
                 const currentIndex = enumeration.values.findIndex(entry => entry.value === value);
-                const options = enumeration.values.map(entry => entry.name);
+                const options = enumeration.values.map(entry => `${entry.value}: ${entry.name}`);
                 parent.addDropdown("enum-value", currentIndex, options, pos, size, newIndex => {
                     changed(enumeration.values[newIndex].value);
                 });
