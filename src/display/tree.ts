@@ -59,7 +59,7 @@ const nodeHeaderHeight = Tree.PositionLookup.nodeHeaderHeight;
 const halfNodeHeaderHeight = Utils.half(nodeHeaderHeight);
 const nodeFieldHeight = Tree.PositionLookup.nodeFieldHeight;
 const nodeInputSlotOffset: Vector.IVector2 = { x: 0, y: 12.5 };
-const nodeTooltipSize: Vector.IVector2 = { x: 400, y: 75 };
+const nodeTooltipSize: Vector.IVector2 = { x: 450, y: 75 };
 const nodeConnectionCurviness = .7;
 
 type nodeChangedCallback = (newNode: Tree.INode) => void;
