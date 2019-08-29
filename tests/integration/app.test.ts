@@ -164,6 +164,7 @@ describe("app", () => {
 
     it("links to github", async () => {
         await page.click("#github-button");
+        await page.waitFor(100); // Give the page some time to respond.
         expect(page.url()).toBe("https://github.com/BastianBlokland/typedtree-editor");
     });
 });
