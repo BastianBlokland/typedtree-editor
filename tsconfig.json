@@ -5,6 +5,7 @@
     "strictNullChecks": true,
     "alwaysStrict": true,
     "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
     "target": "es5",
     "module": "es2015",
     "lib": [

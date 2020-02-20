@@ -179,7 +179,7 @@ async function clearStorage(): Promise<void> {
 }
 
 async function getCurrentScheme(): Promise<TreeScheme.IScheme> {
-    const schemeJson: string | undefined = await page.evaluate("getCurrentSchemeJson()");
+    const schemeJson = await page.evaluate("getCurrentSchemeJson()") as string | undefined;
     if (schemeJson !== undefined) {
         const parseResult = TreeScheme.Parser.parseJson(schemeJson);
         if (parseResult.kind === "success") {
@@ -190,7 +190,7 @@ async function getCurrentScheme(): Promise<TreeScheme.IScheme> {
 }
 
 async function getCurrentTree(): Promise<Tree.INode> {
-    const treeJson: string | undefined = await page.evaluate("getCurrentTreeJson()");
+    const treeJson = await page.evaluate("getCurrentTreeJson()") as string | undefined;
     if (treeJson !== undefined) {
         const parseResult = Tree.Parser.parseJson(treeJson);
         if (parseResult.kind === "success") {
@@ -201,7 +201,7 @@ async function getCurrentTree(): Promise<Tree.INode> {
 }
 
 async function getCurrentPack(): Promise<TreePack.ITreePack> {
-    const packJson: string | undefined = await page.evaluate("getCurrentPackJson()");
+    const packJson = await page.evaluate("getCurrentPackJson()") as string | undefined;
     if (packJson !== undefined) {
         const parseResult = TreePack.Parser.parseJson(packJson);
         if (parseResult.kind === "success") {
@@ -212,7 +212,7 @@ async function getCurrentPack(): Promise<TreePack.ITreePack> {
 }
 
 async function getShareUrl(): Promise<string> {
-    return await page.evaluate("getShareUrl()");
+    return await page.evaluate("getShareUrl()") as string;
 }
 
 async function saveScreenshot(title: string): Promise<void> {
