@@ -44,8 +44,7 @@ describe("app", () => {
         }`;
 
         // Set the test-file in the scheme input field.
-        FileSystem.writeFileSync("tmp/test.treescheme.json", testScheme);
-        (await page.$("#openscheme-file"))!.uploadFile("tmp/test.treescheme.json");
+        await uploadText("#openscheme-file", testScheme);
         await page.waitFor(100); // Give the page some time to respond.
 
         const testSchemeParseResult = TreeScheme.Parser.parseJson(testScheme);
@@ -61,8 +60,7 @@ describe("app", () => {
         const testTree = `{ "$type": "${scheme.rootAlias.values[0]}" }`;
 
         // Set the test-file in the scheme input field.
-        FileSystem.writeFileSync("tmp/test.tree.json", testTree);
-        (await page.$("#opentree-file"))!.uploadFile("tmp/test.tree.json");
+        await uploadText("#opentree-file", testTree);
         await page.waitFor(100); // Give the page some time to respond.
 
         await saveScreenshot("loaded-tree");
@@ -82,8 +80,7 @@ describe("app", () => {
         }`;
 
         // Set the test-file in the pack input field.
-        FileSystem.writeFileSync("tmp/test.treepack.json", testPack);
-        (await page.$("#openpack-file"))!.uploadFile("tmp/test.treepack.json");
+        await uploadText("#openpack-file", testPack);
         await page.waitFor(100); // Give the page some time to respond.
 
         const testPackParseResult = TreePack.Parser.parseJson(testPack);
@@ -178,8 +175,24 @@ async function clearStorage(): Promise<void> {
     await page.evaluate(() => localStorage.clear());
 }
 
+async function uploadText(selector: string, text: string): Promise<void> {
+    const tmpPath = "tmp/to_upload.json";
+
+    FileSystem.writeFileSync(tmpPath, text);
+    const elem = await page.$(selector);
+    if (elem === null) {
+        throw new Error("No element found with given selector");
+    }
+
+    await elem.uploadFile(tmpPath);
+
+    // Manually dispatch the 'change' event, latest puppeteer / chromo doesn't dispatch it
+    // automatically anymore with 'uploadFile'.
+    await elem.evaluate(e => e.dispatchEvent(new Event("change")));
+}
+
 async function getCurrentScheme(): Promise<TreeScheme.IScheme> {
-    const schemeJson: string | undefined = await page.evaluate("getCurrentSchemeJson()");
+    const schemeJson = await page.evaluate("getCurrentSchemeJson()") as string | undefined;
     if (schemeJson !== undefined) {
         const parseResult = TreeScheme.Parser.parseJson(schemeJson);
         if (parseResult.kind === "success") {
@@ -190,7 +203,7 @@ async function getCurrentScheme(): Promise<TreeScheme.IScheme> {
 }
 
 async function getCurrentTree(): Promise<Tree.INode> {
-    const treeJson: string | undefined = await page.evaluate("getCurrentTreeJson()");
+    const treeJson = await page.evaluate("getCurrentTreeJson()") as string | undefined;
     if (treeJson !== undefined) {
         const parseResult = Tree.Parser.parseJson(treeJson);
         if (parseResult.kind === "success") {
@@ -201,7 +214,7 @@ async function getCurrentTree(): Promise<Tree.INode> {
 }
 
 async function getCurrentPack(): Promise<TreePack.ITreePack> {
-    const packJson: string | undefined = await page.evaluate("getCurrentPackJson()");
+    const packJson = await page.evaluate("getCurrentPackJson()") as string | undefined;
     if (packJson !== undefined) {
         const parseResult = TreePack.Parser.parseJson(packJson);
         if (parseResult.kind === "success") {
@@ -212,7 +225,7 @@ async function getCurrentPack(): Promise<TreePack.ITreePack> {
 }
 
 async function getShareUrl(): Promise<string> {
-    return await page.evaluate("getShareUrl()");
+    return await page.evaluate("getShareUrl()") as string;
 }
 
 async function saveScreenshot(title: string): Promise<void> {

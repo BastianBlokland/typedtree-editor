@@ -169,13 +169,13 @@ export function instantiateDefaultField(fieldDefinition: TreeScheme.IFieldDefini
 export function createNewElement<T extends TreeScheme.FieldValueType>(valueType: T): TreeScheme.TreeType<T> {
     const typedValueType = valueType as TreeScheme.FieldValueType;
     switch (typedValueType) {
-        case "string": return "";
-        case "number": return 0;
-        case "boolean": return false;
+        case "string": return "" as TreeScheme.TreeType<T>;
+        case "number": return 0 as TreeScheme.TreeType<T>;
+        case "boolean": return false as TreeScheme.TreeType<T>;
         default:
             switch (typedValueType.type) {
-                case "alias": return Tree.createNoneNode();
-                case "enum": return typedValueType.values[0].value;
+                case "alias": return Tree.createNoneNode() as TreeScheme.TreeType<T>;
+                case "enum": return typedValueType.values[0].value as TreeScheme.TreeType<T>;
                 default: Utils.assertNever(typedValueType);
             }
     }
