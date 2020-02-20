@@ -8,12 +8,13 @@ import * as TreePack from "../../src/treepack";
 import * as TreeScheme from "../../src/treescheme";
 
 const url = "http://127.0.0.1:3000";
+const integrationModeUrl = "http://127.0.0.1:3000?mode=integration";
 
-describe("app", () => {
-    page.on("dialog", async dialog => {
-        await dialog.accept();
-    });
+page.on("dialog", async dialog => {
+    await dialog.accept();
+});
 
+describe("app in normal mode", () => {
     beforeEach(async () => {
         await loadPage(url);
     });
@@ -163,6 +164,51 @@ describe("app", () => {
         await page.click("#github-button");
         await page.waitFor(100); // Give the page some time to respond.
         expect(page.url()).toBe("https://github.com/BastianBlokland/typedtree-editor");
+    });
+});
+
+describe("app in integration mode", () => {
+    beforeEach(async () => {
+        await loadPage(integrationModeUrl);
+    });
+
+    it("should load", async () => {
+        expect(await page.title()).toBe("TypedTree");
+        await saveScreenshot("integration-mode");
+    });
+
+    it("can load a scheme", async () => {
+        const testScheme = `{
+            "rootAlias": "Alias",
+            "aliases": [ { "identifier": "Alias", "values": [ "Node" ] } ],
+            "nodes": [ { "nodeType": "Node" } ]
+        }`;
+
+        await page.evaluate(`enqueueLoadScheme(\`${testScheme}\`)`);
+        await page.waitFor(100); // Give the page some time to respond.
+
+        // Expect the current scheme to equal the one we just loaded.
+        const testSchemeParseResult = TreeScheme.Parser.parseJson(testScheme);
+        if (testSchemeParseResult.kind === "error") {
+            throw new Error(testSchemeParseResult.errorMessage);
+        }
+        expect(await getCurrentScheme()).toEqual(testSchemeParseResult.value);
+    });
+
+    it("can load a tree", async () => {
+        const testScheme = `{
+            "rootAlias": "Alias",
+            "aliases": [ { "identifier": "Alias", "values": [ "Node" ] } ],
+            "nodes": [ { "nodeType": "Node" } ]
+        }`;
+        const testTree = `{\n  "$type": "Node"\n}`;
+
+        await page.evaluate(`enqueueLoadScheme(\`${testScheme}\`)`);
+        await page.evaluate(`enqueueLoadTree(\`${testTree}\`)`);
+        await page.waitFor(100); // Give the page some time to respond.
+
+        // Expect the current tree json to equal the one we just loaded.
+        expect(await page.evaluate("getCurrentTreeJson()")).toEqual(testTree);
     });
 });
 

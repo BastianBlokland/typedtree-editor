@@ -31,6 +31,20 @@ if (location.protocol !== "https:" && !location.host.startsWith("127.0.0.1")) {
     (window as any).getCurrentTreeJson = App.getCurrentTreeJson;
     (window as any).getCurrentPackJson = App.getCurrentPackJson;
     (window as any).getShareUrl = App.getShareUrl;
+    (window as any).enqueueLoadScheme = App.enqueueLoadScheme;
+    (window as any).enqueueLoadSchemeFromUrlOrFile = App.enqueueLoadSchemeFromUrlOrFile;
+    (window as any).enqueueEnsureTree = App.enqueueEnsureTree;
+    (window as any).enqueueNewTree = App.enqueueNewTree;
+    (window as any).enqueueLoadTree = App.enqueueLoadTree;
+    (window as any).enqueueLoadTreeFromUrlOrFile = App.enqueueLoadTreeFromUrlOrFile;
+    (window as any).enqueueExportScheme = App.enqueueExportScheme;
+    (window as any).enqueueExportTree = App.enqueueExportTree;
+    (window as any).enqueueExportPack = App.enqueueExportPack;
+    (window as any).enqueueCopyTreeToClipboard = App.enqueueCopyTreeToClipboard;
+    (window as any).enqueuePasteTree = App.enqueuePasteTree;
+    (window as any).enqueueShareToClipboard = App.enqueueShareToClipboard;
+    (window as any).enqueueUndo = App.enqueueUndo;
+    (window as any).enqueueRedo = App.enqueueRedo;
 
     // Parse the search-params from the url and cleanup browser url.
     const url = new URL(location.href);
