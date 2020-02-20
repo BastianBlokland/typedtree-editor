@@ -34,7 +34,7 @@ This editor runs purely client-side and any content you load into it stays purel
 
 Tiny electron wrapper to ease in saving until
 [native-file-system](https://web.dev/native-file-system/) has become mainstream:
-[electron-wrapper](https://gist.github.com/BastianBlokland/1f2b2d9dfe75258274588ed53bcb8d90/edit).
+[electron-wrapper](https://gist.github.com/BastianBlokland/1f2b2d9dfe75258274588ed53bcb8d90).
 
 ### Example of the scheme format
 ```json
