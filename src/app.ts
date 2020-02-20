@@ -8,19 +8,23 @@ import * as TreePack from "./treepack";
 import * as TreeScheme from "./treescheme";
 import * as Utils from "./utils";
 
+enum Mode {
+    Normal,
+    Integration, // Import / export controls are hidden, expect to be controlled by extern code.
+}
+
 /** Function to run the main app logic in. */
 export async function run(searchParams: URLSearchParams): Promise<void> {
-    window.ondragenter = onDrag;
-    window.ondragover = onDrag;
-    window.ondragleave = onDrag;
-    window.ondrop = onDrag;
-    window.onkeydown = onDomKeyPress;
+    mode = searchParams.get("mode") === "integration" ? Mode.Integration : Mode.Normal;
+
+    // Load persistent settings.
     const zoomspeed = Utils.Dom.tryGetFromStorage("zoomspeed");
     if (zoomspeed !== null) {
         setZoomSpeed(parseFloat(zoomspeed));
     }
-    Utils.Dom.subscribeToClick("share-button", enqueueShareToClipboard);
-    Utils.Dom.subscribeToClick("toolbox-toggle", toggleToolbox);
+
+    // Subscribe to navigation controls.
+    window.onkeydown = onDomKeyPress;
     Utils.Dom.subscribeToClick("focus-button", focusTree);
     Utils.Dom.subscribeToClick("zoomin-button", () => { Display.Tree.zoom(0.1); });
     Utils.Dom.subscribeToClick("zoomout-button", () => { Display.Tree.zoom(-0.1); });
@@ -28,22 +32,50 @@ export async function run(searchParams: URLSearchParams): Promise<void> {
     Utils.Dom.subscribeToClick("undo-button", enqueueUndo);
     Utils.Dom.subscribeToClick("redo-button", enqueueRedo);
 
-    Utils.Dom.subscribeToFileInput("openscheme-file", file => {
-        enqueueLoadScheme(file);
-        enqueueEnsureTree();
-    });
-    Utils.Dom.subscribeToClick("exportscheme-button", enqueueExportScheme);
+    switch (mode) {
+        case Mode.Normal:
 
-    Utils.Dom.subscribeToClick("newtree-button", enqueueNewTree);
-    Utils.Dom.subscribeToFileInput("opentree-file", enqueueLoadTree);
-    Utils.Dom.subscribeToClick("pastetree-button", enqueuePasteTree);
-    Utils.Dom.subscribeToClick("exporttree-button", enqueueExportTree);
-    Utils.Dom.subscribeToClick("copytree-button", enqueueCopyTreeToClipboard);
+            // Load files when dropped on window.
+            window.ondragenter = onDrag;
+            window.ondragover = onDrag;
+            window.ondragleave = onDrag;
+            window.ondrop = onDrag;
 
-    Utils.Dom.subscribeToFileInput("openpack-file", enqueueLoadPack);
-    Utils.Dom.subscribeToClick("exportpack-button", enqueueExportPack);
+            Utils.Dom.subscribeToClick("share-button", enqueueShareToClipboard);
+            Utils.Dom.subscribeToClick("toolbox-toggle", toggleToolbox);
 
-    console.log("Started running");
+            // Subscribe to controls on the toolbox.
+            Utils.Dom.subscribeToFileInput("openscheme-file", file => {
+                enqueueLoadSchemeFromUrlOrFile(file);
+                enqueueEnsureTree();
+            });
+            Utils.Dom.subscribeToClick("exportscheme-button", enqueueExportScheme);
+
+            Utils.Dom.subscribeToClick("newtree-button", enqueueNewTree);
+            Utils.Dom.subscribeToFileInput("opentree-file", enqueueLoadTreeFromUrlOrFile);
+            Utils.Dom.subscribeToClick("pastetree-button", enqueuePasteTree);
+            Utils.Dom.subscribeToClick("exporttree-button", enqueueExportTree);
+            Utils.Dom.subscribeToClick("copytree-button", enqueueCopyTreeToClipboard);
+
+            Utils.Dom.subscribeToFileInput("openpack-file", enqueueLoadPackFromUrlOrFile);
+            Utils.Dom.subscribeToClick("exportpack-button", enqueueExportPack);
+            break;
+
+        case Mode.Integration:
+
+            // Hide control elements.
+            Utils.Dom.hideElementById("toolbox");
+            Utils.Dom.hideElementById("toolbox-toggle");
+            Utils.Dom.hideElementById("share-button");
+            Utils.Dom.hideElementById("github-button");
+
+            // Disable undo / redo until a tree has been loaded.
+            Utils.Dom.setButtonDisabled("undo-button", true);
+            Utils.Dom.setButtonDisabled("redo-button", true);
+
+            break;
+    }
+
 
     function getSchemeFromParam(): TreeScheme.IScheme | null {
         const paramValue = searchParams.get("scheme");
@@ -102,56 +134,69 @@ export async function run(searchParams: URLSearchParams): Promise<void> {
         return null;
     }
 
-    // Load scheme. (either from params or storage)
-    let scheme = getSchemeFromParam();
-    if (scheme !== null) {
-        console.log("Loaded scheme from param.");
-        setCurrentScheme(scheme);
-    } else {
-        scheme = getSchemeFromStorage();
-        if (scheme !== null) {
-            console.log("Loaded scheme from storage.");
-            setCurrentScheme(scheme);
-        }
-    }
+    // In 'normal' mode load a scheme and tree from either url params or storage, in 'integration'
+    // mode we do not load anything as we expect to be controlled remotely.
+    switch (mode) {
+        case Mode.Normal:
+            console.log("Started running in normal mode");
 
-    // If we found a scheme then attempt to load a tree. (either from params or storage)
-    if (currentScheme !== undefined) {
-        let tree = getTreeFromParam();
-        if (tree !== null && TreeScheme.Validator.validate(currentScheme, tree.tree) === true) {
-            console.log("Loaded tree from param.");
-            openTree(tree.tree, tree.treename);
-        } else {
-            tree = getTreeFromStorage();
-            if (tree !== null && TreeScheme.Validator.validate(currentScheme, tree.tree) === true) {
-                console.log("Loaded tree from storage.");
-                openTree(tree.tree, tree.treename);
+            // Load scheme. (either from params or storage)
+            let scheme = getSchemeFromParam();
+            if (scheme !== null) {
+                console.log("Loaded scheme from param.");
+                setCurrentScheme(scheme);
             } else {
-                console.log("No existing tree found, creating new.");
-                enqueueNewTree();
+                scheme = getSchemeFromStorage();
+                if (scheme !== null) {
+                    console.log("Loaded scheme from storage.");
+                    setCurrentScheme(scheme);
+                }
             }
-        }
-    } else {
-        console.log("No existing scheme found, loading example.");
-        enqueueLoadScheme("example.treescheme.json");
-        enqueueLoadTree("example.tree.json");
+
+            // If we found a scheme then attempt to load a tree. (either from params or storage)
+            if (currentScheme !== undefined) {
+                let tree = getTreeFromParam();
+                if (tree !== null && TreeScheme.Validator.validate(currentScheme, tree.tree) === true) {
+                    console.log("Loaded tree from param.");
+                    openTree(tree.tree, tree.treename);
+                } else {
+                    tree = getTreeFromStorage();
+                    if (tree !== null && TreeScheme.Validator.validate(currentScheme, tree.tree) === true) {
+                        console.log("Loaded tree from storage.");
+                        openTree(tree.tree, tree.treename);
+                    } else {
+                        console.log("No existing tree found, creating new.");
+                        enqueueNewTree();
+                    }
+                }
+            } else {
+                console.log("No existing scheme found, loading example.");
+                enqueueLoadSchemeFromUrlOrFile("example.treescheme.json");
+                enqueueLoadTreeFromUrlOrFile("example.tree.json");
+            }
+            break;
+
+        case Mode.Integration:
+            console.log("Started running in integration mode");
+            break;
+
     }
 
     await sequencer.untilEnd;
     console.log("Stopped running");
 }
 
-/** Return a json export of the currently loaded scheme. Useful for interop with other JavaScript. */
+/** Return a json export of the currently loaded scheme. */
 export function getCurrentSchemeJson(): string | undefined {
     return currentScheme === undefined ? undefined : TreeScheme.Serializer.composeJson(currentScheme);
 }
 
-/** Return a json export of the currently loaded tree. Useful for interop with other JavaScript. */
+/** Return a json export of the currently loaded tree. */
 export function getCurrentTreeJson(): string | undefined {
     return treeHistory.current === undefined ? undefined : Tree.Serializer.composeJson(treeHistory.current);
 }
 
-/** Return a json export of the currently loaded scheme and tree. Useful for interop with other JavaScript. */
+/** Return a json export of the currently loaded scheme and tree. */
 export function getCurrentPackJson(): string | undefined {
     if (currentScheme === undefined || treeHistory.current === undefined) {
         return undefined;
@@ -160,7 +205,7 @@ export function getCurrentPackJson(): string | undefined {
     return TreePack.Serializer.composeJson(pack);
 }
 
-/** Url that contains the current loaded scheme and tree. Useful for interop with other JavaScript. */
+/** Share url that contains the current loaded scheme and tree. */
 export function getShareUrl(): string {
     const url = new URL("index.html", location.origin + location.pathname);
     if (currentScheme !== undefined) {
@@ -178,15 +223,21 @@ export function getShareUrl(): string {
     return url.href;
 }
 
-const sequencer = Utils.Sequencer.createRunner();
+/** Load a scheme from a json string. */
+export function enqueueLoadScheme(json: string): void {
+    sequencer.enqueue(async () => {
+        const result = TreeScheme.Parser.parseJson(json);
+        if (result.kind === "error") {
+            alert(`Failed to load. Error: ${result.errorMessage}`);
+        } else {
+            console.log("Successfully loaded scheme");
+            setCurrentScheme(result.value);
+        }
+    });
+}
 
-const maxTreeHistory: number = 100;
-const treeHistory: Utils.History.IHistoryStack<Tree.INode> = Utils.History.createHistoryStack(maxTreeHistory);
-
-let currentScheme: TreeScheme.IScheme | undefined;
-let currentTreeName = "unknown.tree.json";
-
-function enqueueLoadScheme(source: string | File): void {
+/** Load a scheme from a (remote) url or a file. */
+export function enqueueLoadSchemeFromUrlOrFile(source: string | File): void {
     sequencer.enqueue(async () => {
         const result = await TreeScheme.Parser.load(source);
         if (result.kind === "error") {
@@ -198,7 +249,8 @@ function enqueueLoadScheme(source: string | File): void {
     });
 }
 
-function enqueueEnsureTree(): void {
+/** Create a new tree if non is loaded. */
+export function enqueueEnsureTree(): void {
     sequencer.enqueue(async () => {
         if (treeHistory.current === undefined) {
             enqueueNewTree();
@@ -206,7 +258,8 @@ function enqueueEnsureTree(): void {
     });
 }
 
-function enqueueNewTree(): void {
+/** Create a new tree. */
+export function enqueueNewTree(): void {
     sequencer.enqueue(async () => {
         if (currentScheme === undefined) {
             alert("Failed to create a new tree. Error: No scheme loaded");
@@ -222,9 +275,33 @@ function enqueueNewTree(): void {
     });
 }
 
-function enqueueLoadTree(source: string | File): void {
+/** Load a tree from a json string. */
+export function enqueueLoadTree(json: string): void {
+    sequencer.enqueue(async () => {
+        if (currentScheme === undefined) {
+            alert("Failed to load a tree. Error: No scheme loaded");
+            return;
+        }
+
+        const result = Tree.Parser.parseJson(json);
+        if (result.kind === "error") {
+            alert(`Failed to load. Error: ${result.errorMessage}`);
+        } else {
+            console.log("Successfully loaded tree");
+            openTree(result.value, name);
+        }
+    });
+}
+
+/** Load a tree from a (remote) url or a file. */
+export function enqueueLoadTreeFromUrlOrFile(source: string | File): void {
     const name = typeof source === "string" ? source : source.name;
     sequencer.enqueue(async () => {
+        if (currentScheme === undefined) {
+            alert("Failed to load a tree. Error: No scheme loaded");
+            return;
+        }
+
         // Download and parse the tree from the given source.
         const result = await Tree.Parser.load(source);
         if (result.kind === "error") {
@@ -235,8 +312,28 @@ function enqueueLoadTree(source: string | File): void {
     });
 }
 
-function enqueuePasteTree(): void {
+/** Copy the currently loaded tree to clipboard. */
+export function enqueueCopyTreeToClipboard(): void {
     sequencer.enqueue(async () => {
+        if (treeHistory.current !== undefined) {
+            const treeJson = Tree.Serializer.composeJson(treeHistory.current);
+            try {
+                await Utils.Dom.writeClipboardText(treeJson);
+            } catch (e) {
+                alert(`Unable to copy: ${e}`);
+            }
+        }
+    });
+}
+
+/** Paste a tree from clipboard. */
+export function enqueuePasteTree(): void {
+    sequencer.enqueue(async () => {
+        if (currentScheme === undefined) {
+            alert("Failed to paste tree. Error: No scheme loaded");
+            return;
+        }
+
         let json: string | undefined;
         try {
             json = await Utils.Dom.readClipboardText();
@@ -254,7 +351,8 @@ function enqueuePasteTree(): void {
     });
 }
 
-function enqueueLoadPack(source: string | File): void {
+/** Load a pack containing both a scheme and a tree. */
+export function enqueueLoadPackFromUrlOrFile(source: string | File): void {
     const name = typeof source === "string" ? source : source.name;
     sequencer.enqueue(async () => {
         // Download and parse the pack from the given source.
@@ -269,7 +367,8 @@ function enqueueLoadPack(source: string | File): void {
     });
 }
 
-function enqueueExportScheme(): void {
+/** 'Download' currently loaded scheme. */
+export function enqueueExportScheme(): void {
     sequencer.enqueue(async () => {
         if (currentScheme !== undefined) {
             const treeJson = TreeScheme.Serializer.composeJson(currentScheme);
@@ -278,7 +377,8 @@ function enqueueExportScheme(): void {
     });
 }
 
-function enqueueExportTree(): void {
+/** 'Download' currently loaded tree. */
+export function enqueueExportTree(): void {
     sequencer.enqueue(async () => {
         if (treeHistory.current !== undefined) {
             const treeJson = Tree.Serializer.composeJson(treeHistory.current);
@@ -287,7 +387,8 @@ function enqueueExportTree(): void {
     });
 }
 
-function enqueueExportPack(): void {
+/** 'Download' a pack containing both the currently loaded scheme and tree. */
+export function enqueueExportPack(): void {
     sequencer.enqueue(async () => {
         if (currentScheme !== undefined && treeHistory.current !== undefined) {
             const pack = TreePack.createPack(currentScheme, treeHistory.current);
@@ -297,20 +398,8 @@ function enqueueExportPack(): void {
     });
 }
 
-function enqueueCopyTreeToClipboard(): void {
-    sequencer.enqueue(async () => {
-        if (treeHistory.current !== undefined) {
-            const treeJson = Tree.Serializer.composeJson(treeHistory.current);
-            try {
-                await Utils.Dom.writeClipboardText(treeJson);
-            } catch (e) {
-                alert(`Unable to copy: ${e}`);
-            }
-        }
-    });
-}
-
-function enqueueShareToClipboard(): void {
+/** Copy a share link (containing compressed scheme and tree) to clipboard. */
+export function enqueueShareToClipboard(): void {
     sequencer.enqueue(async () => {
         const shareUrl = getShareUrl();
         try {
@@ -321,26 +410,43 @@ function enqueueShareToClipboard(): void {
     });
 }
 
-function enqueueUndo(): void {
+/** Undo the last tree modification. */
+export function enqueueUndo(): void {
     sequencer.enqueue(async () => {
-        treeHistory.undo();
-        updateTree(currentTreeName);
+        if (currentScheme !== undefined) {
+            treeHistory.undo();
+            updateTree(currentTreeName);
+        }
     });
 }
 
-function enqueueRedo(): void {
+/** Redo the last tree modification. */
+export function enqueueRedo(): void {
     sequencer.enqueue(async () => {
-        treeHistory.redo();
-        updateTree(currentTreeName);
+        if (currentScheme !== undefined) {
+            treeHistory.redo();
+            updateTree(currentTreeName);
+        }
     });
 }
+
+const sequencer = Utils.Sequencer.createRunner();
+
+const maxTreeHistory: number = 100;
+const treeHistory: Utils.History.IHistoryStack<Tree.INode> = Utils.History.createHistoryStack(maxTreeHistory);
+
+let mode: Mode;
+let currentScheme: TreeScheme.IScheme | undefined;
+let currentTreeName = "unknown.tree.json";
 
 function setCurrentScheme(scheme: TreeScheme.IScheme): void {
     currentScheme = scheme;
     Display.TreeScheme.setScheme(currentScheme);
 
     // Save the scheme in storage
-    Utils.Dom.trySaveToStorage("scheme", TreeScheme.Serializer.composeJson(scheme));
+    if (mode !== Mode.Integration) {
+        Utils.Dom.trySaveToStorage("scheme", TreeScheme.Serializer.composeJson(scheme));
+    }
 
     // Prune the history of tree's that do not match the new scheme.
     treeHistory.prune(historyTree => {
@@ -388,7 +494,7 @@ function updateTree(name: string): void {
     });
 
     // Save the new tree to local-storage
-    if (treeHistory.current !== undefined) {
+    if (treeHistory.current !== undefined && mode !== Mode.Integration) {
         Utils.Dom.trySaveToStorage("treename", name);
         Utils.Dom.trySaveToStorage("tree", Tree.Serializer.composeJson(treeHistory.current));
     }
@@ -427,12 +533,12 @@ function onDrag(event: DragEvent): void {
     if (event.dataTransfer !== null && event.dataTransfer.files !== null && event.dataTransfer.files.length) {
         const file = event.dataTransfer.files[0];
         if (file.name.includes("treepack")) {
-            enqueueLoadPack(file);
+            enqueueLoadPackFromUrlOrFile(file);
         } else if (file.name.includes("scheme")) {
-            enqueueLoadScheme(file);
+            enqueueLoadSchemeFromUrlOrFile(file);
             enqueueEnsureTree();
         } else {
-            enqueueLoadTree(file);
+            enqueueLoadTreeFromUrlOrFile(file);
         }
     }
 
@@ -446,9 +552,17 @@ function onDomKeyPress(event: KeyboardEvent): void {
         return;
     }
     switch (event.key) {
-        case "t": toggleToolbox(); break;
+        case "t":
+            if (mode === Mode.Normal) {
+                toggleToolbox();
+            }
+            break;
         case "f": focusTree(); break;
-        case "e": enqueueExportTree(); break;
+        case "e":
+            if (mode === Mode.Normal) {
+                enqueueExportTree();
+            }
+            break;
         case "c": enqueueCopyTreeToClipboard(); break;
         case "v": enqueuePasteTree(); break;
         case "+": case "=": Display.Tree.zoom(0.1); break;

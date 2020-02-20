@@ -279,7 +279,7 @@ export function clearChildren(element: Element): void {
 
 /**
  * Set the text content of an element.
- * * Will throw if the element doesn't exist.
+ * Will throw if the element doesn't exist.
  * @param elementId Id of the element to set the text for.
  * @param text Text to assign to the element.
  */
@@ -289,6 +289,19 @@ export function setText(elementId: string, text: string): void {
         throw new Error(`Element with id: ${elementId} not found`);
     }
     element.textContent = text;
+}
+
+/**
+ * Hide an element be setting the style visibility to 'hidden'.
+ * Will throw if the element doesn't exist.
+ * @param elementId Id of the element to hide.
+ */
+export function hideElementById(elementId: string): void {
+    const elem = document.getElementById(elementId);
+    if (elem === null) {
+        throw new Error(`Element with id: ${elementId} not found`);
+    }
+    elem.style.visibility = "hidden";
 }
 
 /**
