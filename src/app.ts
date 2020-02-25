@@ -276,7 +276,7 @@ export function enqueueNewTree(): void {
 }
 
 /** Load a tree from a json string. */
-export function enqueueLoadTree(json: string): void {
+export function enqueueLoadTree(json: string, focusTree = true): void {
     sequencer.enqueue(async () => {
         if (currentScheme === undefined) {
             alert("Failed to load a tree. Error: No scheme loaded");
@@ -288,13 +288,13 @@ export function enqueueLoadTree(json: string): void {
             alert(`Failed to load. Error: ${result.errorMessage}`);
         } else {
             console.log("Successfully loaded tree");
-            openTree(result.value, name);
+            openTree(result.value, name, focusTree);
         }
     });
 }
 
 /** Load a tree from a (remote) url or a file. */
-export function enqueueLoadTreeFromUrlOrFile(source: string | File): void {
+export function enqueueLoadTreeFromUrlOrFile(source: string | File, focusTree = true): void {
     const name = typeof source === "string" ? source : source.name;
     sequencer.enqueue(async () => {
         if (currentScheme === undefined) {
@@ -307,7 +307,7 @@ export function enqueueLoadTreeFromUrlOrFile(source: string | File): void {
         if (result.kind === "error") {
             alert(`Failed to parse tree. Error: ${result.errorMessage}`);
         } else {
-            openTree(result.value, name);
+            openTree(result.value, name, focusTree);
         }
     });
 }
@@ -461,7 +461,7 @@ function setCurrentScheme(scheme: TreeScheme.IScheme): void {
     updateTree(currentTreeName);
 }
 
-function openTree(tree: Tree.INode, name: string): void {
+function openTree(tree: Tree.INode, name: string, focusTree = true): void {
     if (currentScheme === undefined) {
         alert("Failed to open tree. Error: No scheme loaded");
         return;
@@ -476,7 +476,10 @@ function openTree(tree: Tree.INode, name: string): void {
 
     treeHistory.push(completeTree);
     updateTree(name);
-    Display.Tree.focusTree(1);
+
+    if (focusTree) {
+        Display.Tree.focusTree(1);
+    }
 }
 
 function updateTree(name: string): void {
