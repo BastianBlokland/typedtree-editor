@@ -178,8 +178,8 @@ function createField(
         /* NOTE: There are some ugly casts here because the type-system cannot quite follow what
         we are doing here. */
 
-        // Add element button
-        parent.addGraphics("fieldvalue-button", "arrayAdd", { x: nameWidth - 15, y: centeredYOffset }, () => {
+        // Add element button.
+        parent.addGraphics("fieldvalue-button", "arrayAdd", { x: nameWidth - 30, y: centeredYOffset }, () => {
             if (fieldDefinition === undefined) {
                 throw new Error("Unable to create a new element without a FieldDefinition");
             }
@@ -193,23 +193,30 @@ function createField(
             const yOffset = i * nodeFieldHeight;
             const yPos = centeredYOffset + yOffset;
 
-            // Element deletion button
-            parent.addGraphics("fieldvalue-button", "arrayDelete", { x: nameWidth, y: yPos }, () => {
-                const newArray = Utils.withoutElement(array, i);
+            // Element deletion button.
+            parent.addGraphics("fieldvalue-button", "arrayDelete", { x: nameWidth - 15, y: yPos }, () => {
+                const newArray = Utils.withoutElement(array, i)
                 changed(Tree.Modifications.fieldWithValue(field, newArray as unknown as Tree.FieldValueType<T>));
             });
 
-            // Reorder buttons
-            parent.addGraphics("fieldvalue-button", "arrayOrderUp", { x: nameWidth + 12, y: yPos - 5 }, () => {
+            // Element duplicate button.
+            parent.addGraphics("fieldvalue-button", "arrayDuplicate", { x: nameWidth, y: yPos }, () => {
+                const newArray = Utils.withExtraElement(array, i,
+                    field.kind === "nodeArray" ? Tree.Modifications.cloneNode(element as Tree.INode) : element);
+                changed(Tree.Modifications.fieldWithValue(field, newArray as unknown as Tree.FieldValueType<T>));
+            });
+
+            // Reorder buttons.
+            parent.addGraphics("fieldvalue-button", "arrayOrderUp", { x: nameWidth + 13, y: yPos - 5 }, () => {
                 const newArray = Utils.withSwappedElements(array, i, (i === 0 ? array.length : i) - 1);
                 changed(Tree.Modifications.fieldWithValue(field, newArray as unknown as Tree.FieldValueType<T>));
             });
-            parent.addGraphics("fieldvalue-button", "arrayOrderDown", { x: nameWidth + 12, y: yPos + 5 }, () => {
+            parent.addGraphics("fieldvalue-button", "arrayOrderDown", { x: nameWidth + 13, y: yPos + 5 }, () => {
                 const newArray = Utils.withSwappedElements(array, i, (i + 1) % array.length);
                 changed(Tree.Modifications.fieldWithValue(field, newArray as unknown as Tree.FieldValueType<T>));
             });
 
-            // Element value
+            // Element value.
             createElementValue(element, 20, yOffset, newElement => {
                 changed(Tree.Modifications.fieldWithElement(field, newElement, i));
             });
