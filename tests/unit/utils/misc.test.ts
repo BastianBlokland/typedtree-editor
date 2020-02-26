@@ -4,12 +4,21 @@
 
 import * as Utils from "../../../src/utils";
 
-test("withNewElement", () => {
-    expect(Utils.withNewElement([1, 2, 3], 0, 1337)).toEqual([1337, 2, 3]);
-    expect(Utils.withNewElement([1, 2, 3], 1, 1337)).toEqual([1, 1337, 3]);
-    expect(Utils.withNewElement([1, 2, 3], 2, 1337)).toEqual([1, 2, 1337]);
-    expect(() => Utils.withNewElement([1], -1, 1337)).toThrowError();
-    expect(() => Utils.withNewElement([1], 1, 1337)).toThrowError();
+test("withReplacedElement", () => {
+    expect(Utils.withReplacedElement([1, 2, 3], 0, 1337)).toEqual([1337, 2, 3]);
+    expect(Utils.withReplacedElement([1, 2, 3], 1, 1337)).toEqual([1, 1337, 3]);
+    expect(Utils.withReplacedElement([1, 2, 3], 2, 1337)).toEqual([1, 2, 1337]);
+    expect(() => Utils.withReplacedElement([1], -1, 1337)).toThrowError();
+    expect(() => Utils.withReplacedElement([1], 1, 1337)).toThrowError();
+});
+
+test.only("withExtraElement", () => {
+    expect(Utils.withExtraElement([1, 2, 3], 0, 1337)).toEqual([1337, 1, 2, 3]);
+    expect(Utils.withExtraElement([1, 2, 3], 1, 1337)).toEqual([1, 1337, 2, 3]);
+    expect(Utils.withExtraElement([1, 2, 3], 2, 1337)).toEqual([1, 2, 1337, 3]);
+    expect(Utils.withExtraElement([1, 2, 3], 3, 1337)).toEqual([1, 2, 3, 1337]);
+    expect(() => Utils.withExtraElement([1], -1, 1337)).toThrowError();
+    expect(() => Utils.withExtraElement([1], 2, 1337)).toThrowError();
 });
 
 test("withoutElement", () => {

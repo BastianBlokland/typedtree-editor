@@ -25,7 +25,7 @@ export function fieldWithElement<T extends Tree.Field>(
 
             // Unfortunately the type system cannot follow what we are doing here so some casts are required.
             const arrayField = field as Tree.OnlyArrayField<T>;
-            const value = Utils.withNewElement(
+            const value = Utils.withReplacedElement(
                 arrayField.value,
                 offset,
                 element as Tree.FieldElementType<Tree.Field>);
