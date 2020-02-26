@@ -83,3 +83,19 @@ test("treeWithReplacedNode", () => {
             b.pushNodeField("child", Tree.createNode("child", b => b.pushNodeField("grandChild", innerNodeB)));
         }));
 });
+
+test("cloneNode", () => {
+    const innerNodeA = Tree.createNode("innerNode", b => {
+        b.pushStringField("innerFieldA", "innerValueA");
+    });
+    const innerNodeB = Tree.createNode("innerNode", b => {
+        b.pushStringField("innerFieldB", "innerValueB");
+    });
+    const node = Tree.createNode("testNode", b => {
+        b.pushNodeField("f1", Tree.createNode("child", b => b.pushNodeField("grandChild", innerNodeA)));
+        b.pushNodeArrayField("f2", [innerNodeB]);
+    });
+    // Clone should be different but should contain the same values.
+    expect(Tree.Modifications.cloneNode(node)).not.toBe(node);
+    expect(Tree.Modifications.cloneNode(node)).toEqual(node);
+});

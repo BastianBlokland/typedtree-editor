@@ -88,3 +88,32 @@ function fieldWithNewNode(origin: Tree.INode, output: Tree.IFieldElementIdentifi
     }
     return fieldWithElement(orgField, target, output.offset);
 }
+
+/**
+ * Make a deep clone of anode.
+ * @param node Node to clone.
+ * @returns New node with the same fields.
+ */
+export function cloneNode(node: Tree.INode): Tree.INode {
+    return Tree.createNode(node.type, b => {
+        node.fields.forEach(orgField => b.pushField(cloneField(orgField)));
+    });
+}
+
+function cloneField(field: Tree.Field): Tree.Field {
+    switch (field.kind) {
+        case "string":
+        case "number":
+        case "boolean":
+        case "stringArray":
+        case "numberArray":
+        case "booleanArray":
+            return field;
+        case "node":
+            return fieldWithValue(field, cloneNode(field.value));
+        case "nodeArray":
+            return fieldWithValue(field, field.value.map(cloneNode));
+        default:
+            Utils.assertNever(field);
+    }
+}
