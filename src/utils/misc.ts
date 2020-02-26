@@ -10,12 +10,28 @@
  * @param data Data for the new element.
  * @returns New array with the changed element.
  */
-export function withNewElement<T>(array: ReadonlyArray<T>, index: number, data: T): T[] {
+export function withReplacedElement<T>(array: ReadonlyArray<T>, index: number, data: T): T[] {
     if (index < 0 || index >= array.length) {
         throw new Error("Given index is outside of the bounds of the array");
     }
     const result = array.slice();
     result[index] = data;
+    return result;
+}
+
+/**
+ * Create a new array that contains all the elements and an extra element at the given index.
+ * @param array Source array.
+ * @param index Index to insert the element at.
+ * @param data New element.
+ * @returns New array with the extra element.
+ */
+export function withExtraElement<T>(array: ReadonlyArray<T>, index: number, data: T): T[] {
+    if (index < 0 || index > array.length) {
+        throw new Error("Given index is outside of the bounds of the array");
+    }
+    const result = array.slice();
+    result.splice(index, 0, data);
     return result;
 }
 
