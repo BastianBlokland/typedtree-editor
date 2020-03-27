@@ -16,34 +16,34 @@
     "./build"
   ],
   "dependencies": {
-    "file-saver": "^2.0.1",
+    "file-saver": "^2.0.2",
     "lz-string": "^1.4.4",
     "normalize-wheel": "^1.0.1"
   },
   "devDependencies": {
     "@types/expect-puppeteer": "^4.4.0",
-    "@types/file-saver": "^2.0.0",
-    "@types/jest": "^25.1.3",
-    "@types/jest-environment-puppeteer": "^4.0.0",
+    "@types/file-saver": "^2.0.1",
+    "@types/jest": "^25.1.4",
+    "@types/jest-environment-puppeteer": "^4.3.1",
     "@types/lz-string": "^1.3.33",
-    "@types/puppeteer": "^2.0.0",
+    "@types/puppeteer": "^2.0.1",
     "codecov": "^3.6.5",
     "css-combine": "^1.0.0",
-    "jest": "^25.1.0",
-    "jest-dev-server": "^4.1.1",
+    "jest": "^25.2.3",
+    "jest-dev-server": "^4.4.0",
     "jest-junit": "^10.0.0",
-    "jest-puppeteer": "^4.1.1",
+    "jest-puppeteer": "^4.4.0",
     "live-server": "^1.2.1",
-    "npm-check-updates": "^4.0.1",
+    "npm-check-updates": "^4.1.0",
     "puppeteer": "^2.1.1",
-    "rollup": "^1.11.3",
+    "rollup": "^2.2.0",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
     "ts-jest": "^25.2.1",
-    "tsc-watch": "^4.1.0",
-    "tslint": "^6.0.0",
-    "typescript": "^3.4.5",
+    "tsc-watch": "^4.2.3",
+    "tslint": "^6.1.0",
+    "typescript": "^3.8.3",
     "typescript-tslint-plugin": "^0.5.5",
-    "uglify-js": "^3.5.10"
+    "uglify-js": "^3.8.0"
   }
 }

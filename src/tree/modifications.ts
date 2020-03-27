@@ -33,7 +33,9 @@ export function fieldWithElement<T extends Tree.Field>(
             return { ...field, value } as T;
     }
 
-    return fieldWithValue(field, element as Tree.FieldValueType<T>);
+    // If the field is not an array then treat it as a value.
+    // Needs ugly cast to 'unknown' as the typescript compiler cannot figure out that these types    // have overlap.
+    return fieldWithValue(field, element as unknown as Tree.FieldValueType<T>);
 }
 
 /**
