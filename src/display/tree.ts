@@ -208,11 +208,17 @@ function createField(
 
             // Reorder buttons.
             parent.addGraphics("fieldvalue-button", "arrayOrderUp", { x: nameWidth + 13, y: yPos - 5 }, () => {
-                const newArray = Utils.withSwappedElements(array, i, (i === 0 ? array.length : i) - 1);
+                // If item is the first then move it to the end, otherwise move it one toward the front.
+                const newArray = i === 0 ?
+                    Utils.withExtraElement(Utils.withoutElement(array, i), array.length - 1, array[0]) :
+                    Utils.withSwappedElements(array, i, i - 1);
                 changed(Tree.Modifications.fieldWithValue(field, newArray as unknown as Tree.FieldValueType<T>));
             });
             parent.addGraphics("fieldvalue-button", "arrayOrderDown", { x: nameWidth + 13, y: yPos + 5 }, () => {
-                const newArray = Utils.withSwappedElements(array, i, (i + 1) % array.length);
+                // If the item is the last then move it to the front, otherwise move it one toward to end.
+                const newArray = i === array.length - 1 ?
+                    Utils.withExtraElement(Utils.withoutElement(array, i), 0, array[array.length - 1]) :
+                    Utils.withSwappedElements(array, i, i + 1);
                 changed(Tree.Modifications.fieldWithValue(field, newArray as unknown as Tree.FieldValueType<T>));
             });
 
