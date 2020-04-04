@@ -475,9 +475,18 @@ class SchemeBuilderImpl implements ISchemeBuilder {
             return undefined;
         }
 
-        const alias = new AliasImpl(identifier, values);
-        this._aliases.push(alias);
-        return alias;
+        try {
+            const alias = new AliasImpl(identifier, values);
+            this._aliases.push(alias);
+            return alias;
+        }
+        catch (e) {
+            if (e instanceof Error) {
+                throw Error(`Invalid alias '${identifier}': ${e.message}`);
+            } else {
+                throw e;
+            }
+        }
     }
 
     public pushEnum(identifier: string, values: ReadonlyArray<IEnumEntry>): IEnum | undefined {
@@ -492,9 +501,18 @@ class SchemeBuilderImpl implements ISchemeBuilder {
             return undefined;
         }
 
-        const enumEntry = new EnumImpl(identifier, values);
-        this._enums.push(enumEntry);
-        return enumEntry;
+        try {
+            const enumEntry = new EnumImpl(identifier, values);
+            this._enums.push(enumEntry);
+            return enumEntry;
+        }
+        catch (e) {
+            if (e instanceof Error) {
+                throw Error(`Invalid enum '${identifier}': ${e.message}`);
+            } else {
+                throw e;
+            }
+        }
     }
 
     public getAlias(identifier: string): IAlias | undefined {
