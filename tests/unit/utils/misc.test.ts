@@ -12,7 +12,7 @@ test("withReplacedElement", () => {
     expect(() => Utils.withReplacedElement([1], 1, 1337)).toThrowError();
 });
 
-test.only("withExtraElement", () => {
+test("withExtraElement", () => {
     expect(Utils.withExtraElement([1, 2, 3], 0, 1337)).toEqual([1337, 1, 2, 3]);
     expect(Utils.withExtraElement([1, 2, 3], 1, 1337)).toEqual([1, 1337, 2, 3]);
     expect(Utils.withExtraElement([1, 2, 3], 2, 1337)).toEqual([1, 2, 1337, 3]);
