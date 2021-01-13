@@ -1,15 +1,15 @@
 ﻿# TypedTree-Editor
 
-[![Website](https://img.shields.io/website/https/bastian.tech/tree.svg)](https://bastian.tech/tree/)
+[![Website](https://img.shields.io/website/https/www.bastian.tech/tree.svg)](https://www.bastian.tech/tree/)
 [![Build](https://img.shields.io/azure-devops/build/bastian-blokland/TypedTree/3/master.svg)](https://dev.azure.com/bastian-blokland/TypedTree/_build/latest?definitionId=3&branchName=master)
 [![Tests](https://img.shields.io/azure-devops/tests/bastian-blokland/TypedTree/3/master.svg)](https://dev.azure.com/bastian-blokland/TypedTree/_build/latest?definitionId=3&branchName=master)
 [![CodeCov](https://codecov.io/gh/BastianBlokland/typedtree-editor/branch/master/graph/badge.svg)](https://codecov.io/gh/BastianBlokland/typedtree-editor)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-[**Web editor for typed tree structures**](https://bastian.tech/tree/)
+[**Web editor for typed tree structures**](https://www.bastian.tech/tree/)
 
 ---
-![Preview image](https://bastian.tech/tree/screenshots/toolbox-hidden.png)
+![Preview image](https://www.bastian.tech/tree/screenshots/toolbox-hidden.png)
 
 ---
 
@@ -167,10 +167,10 @@ found in the `./screenshots` directory. Actually the image in this readme also c
 ### Continuous integration
 Builds are run in [azure-devops](https://dev.azure.com/bastian-blokland/TypedTree/_build?definitionId=3) and
 output is deployed to a azure blob-storage bucket. Output can be found here:
-`bastian.tech/typedtree-editor/refs/heads/[BRANCH_NAME]/`
+`www.bastian.tech/typedtree-editor/refs/heads/[BRANCH_NAME]/`
 
-`bastian.tech/tree` is a alias
-to `bastian.tech/typedtree-editor/refs/heads/master/`
+`www.bastian.tech/tree` is a alias
+to `www.bastian.tech/typedtree-editor/refs/heads/master/`
 
 ### Dependencies
 * [FileSaver](https://github.com/eligrey/FileSaver.js): Library for saving files that works
