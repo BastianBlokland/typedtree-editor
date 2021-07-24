@@ -167,6 +167,7 @@ found in the `./screenshots` directory. Actually the image in this readme also c
 ### Continuous integration
 Builds are run in [azure-devops](https://dev.azure.com/bastian-blokland/TypedTree/_build?definitionId=3) and
 output is deployed to a azure blob-storage bucket. Output can be found here:
+`https://www.bastian.tech/typedtree-editor/refs/pull/[PULL_REQUEST_NUMBER]/merge/` or
 `www.bastian.tech/typedtree-editor/refs/heads/[BRANCH_NAME]/`
 
 `www.bastian.tech/tree` is a alias
