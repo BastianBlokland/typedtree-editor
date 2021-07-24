@@ -276,7 +276,7 @@ export function enqueueNewTree(): void {
 }
 
 /** Load a tree from a json string. */
-export function enqueueLoadTree(json: string, focusTree = true): void {
+export function enqueueLoadTree(json: string, name: string, focusTree = true): void {
     sequencer.enqueue(async () => {
         if (currentScheme === undefined) {
             alert("Failed to load a tree. Error: No scheme loaded");

@@ -46,7 +46,7 @@ describe("app in normal mode", () => {
 
         // Set the test-file in the scheme input field.
         await uploadText("#openscheme-file", testScheme);
-        await page.waitFor(100); // Give the page some time to respond.
+        await page.waitForTimeout(100); // Give the page some time to respond.
 
         const testSchemeParseResult = TreeScheme.Parser.parseJson(testScheme);
         if (testSchemeParseResult.kind === "error") {
@@ -62,7 +62,7 @@ describe("app in normal mode", () => {
 
         // Set the test-file in the scheme input field.
         await uploadText("#opentree-file", testTree);
-        await page.waitFor(100); // Give the page some time to respond.
+        await page.waitForTimeout(100); // Give the page some time to respond.
 
         await saveScreenshot("loaded-tree");
         expect(await getCurrentTree()).toEqual(Tree.createNode(scheme.rootAlias.values[0]));
@@ -82,7 +82,7 @@ describe("app in normal mode", () => {
 
         // Set the test-file in the pack input field.
         await uploadText("#openpack-file", testPack);
-        await page.waitFor(100); // Give the page some time to respond.
+        await page.waitForTimeout(100); // Give the page some time to respond.
 
         const testPackParseResult = TreePack.Parser.parseJson(testPack);
         if (testPackParseResult.kind === "error") {
@@ -99,7 +99,7 @@ describe("app in normal mode", () => {
         await saveScreenshot("change-node-before");
 
         await page.select(".node-type", targetType);
-        await page.waitFor(100); // Give the page some time to respond.
+        await page.waitForTimeout(100); // Give the page some time to respond.
 
         await saveScreenshot("change-node-after");
         expect((await getCurrentTree()).type).toBe(targetType);
@@ -162,7 +162,7 @@ describe("app in normal mode", () => {
 
     it("links to github", async () => {
         await page.click("#github-button");
-        await page.waitFor(100); // Give the page some time to respond.
+        await page.waitForTimeout(100); // Give the page some time to respond.
         expect(page.url()).toBe("https://github.com/BastianBlokland/typedtree-editor");
     });
 });
@@ -185,7 +185,7 @@ describe("app in integration mode", () => {
         }`;
 
         await page.evaluate(`enqueueLoadScheme(\`${testScheme}\`)`);
-        await page.waitFor(100); // Give the page some time to respond.
+        await page.waitForTimeout(100); // Give the page some time to respond.
 
         // Expect the current scheme to equal the one we just loaded.
         const testSchemeParseResult = TreeScheme.Parser.parseJson(testScheme);
@@ -205,7 +205,7 @@ describe("app in integration mode", () => {
 
         await page.evaluate(`enqueueLoadScheme(\`${testScheme}\`)`);
         await page.evaluate(`enqueueLoadTree(\`${testTree}\`)`);
-        await page.waitFor(100); // Give the page some time to respond.
+        await page.waitForTimeout(100); // Give the page some time to respond.
 
         // Expect the current tree json to equal the one we just loaded.
         expect(await page.evaluate("getCurrentTreeJson()")).toEqual(testTree);
@@ -214,7 +214,7 @@ describe("app in integration mode", () => {
 
 async function loadPage(url: string): Promise<void> {
     await page.goto(url);
-    await page.waitFor(100); // Give the page some time to load.
+    await page.waitForTimeout(100); // Give the page some time to load.
 }
 
 async function clearStorage(): Promise<void> {

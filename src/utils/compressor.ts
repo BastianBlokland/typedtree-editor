@@ -19,5 +19,6 @@ export function compressToUriComponent(uncompressed: string): string {
  * @returns Original uncompressed text.
  */
 export function decompressFromUriComponent(compressed: string): string {
-    return LZString.decompressFromEncodedURIComponent(compressed);
+    const result = LZString.decompressFromEncodedURIComponent(compressed);
+    return result === null ? "" : result;
 }

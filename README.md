@@ -137,8 +137,8 @@ are included. Ci scripts are written in bash so windows users should use the
 [wsl](https://docs.microsoft.com/en-us/windows/wsl) for running them.
 
 ### Building
-Installing [node](https://nodejs.org/en/download/) and executing: `make` should be enough, build-output
-can be found in the `./build` directory.
+Installing [node](https://nodejs.org/en/download/) (at least version 10 of node required) and executing: `make`
+should be enough, build-output can be found in the `./build` directory.
 
 ### Development
 For local development execute: `make watch` which will start a local [server](https://github.com/tapio/live-server)
@@ -167,12 +167,14 @@ found in the `./screenshots` directory. Actually the image in this readme also c
 ### Continuous integration
 Builds are run in [azure-devops](https://dev.azure.com/bastian-blokland/TypedTree/_build?definitionId=3) and
 output is deployed to a azure blob-storage bucket. Output can be found here:
+`https://www.bastian.tech/typedtree-editor/refs/pull/[PULL_REQUEST_NUMBER]/merge/` or
 `www.bastian.tech/typedtree-editor/refs/heads/[BRANCH_NAME]/`
 
 `www.bastian.tech/tree` is a alias
 to `www.bastian.tech/typedtree-editor/refs/heads/master/`
 
 ### Dependencies
+* [NodeJs](https://nodejs.org/en/): At least version 10 is required.
 * [FileSaver](https://github.com/eligrey/FileSaver.js): Library for saving files that works
 consistently in almost all browsers.
 * [lz-string](https://github.com/pieroxy/lz-string): Library for compressing text.
