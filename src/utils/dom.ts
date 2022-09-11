@@ -5,9 +5,9 @@
 import * as Vec from "./vector";
 
 // External node-plugins
-import "file-saver";
 // @ts-ignore (No types available)
 import normalizeWheel from "normalize-wheel";
+import saveAs from "file-saver";
 
 /** Html class identifier */
 export type ClassName = string;
