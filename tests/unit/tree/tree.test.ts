@@ -76,10 +76,24 @@ test("noneNodesCannotHaveFields", () => {
     }).toThrowError();
 });
 
+test("nodeName", () => {
+    const testTree = createTestTree();
+    expect(testTree.name).toEqual("TestNode1");
+});
+
+test("nodeNameUndefined", () => {
+    expect(() => {
+        const noneNode = Tree.createNoneNode();
+        expect(noneNode).toEqual(undefined);
+    }).toThrowError();
+});
+
 function createTestTree(): Tree.INode {
     return Tree.createNode("node1", b => {
+        b.pushName("TestNode1");
         b.pushNodeArrayField("field1", [
             Tree.createNode("node2", b => {
+                b.pushName("TestNode2");
                 b.pushNodeField("field2", Tree.createNode("node3"));
             }),
         ]);
