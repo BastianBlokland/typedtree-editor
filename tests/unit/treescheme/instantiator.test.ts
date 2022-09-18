@@ -8,6 +8,7 @@ import * as TreeScheme from "../../../src/treescheme";
 test("missingFieldsAreAppendedCorrectly", () => {
     const scheme = createTestScheme();
     const tree = Tree.createNode("Node1", b => {
+        b.pushName("MyNode");
         b.pushNumberField("field2", 1337);
         b.pushNodeArrayField("field9", [
             Tree.createNode("Node1", b => {
@@ -17,6 +18,7 @@ test("missingFieldsAreAppendedCorrectly", () => {
     });
     expect(TreeScheme.Instantiator.duplicateWithMissingFields(scheme, tree)).
         toEqual(Tree.createNode("Node1", b => {
+            b.pushName("MyNode");
             b.pushStringField("field1", "");
             b.pushNumberField("field2", 1337);
             b.pushBooleanField("field3", false);
@@ -61,6 +63,7 @@ test("nodeTypeCanBeChangedIntoNoneType", () => {
 test("whenChangingNodeTypeCompatibleFieldsAreReused", () => {
     const scheme = createTestScheme();
     const node = Tree.createNode("RandomNode", b => {
+        b.pushName("My Node");
         b.pushNumberField("field1", 1234);
         b.pushNumberField("field2", 1337);
         b.pushNodeArrayField("field9", [
@@ -72,6 +75,7 @@ test("whenChangingNodeTypeCompatibleFieldsAreReused", () => {
     });
     expect(TreeScheme.Instantiator.changeNodeType(scheme, node, "Node1")).
         toEqual(Tree.createNode("Node1", b => {
+            b.pushName("My Node");
             b.pushStringField("field1", "");
             b.pushNumberField("field2", 1337);
             b.pushBooleanField("field3", false);
