@@ -98,6 +98,9 @@ function fieldWithNewNode(origin: Tree.INode, output: Tree.IFieldElementIdentifi
  */
 export function cloneNode(node: Tree.INode): Tree.INode {
     return Tree.createNode(node.type, b => {
+        if (node.name !== undefined) {
+            b.pushName(node.name);
+        }
         node.fields.forEach(orgField => b.pushField(cloneField(orgField)));
     });
 }

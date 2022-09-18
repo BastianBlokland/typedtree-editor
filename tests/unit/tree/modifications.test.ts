@@ -89,6 +89,7 @@ test("cloneNode", () => {
         b.pushStringField("innerFieldA", "innerValueA");
     });
     const innerNodeB = Tree.createNode("innerNode", b => {
+        b.pushName("Inner Node B");
         b.pushStringField("innerFieldB", "innerValueB");
     });
     const node = Tree.createNode("testNode", b => {
