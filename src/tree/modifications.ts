@@ -69,6 +69,21 @@ export function nodeWithField(node: Tree.INode, field: Tree.Field): Tree.INode {
 }
 
 /**
+ * Create a new node with a new name.
+ * @param node Original node.
+ * @param name New name.
+ * @returns New node with updated name.
+ */
+export function nodeWithName(node: Tree.INode, name: string | undefined): Tree.INode {
+    return Tree.createNode(node.type, b => {
+        if (name !== undefined) {
+            b.pushName(name);
+        }
+        node.fields.forEach(orgField => b.pushField(orgField));
+    });
+}
+
+/**
  * Create a new tree based on a existing tree but with a single node replaced with another.
  * @param root Root of the tree to replace.
  * @param target Node to replace.

@@ -68,6 +68,20 @@ test("nodeWithField", () => {
         }));
 });
 
+
+test("nodeWithName", () => {
+    const node = Tree.createNode("testNode", b => {
+        b.pushStringField("f1", "v1");
+        b.pushStringField("f2", "v2");
+    });
+    expect(Tree.Modifications.nodeWithName(node, "Hello World"))
+        .toEqual(Tree.createNode("testNode", b => {
+            b.pushName("Hello World");
+            b.pushStringField("f1", "v1");
+            b.pushStringField("f2", "v2");
+        }));
+});
+
 test("treeWithReplacedNode", () => {
     const innerNodeA = Tree.createNode("innerNode", b => {
         b.pushStringField("innerFieldA", "innerValueA");
