@@ -34,6 +34,9 @@ export function createObject(node: Tree.INode): object {
     if (node.type !== Tree.anonymousNodeType) {
         obj.$type = node.type;
     }
+    if (node.name !== undefined && node.name !== "") {
+        obj.$name = node.name;
+    }
     node.fields.forEach(field => {
         switch (field.kind) {
             case "string":
