@@ -58,6 +58,9 @@ export function fieldWithValue<T extends Tree.Field>(field: T, value: Tree.Field
  */
 export function nodeWithField(node: Tree.INode, field: Tree.Field): Tree.INode {
     return Tree.createNode(node.type, b => {
+        if (node.name !== undefined) {
+            b.pushName(node.name);
+        }
         node.fields.forEach(orgField => {
             if (orgField.name === field.name) {
                 b.pushField(field);

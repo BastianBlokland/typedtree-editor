@@ -58,11 +58,13 @@ test("fieldWithValueNodeArray", () => {
 
 test("nodeWithField", () => {
     const node = Tree.createNode("testNode", b => {
+        b.pushName("Hello World");
         b.pushStringField("f1", "v1");
         b.pushStringField("f2", "v2");
     });
     expect(Tree.Modifications.nodeWithField(node, { kind: "string", name: "f2", value: "v3" }))
         .toEqual(Tree.createNode("testNode", b => {
+            b.pushName("Hello World");
             b.pushStringField("f1", "v1");
             b.pushStringField("f2", "v3");
         }));
