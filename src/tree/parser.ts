@@ -68,9 +68,17 @@ function parseNode(obj: any): Tree.INode {
         }
     }
 
+    let name: any = obj.$name;
+    if (name === undefined || name === null || typeof name !== "string" || name === "") {
+        name = undefined;
+    }
+
     return Tree.createNode(type, b => {
+        if (name !== undefined) {
+            b.pushName(name);
+        }
         Object.keys(obj).forEach(key => {
-            if (key !== "$type") {
+            if (!key.startsWith("$")) {
                 const field = parseField(key, obj[key]);
                 if (field !== undefined) {
                     b.pushField(field);
