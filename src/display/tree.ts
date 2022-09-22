@@ -62,6 +62,7 @@ const nodeInputSlotOffset: Vector.IVector2 = { x: 0, y: 12.5 };
 const nodeTooltipSize: Vector.IVector2 = { x: 450, y: 75 };
 const nodeContentPadding = 6;
 const infoButtonSize = 20;
+const nameButtonSize = 20;
 const nodeConnectionCurviness = .7;
 
 type nodeChangedCallback = (newNode: Tree.INode) => void;
@@ -89,7 +90,7 @@ function createNode(
         typeOptionsIndex,
         typeOptions,
         { x: infoButtonSize + Utils.half(nodeContentPadding), y: Utils.half(nodeContentPadding) },
-        { x: size.x - nodeContentPadding - infoButtonSize, y: nodeHeaderHeight - nodeContentPadding },
+        { x: size.x - nodeContentPadding - infoButtonSize - nameButtonSize, y: nodeHeaderHeight - nodeContentPadding },
         newIndex => {
             const newNodeType = typeOptions[newIndex];
             const newNode = TreeScheme.Instantiator.changeNodeType(typeLookup.scheme, node, newNodeType);
@@ -112,6 +113,9 @@ function createNode(
         toolTipElement.addRect("node-tooltip-background", nodeTooltipSize, Vector.zeroVector);
         toolTipElement.addText("node-tooltip-text", definition.comment, { x: 0, y: 0 }, nodeTooltipSize);
     }
+
+    nodeElement.addGraphics("node-name-button", "name",
+        { x: size.x - Utils.half(nodeContentPadding) - Utils.half(nameButtonSize), y: halfNodeHeaderHeight });
 }
 
 type fieldChangedCallback<T extends Tree.Field> = (newField: T) => void;
