@@ -447,8 +447,7 @@ class GroupElement implements IElement {
     private addForeignObject(position: Vector.Position, size: Vector.Size, htmlElement: HTMLElement): void {
         const foreignObject = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
         foreignObject.setAttribute("x", position.x.toString());
-        // + 3 here because the foreign objects seem to render too low on most browsers.
-        foreignObject.setAttribute("y", (position.y - Utils.half(size.y) + 2).toString());
+        foreignObject.setAttribute("y", position.y.toString());
         foreignObject.setAttribute("width", size.x.toString());
         foreignObject.setAttribute("height", size.y.toString());
         foreignObject.appendChild(htmlElement);
