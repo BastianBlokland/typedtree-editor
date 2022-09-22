@@ -60,6 +60,8 @@ const halfNodeHeaderHeight = Utils.half(nodeHeaderHeight);
 const nodeFieldHeight = Tree.PositionLookup.nodeFieldHeight;
 const nodeInputSlotOffset: Vector.IVector2 = { x: 0, y: 12.5 };
 const nodeTooltipSize: Vector.IVector2 = { x: 450, y: 75 };
+const nodeContentPadding = 6;
+const infoButtonSize = 20;
 const nodeConnectionCurviness = .7;
 
 type nodeChangedCallback = (newNode: Tree.INode) => void;
@@ -86,9 +88,8 @@ function createNode(
         "node-type",
         typeOptionsIndex,
         typeOptions,
-        /* Ugly offsets to compensate for styling of select elements */
-        { x: 10, y: halfNodeHeaderHeight - 3 },
-        { x: size.x - 10, y: nodeHeaderHeight - 5 },
+        { x: infoButtonSize + Utils.half(nodeContentPadding), y: Utils.half(nodeContentPadding) },
+        { x: size.x - nodeContentPadding - infoButtonSize, y: nodeHeaderHeight - nodeContentPadding },
         newIndex => {
             const newNodeType = typeOptions[newIndex];
             const newNode = TreeScheme.Instantiator.changeNodeType(typeLookup.scheme, node, newNodeType);
@@ -104,15 +105,12 @@ function createNode(
 
     if (definition !== undefined && definition.comment !== undefined) {
         const infoElement = nodeElement.addElement("node-info", Vector.zeroVector);
-        infoElement.addGraphics("node-info-button", "info", { x: 12, y: halfNodeHeaderHeight });
+        infoElement.addGraphics("node-info-button", "info",
+            { x: Utils.half(nodeContentPadding) + Utils.half(infoButtonSize), y: halfNodeHeaderHeight });
 
-        const toolTipElement = infoElement.addElement("node-tooltip", { x: 25, y: -26 });
+        const toolTipElement = infoElement.addElement("node-tooltip", { x: 25, y: -25 });
         toolTipElement.addRect("node-tooltip-background", nodeTooltipSize, Vector.zeroVector);
-        toolTipElement.addText(
-            "node-tooltip-text",
-            definition.comment,
-            { x: 0, y: Utils.half(nodeTooltipSize.y) },
-            nodeTooltipSize);
+        toolTipElement.addText("node-tooltip-text", definition.comment, { x: 0, y: 0 }, nodeTooltipSize);
     }
 }
 
@@ -124,7 +122,7 @@ function createField(
     fieldName: string,
     parent: Svg.IElement,
     positionLookup: Tree.PositionLookup.IPositionLookup,
-    yOffset: number,
+    baseYOffset: number,
     changed: fieldChangedCallback<Tree.Field>): number {
 
     const field = node.getField(fieldName);
@@ -136,14 +134,13 @@ function createField(
         fieldDefinition = nodeDefinition.getField(fieldName);
     }
     const fieldSize = { x: positionLookup.getSize(node).x, y: Tree.PositionLookup.getFieldHeight(field) };
-    const centeredYOffset = yOffset + Utils.half(nodeFieldHeight);
     const nameWidth = Utils.half(fieldSize.x) + 20;
 
-    parent.addRect(`${field.kind}-value-background`, fieldSize, { x: 0, y: yOffset });
+    parent.addRect(`${field.kind}-value-background`, fieldSize, { x: 0, y: baseYOffset });
     parent.addText(
         "fieldname",
         `${field.name}:`,
-        { x: 10, y: centeredYOffset },
+        { x: 10, y: baseYOffset },
         { x: nameWidth - 45, y: nodeFieldHeight });
 
     // Value
@@ -179,7 +176,7 @@ function createField(
         we are doing here. */
 
         // Add element button.
-        parent.addGraphics("fieldvalue-button", "arrayAdd", { x: nameWidth - 30, y: centeredYOffset }, () => {
+        parent.addGraphics("fieldvalue-button", "arrayAdd", { x: nameWidth - 30, y: baseYOffset + Utils.half(nodeFieldHeight) }, () => {
             if (fieldDefinition === undefined) {
                 throw new Error("Unable to create a new element without a FieldDefinition");
             }
@@ -191,7 +188,7 @@ function createField(
         for (let i = 0; i < field.value.length; i++) {
             const element = array[i];
             const yOffset = i * nodeFieldHeight;
-            const yPos = centeredYOffset + yOffset;
+            const yPos = baseYOffset + yOffset + Utils.half(nodeFieldHeight);
 
             // Element deletion button.
             parent.addGraphics("fieldvalue-button", "arrayDelete", { x: nameWidth - 15, y: yPos }, () => {
@@ -237,8 +234,8 @@ function createField(
         yOffset: number,
         changed: elementChangedCallback<T>): void {
 
-        const pos: Vector.Position = { x: nameWidth + xOffset, y: centeredYOffset + yOffset };
-        const size: Vector.Size = { x: fieldSize.x - pos.x, y: nodeFieldHeight };
+        const pos: Vector.Position = { x: nameWidth + xOffset, y: baseYOffset + yOffset + Utils.half(nodeContentPadding) };
+        const size: Vector.Size = { x: fieldSize.x - pos.x - Utils.half(nodeContentPadding), y: nodeFieldHeight - nodeContentPadding };
         switch (typeof element) {
             case "string": createStringValue(element, pos, size, changed as elementChangedCallback<string>); break;
             case "number": createNumberValue(element, pos, size, changed as elementChangedCallback<number>); break;
@@ -293,7 +290,9 @@ function createField(
         pos: Vector.Position,
         size: Vector.Size): void {
 
-        addConnection(parent, { x: fieldSize.x - 12, y: pos.y }, getRelativeVector(node, value, positionLookup));
+        addConnection(parent,
+            { x: pos.x + size.x - 12, y: pos.y + Utils.half(size.y) },
+            getRelativeVector(node, value, positionLookup));
     }
 }
 
