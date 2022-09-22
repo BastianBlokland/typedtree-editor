@@ -86,6 +86,7 @@
     font-weight: bold;
     white-space: pre;
     pointer-events: none;
+    vertical-align: sub;
 }
 
 /* Field values */
