@@ -1,17 +1,17 @@
 #svg-display .node-background {
     fill: #999;
-    rx: 10;
-    ry: 10;
+    rx: 10px;
+    ry: 10px;
     stroke: #000;
-    stroke-width: 4;
+    stroke-width: 4px;
 }
 
 #svg-display .nonenode-background {
     fill: #555;
-    rx: 10;
-    ry: 10;
+    rx: 10px;
+    ry: 10px;
     stroke: #000;
-    stroke-width: 4;
+    stroke-width: 4px;
 }
 
 #svg-display .node-type {
@@ -49,34 +49,34 @@
 /* Field backgrounds */
 #svg-display .string-value-background, #svg-display .stringArray-value-background {
     fill: #696;
-    rx: 10;
-    ry: 10;
+    rx: 10px;
+    ry: 10px;
     stroke: #000;
-    stroke-width: 2;
+    stroke-width: 2px;
 }
 
 #svg-display .number-value-background, #svg-display .numberArray-value-background {
     fill: #669;
-    rx: 10;
-    ry: 10;
+    rx: 10px;
+    ry: 10px;
     stroke: #000;
-    stroke-width: 2;
+    stroke-width: 2px;
 }
 
 #svg-display .boolean-value-background, #svg-display .booleanArray-value-background {
     fill: #966;
-    rx: 10;
-    ry: 10;
+    rx: 10px;
+    ry: 10px;
     stroke: #000;
-    stroke-width: 2;
+    stroke-width: 2px;
 }
 
 #svg-display .node-value-background, #svg-display .nodeArray-value-background {
     fill: #999966;
-    rx: 10;
-    ry: 10;
+    rx: 10px;
+    ry: 10px;
     stroke: #000;
-    stroke-width: 2;
+    stroke-width: 2px;
 }
 
 #svg-display .fieldname {
