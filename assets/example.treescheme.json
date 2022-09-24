@@ -203,5 +203,6 @@
         }
       ]
     }
-  ]
+  ],
+  "featureNodeNames": true
 }
