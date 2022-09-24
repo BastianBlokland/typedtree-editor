@@ -49,6 +49,11 @@
     stroke-width: 2px;
 }
 
+/* Node name */
+#svg-display .node-name-button {
+    cursor: pointer;
+}
+
 /* Field backgrounds */
 #svg-display .string-value-background, #svg-display .stringArray-value-background {
     fill: #696;
