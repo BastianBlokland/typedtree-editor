@@ -50,6 +50,17 @@
 }
 
 /* Node name */
+#svg-display .node-name {
+    background: none;
+    display: block;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+    border: 0px;
+}
+
 #svg-display .node-name-button {
     cursor: pointer;
 }

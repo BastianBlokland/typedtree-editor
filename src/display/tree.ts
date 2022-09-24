@@ -57,6 +57,7 @@ export function zoom(delta: number = 0.1): void {
 
 const nodeHeaderHeight = Tree.PositionLookup.nodeHeaderHeight;
 const halfNodeHeaderHeight = Utils.half(nodeHeaderHeight);
+const nodeNameHeight = Tree.PositionLookup.nodeNameHeight;
 const nodeFieldHeight = Tree.PositionLookup.nodeFieldHeight;
 const nodeInputSlotOffset: Vector.IVector2 = { x: 0, y: 12.5 };
 const nodeTooltipSize: Vector.IVector2 = { x: 450, y: 75 };
@@ -84,12 +85,23 @@ function createNode(
     const nodeElement = builder.addElement("node", positionLookup.getPosition(node));
     const backgroundClass = node.type === Tree.noneNodeType ? "nonenode-background" : "node-background";
 
+    // Add background.
     nodeElement.addRect(backgroundClass, size, Vector.zeroVector);
-    nodeElement.addDropdown(
-        "node-type",
-        typeOptionsIndex,
-        typeOptions,
-        { x: infoButtonSize + Utils.half(nodeContentPadding), y: Utils.half(nodeContentPadding) },
+
+    let yOffset = 0;
+
+    // Add name field.
+    if (node.name !== undefined) {
+        nodeElement.addEditableText("node-name", node.name,
+            { x: Utils.half(nodeContentPadding), y: yOffset + Utils.half(nodeContentPadding) },
+            { x: size.x - nodeContentPadding, y: nodeNameHeight - Utils.half(nodeContentPadding) },
+            newName => { changed(Tree.Modifications.nodeWithName(node, newName)); });
+        yOffset += nodeNameHeight;
+    }
+
+    // Add type dropdown.
+    nodeElement.addDropdown("node-type", typeOptionsIndex, typeOptions,
+        { x: infoButtonSize + Utils.half(nodeContentPadding), y: Utils.half(nodeContentPadding) + yOffset },
         { x: size.x - nodeContentPadding - infoButtonSize - nameButtonSize, y: nodeHeaderHeight - nodeContentPadding },
         newIndex => {
             const newNodeType = typeOptions[newIndex];
@@ -97,29 +109,35 @@ function createNode(
             changed(newNode);
         });
 
-    let yOffset = nodeHeaderHeight;
-    node.fieldNames.forEach(fieldName => {
-        yOffset += createField(node, definition, fieldName, nodeElement, positionLookup, yOffset, newField => {
-            changed(Tree.Modifications.nodeWithField(node, newField));
-        });
-    });
-
+    // Add tooltip.
     if (definition !== undefined && definition.comment !== undefined) {
         const infoElement = nodeElement.addElement("node-info", Vector.zeroVector);
-        infoElement.addGraphics("node-info-button", "info",
-            { x: Utils.half(nodeContentPadding) + Utils.half(infoButtonSize), y: halfNodeHeaderHeight });
+        infoElement.addGraphics("node-info-button", "info", {
+            x: Utils.half(nodeContentPadding) + Utils.half(infoButtonSize),
+            y: halfNodeHeaderHeight + yOffset
+        });
 
         const toolTipElement = infoElement.addElement("node-tooltip", { x: 25, y: -25 });
         toolTipElement.addRect("node-tooltip-background", nodeTooltipSize, Vector.zeroVector);
         toolTipElement.addText("node-tooltip-text", definition.comment, { x: 0, y: 0 }, nodeTooltipSize);
     }
 
+    // Add name toggle button.
     const nodeNameButtonSize: Vector.IVector2 = {
         x: size.x - Utils.half(nodeContentPadding) - Utils.half(nameButtonSize),
-        y: halfNodeHeaderHeight,
+        y: halfNodeHeaderHeight + yOffset,
     };
     nodeElement.addGraphics("node-name-button", "name", nodeNameButtonSize, () => {
         changed(Tree.Modifications.nodeWithName(node, node.name === undefined ? "Unnamed" : undefined));
+    });
+
+    yOffset += nodeHeaderHeight;
+
+    // Add fields.
+    node.fieldNames.forEach(fieldName => {
+        yOffset += createField(node, definition, fieldName, nodeElement, positionLookup, yOffset, newField => {
+            changed(Tree.Modifications.nodeWithField(node, newField));
+        });
     });
 }
 
