@@ -107,3 +107,41 @@ test("nodeDefinitionCanHaveTheSameNameAsAnAlias", () => {
     });
     expect(TreeScheme.Validator.validate(scheme, tree)).toBe(true);
 });
+
+test("validateAllowsNodeNamesIfSupportedByScheme", () => {
+    const scheme = TreeScheme.createScheme("Alias1", b => {
+        b.allowFeatures(TreeScheme.Features.NodeNames);
+        b.pushAlias("Alias1", ["Node1"]);
+
+        b.pushNodeDefinition("Node1", b => {
+            b.pushField("field1", "string");
+            b.pushField("field2", "number");
+        });
+    });
+
+    const tree = Tree.createNode("Node1", b => {
+        b.pushName("Hello World");
+        b.pushStringField("field1", "test");
+        b.pushNumberField("field2", 1337);
+    });
+    expect(TreeScheme.Validator.validate(scheme, tree)).toBe(true);
+});
+
+
+test("validateDisallowsNodeNamesIfNotSupportedByScheme", () => {
+    const scheme = TreeScheme.createScheme("Alias1", b => {
+        b.pushAlias("Alias1", ["Node1"]);
+
+        b.pushNodeDefinition("Node1", b => {
+            b.pushField("field1", "string");
+            b.pushField("field2", "number");
+        });
+    });
+
+    const tree = Tree.createNode("Node1", b => {
+        b.pushName("Hello World");
+        b.pushStringField("field1", "test");
+        b.pushNumberField("field2", 1337);
+    });
+    expect(TreeScheme.Validator.validate(scheme, tree)).not.toBe(true);
+});

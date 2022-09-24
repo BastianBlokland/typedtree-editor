@@ -37,6 +37,11 @@ export function validateNode(scheme: TreeScheme.IScheme, alias: TreeScheme.IAlia
         return true;
     }
 
+    // Validate that the scheme supports named nodes.
+    if (node.name !== undefined && !TreeScheme.featureSupported(scheme, TreeScheme.Features.NodeNames)) {
+        return createFailure("Named nodes are not supported by the scheme");
+    }
+
     // Validate type.
     if (!alias.containsValue(node.type)) {
         return createInvalidNodeTypeFailure(alias, node.type);

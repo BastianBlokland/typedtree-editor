@@ -134,6 +134,7 @@ test("newElementsCanBeCreated", () => {
 
 function createTestScheme(): TreeScheme.IScheme {
     return TreeScheme.createScheme("Root", b => {
+        b.allowFeatures(TreeScheme.Features.NodeNames);
         const alias = b.pushAlias("Root", ["Node1"]);
         const enumeration = b.pushEnum("Enum", [{ value: 1, name: "A" }, { value: 2, name: "B" }]);
         b.pushNodeDefinition("Node1", b => {
