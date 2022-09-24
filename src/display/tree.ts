@@ -32,7 +32,7 @@ export function setTree(
 
     Svg.setContent(b => {
         positionLookup.nodes.forEach(node => {
-            createNode(b, node, typeLookup, positionLookup, newNode => {
+            createNode(b, node, typeLookup, positionLookup, scheme.features, newNode => {
                 if (changed !== undefined) {
                     changed(Tree.Modifications.treeWithReplacedNode(root, node, newNode));
                 }
@@ -73,6 +73,7 @@ function createNode(
     node: Tree.INode,
     typeLookup: TreeScheme.TypeLookup.ITypeLookup,
     positionLookup: Tree.PositionLookup.IPositionLookup,
+    supportedFeatures: TreeScheme.Features,
     changed: nodeChangedCallback): void {
 
     let definition: TreeScheme.INodeDefinition | undefined;
@@ -84,7 +85,7 @@ function createNode(
     const size = positionLookup.getSize(node);
     const nodeElement = builder.addElement("node", positionLookup.getPosition(node));
     const backgroundClass = node.type === Tree.noneNodeType ? "nonenode-background" : "node-background";
-    const allowName = node.type !== Tree.noneNodeType;
+    const allowName = node.type !== Tree.noneNodeType && (supportedFeatures & TreeScheme.Features.NodeNames) !== 0;
 
     // Add background.
     nodeElement.addRect(backgroundClass, size, Vector.zeroVector);
