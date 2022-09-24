@@ -65,6 +65,9 @@ function parseScheme(obj: any): TreeScheme.IScheme {
     }
 
     return TreeScheme.createScheme(rootAliasIdentifier, schemeBuilder => {
+        if (Utils.Parser.validateBoolean(obj.featureNodeNames)) {
+            schemeBuilder.allowFeatures(TreeScheme.Features.NodeNames);
+        }
         parseAliases(schemeBuilder, obj);
         parseEnums(schemeBuilder, obj);
         parseNodes(schemeBuilder, obj);

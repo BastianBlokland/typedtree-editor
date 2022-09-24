@@ -27,6 +27,12 @@ interface ITreeTypeMap {
     "enum": number;
 }
 
+/** Features supported by this scheme. */
+export enum Features {
+    None = 0,
+    NodeNames = 1 << 0,
+}
+
 /**
  * Tree scheme.
  * Consists out of aliases, enums and nodes.
@@ -39,6 +45,7 @@ export interface IScheme {
     readonly aliases: ReadonlyArray<IAlias>;
     readonly enums: ReadonlyArray<IEnum>;
     readonly nodes: ReadonlyArray<INodeDefinition>;
+    readonly features: Features;
 
     getAlias(identifier: string): IAlias | undefined;
     getEnum(identifier: string): IEnum | undefined;
@@ -87,6 +94,8 @@ export interface IFieldDefinition {
 
 /** Builder that can be used to create a scheme */
 export interface ISchemeBuilder {
+    allowFeatures(features: Features): void;
+
     pushAlias(identifier: string, values: ReadonlyArray<Tree.NodeType>): IAlias | undefined;
     pushEnum(identifier: string, values: ReadonlyArray<IEnumEntry>): IEnum | undefined;
 
@@ -213,6 +222,14 @@ export function getFieldKind(field: IFieldDefinition): Tree.FieldKind {
 }
 
 /**
+ * Test if a set of features is supported by the given scheme.
+ * @returns True if the features are supported, otherwise False.
+ */
+export function featureSupported(scheme: IScheme, features: Features): boolean {
+    return (scheme.features & features) !== 0;
+}
+
+/**
  * Create a string representation for a scheme. (Useful for debugging)
  * @param scheme Scheme to create the string representation for.
  * @returns Newly created string representation of the scheme.
@@ -259,6 +276,9 @@ export function printScheme(
             printLine(`${f.name} (${getPrettyFieldValueType(f.valueType, f.isArray)})`, indent + 2);
         });
     });
+
+    // Features.
+    printLine(`Features: NodeNames: (${featureSupported(scheme, Features.NodeNames)})`, indent);
 }
 
 class SchemeImpl implements IScheme {
@@ -266,12 +286,14 @@ class SchemeImpl implements IScheme {
     private readonly _aliases: ReadonlyArray<IAlias>;
     private readonly _enums: ReadonlyArray<IEnum>;
     private readonly _nodes: ReadonlyArray<INodeDefinition>;
+    private readonly _features: Features;
 
     constructor(
         rootAlias: IAlias,
         aliases: ReadonlyArray<IAlias>,
         enums: ReadonlyArray<IEnum>,
-        nodes: ReadonlyArray<INodeDefinition>) {
+        nodes: ReadonlyArray<INodeDefinition>,
+        features: Features) {
 
         // Verify that root-alias exists in the aliases array.
         if (!aliases.some(a => a === rootAlias)) {
@@ -299,6 +321,7 @@ class SchemeImpl implements IScheme {
         this._aliases = aliases;
         this._enums = enums;
         this._nodes = nodes;
+        this._features = features;
     }
 
     get rootAlias(): IAlias {
@@ -315,6 +338,10 @@ class SchemeImpl implements IScheme {
 
     get nodes(): ReadonlyArray<INodeDefinition> {
         return this._nodes;
+    }
+
+    get features(): Features {
+        return this._features;
     }
 
     public getAlias(identifier: string): IAlias | undefined {
@@ -454,6 +481,7 @@ class SchemeBuilderImpl implements ISchemeBuilder {
     private _aliases: IAlias[];
     private _enums: IEnum[];
     private _nodes: INodeDefinition[];
+    private _features: Features;
     private _build: boolean;
 
     constructor(rootAliasIdentifier: string) {
@@ -461,6 +489,10 @@ class SchemeBuilderImpl implements ISchemeBuilder {
         this._aliases = [];
         this._enums = [];
         this._nodes = [];
+    }
+
+    public allowFeatures(features: Features): void {
+        this._features |= features;
     }
 
     public pushAlias(identifier: string, values: ReadonlyArray<Tree.NodeType>): IAlias | undefined {
@@ -561,7 +593,7 @@ class SchemeBuilderImpl implements ISchemeBuilder {
         if (rootAlias === undefined) {
             throw new Error(`Root alias '${this._rootAliasIdentifier}' not found in alias set`);
         }
-        return new SchemeImpl(rootAlias, this._aliases, this._enums, this._nodes);
+        return new SchemeImpl(rootAlias, this._aliases, this._enums, this._nodes, this._features);
     }
 }
 

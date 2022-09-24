@@ -58,13 +58,29 @@ test("fieldWithValueNodeArray", () => {
 
 test("nodeWithField", () => {
     const node = Tree.createNode("testNode", b => {
+        b.pushName("Hello World");
         b.pushStringField("f1", "v1");
         b.pushStringField("f2", "v2");
     });
     expect(Tree.Modifications.nodeWithField(node, { kind: "string", name: "f2", value: "v3" }))
         .toEqual(Tree.createNode("testNode", b => {
+            b.pushName("Hello World");
             b.pushStringField("f1", "v1");
             b.pushStringField("f2", "v3");
+        }));
+});
+
+
+test("nodeWithName", () => {
+    const node = Tree.createNode("testNode", b => {
+        b.pushStringField("f1", "v1");
+        b.pushStringField("f2", "v2");
+    });
+    expect(Tree.Modifications.nodeWithName(node, "Hello World"))
+        .toEqual(Tree.createNode("testNode", b => {
+            b.pushName("Hello World");
+            b.pushStringField("f1", "v1");
+            b.pushStringField("f2", "v2");
         }));
 });
 
@@ -89,6 +105,7 @@ test("cloneNode", () => {
         b.pushStringField("innerFieldA", "innerValueA");
     });
     const innerNodeB = Tree.createNode("innerNode", b => {
+        b.pushName("Inner Node B");
         b.pushStringField("innerFieldB", "innerValueB");
     });
     const node = Tree.createNode("testNode", b => {

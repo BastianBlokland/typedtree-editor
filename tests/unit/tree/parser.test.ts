@@ -203,3 +203,42 @@ test("nodeCanBeParsedFromAnObject", () => {
         }));
     }
 });
+
+test("nodeWithName", () => {
+    const json = `{
+        "$type": "test",
+        "$name": "Hello World"
+    }`;
+    const parseResult = Tree.Parser.parseJson(json);
+    expect(parseResult.kind).toBe("success");
+    if (parseResult.kind === "success") {
+        expect(parseResult.value).toEqual(Tree.createNode("test", b => {
+            b.pushName("Hello World");
+        }));
+    }
+});
+
+test("emptyNameIsIgnored", () => {
+    const json = `{
+        "$type": "test",
+        "$name": ""
+    }`;
+    const parseResult = Tree.Parser.parseJson(json);
+    expect(parseResult.kind).toBe("success");
+    if (parseResult.kind === "success") {
+        expect(parseResult.value).toEqual(Tree.createNode("test"));
+    }
+});
+
+test("nullNameIsIgnored", () => {
+    const json = `{
+        "$type": "test",
+        "$name": null
+    }`;
+    const parseResult = Tree.Parser.parseJson(json);
+    expect(parseResult.kind).toBe("success");
+    if (parseResult.kind === "success") {
+        expect(parseResult.value).toEqual(Tree.createNode("test"));
+    }
+});
+

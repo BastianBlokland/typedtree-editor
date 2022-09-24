@@ -66,6 +66,7 @@ export type Field =
 /** Immutable structure representing a single node in the tree. */
 export interface INode {
     readonly type: NodeType;
+    readonly name?: string;
     readonly fields: ReadonlyArray<Field>;
     readonly fieldNames: ReadonlyArray<string>;
 
@@ -139,6 +140,7 @@ export interface INodeBuilder {
     pushBooleanArrayField(name: string, value: ReadonlyArray<boolean>): boolean;
     pushNodeArrayField(name: string, value: ReadonlyArray<INode>): boolean;
     pushField(field: Field): boolean;
+    pushName(name: string): void;
 }
 
 /**
@@ -270,6 +272,11 @@ export function printNode(node: INode, indent: number = 0, printLine: (line: str
     // Print type
     printLine(`Type: ${node.type}`, indent);
 
+    // Print name
+    if(node.name !== undefined) {
+        printLine(`Name: ${node.name}`, indent);
+    }
+
     // Print fields
     node.fields.forEach(field => {
         switch (field.kind) {
@@ -304,8 +311,9 @@ export function printNode(node: INode, indent: number = 0, printLine: (line: str
 class NodeImpl implements INode {
     private readonly _type: NodeType;
     private readonly _fields: ReadonlyArray<Field>;
+    private readonly _name?: string;
 
-    constructor(type: NodeType, fields: ReadonlyArray<Field>) {
+    constructor(type: NodeType, fields: ReadonlyArray<Field>, name?: string) {
         if (type === "") {
             throw new Error("Node must has a type");
         }
@@ -318,6 +326,7 @@ class NodeImpl implements INode {
 
         this._type = type;
         this._fields = fields;
+        this._name = name;
     }
 
     get type(): NodeType {
@@ -330,6 +339,10 @@ class NodeImpl implements INode {
 
     get fieldNames(): ReadonlyArray<string> {
         return this._fields.map(getFieldName);
+    }
+
+    get name(): string | undefined {
+        return this._name;
     }
 
     public getField(name: string): Field | undefined {
@@ -353,6 +366,7 @@ class NodeImpl implements INode {
 class NodeBuilderImpl implements INodeBuilder {
     private readonly _type: NodeType;
     private _fields: Field[];
+    private _name?: string;
     private _build: boolean;
 
     constructor(type: NodeType) {
@@ -415,8 +429,12 @@ class NodeBuilderImpl implements INodeBuilder {
         return true;
     }
 
+    public pushName(name: string) {
+        this._name = name;
+    }
+
     public build(): INode {
         this._build = true;
-        return new NodeImpl(this._type, this._fields);
+        return new NodeImpl(this._type, this._fields, this._name);
     }
 }

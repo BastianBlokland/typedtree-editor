@@ -32,7 +32,8 @@ test("savedJsonIsIdenticalToReadJson", () => {
                     { "name": "field5", "valueType": "Enum", "isArray": true }
                 ]
             }
-        ]
+        ],
+        "featureNodeNames": true
     }`);
     const parseResult = TreeScheme.Parser.parseJson(json);
     expect(parseResult.kind).toBe("success");

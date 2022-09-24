@@ -32,7 +32,7 @@ export function setTree(
 
     Svg.setContent(b => {
         positionLookup.nodes.forEach(node => {
-            createNode(b, node, typeLookup, positionLookup, newNode => {
+            createNode(b, node, typeLookup, positionLookup, scheme.features, newNode => {
                 if (changed !== undefined) {
                     changed(Tree.Modifications.treeWithReplacedNode(root, node, newNode));
                 }
@@ -57,11 +57,13 @@ export function zoom(delta: number = 0.1): void {
 
 const nodeHeaderHeight = Tree.PositionLookup.nodeHeaderHeight;
 const halfNodeHeaderHeight = Utils.half(nodeHeaderHeight);
+const nodeNameHeight = Tree.PositionLookup.nodeNameHeight;
 const nodeFieldHeight = Tree.PositionLookup.nodeFieldHeight;
 const nodeInputSlotOffset: Vector.IVector2 = { x: 0, y: 12.5 };
 const nodeTooltipSize: Vector.IVector2 = { x: 450, y: 75 };
 const nodeContentPadding = 6;
 const infoButtonSize = 20;
+const nameButtonSize = 20;
 const nodeConnectionCurviness = .7;
 
 type nodeChangedCallback = (newNode: Tree.INode) => void;
@@ -71,6 +73,7 @@ function createNode(
     node: Tree.INode,
     typeLookup: TreeScheme.TypeLookup.ITypeLookup,
     positionLookup: Tree.PositionLookup.IPositionLookup,
+    supportedFeatures: TreeScheme.Features,
     changed: nodeChangedCallback): void {
 
     let definition: TreeScheme.INodeDefinition | undefined;
@@ -82,31 +85,61 @@ function createNode(
     const size = positionLookup.getSize(node);
     const nodeElement = builder.addElement("node", positionLookup.getPosition(node));
     const backgroundClass = node.type === Tree.noneNodeType ? "nonenode-background" : "node-background";
+    const allowName = node.type !== Tree.noneNodeType && (supportedFeatures & TreeScheme.Features.NodeNames) !== 0;
 
+    // Add background.
     nodeElement.addRect(backgroundClass, size, Vector.zeroVector);
-    nodeElement.addDropdown(
-        "node-type",
-        typeOptionsIndex,
-        typeOptions,
-        { x: infoButtonSize + Utils.half(nodeContentPadding), y: Utils.half(nodeContentPadding) },
-        { x: size.x - nodeContentPadding - infoButtonSize, y: nodeHeaderHeight - nodeContentPadding },
+
+    let yOffset = 0;
+
+    // Add name field.
+    if (node.name !== undefined) {
+        nodeElement.addEditableText("node-name", node.name,
+            { x: Utils.half(nodeContentPadding), y: yOffset + Utils.half(nodeContentPadding) },
+            { x: size.x - nodeContentPadding, y: nodeNameHeight - Utils.half(nodeContentPadding) },
+            newName => { changed(Tree.Modifications.nodeWithName(node, newName)); });
+        yOffset += nodeNameHeight;
+    }
+
+    const headerYOffset = yOffset;
+
+    // Add type dropdown.
+    nodeElement.addDropdown("node-type", typeOptionsIndex, typeOptions,
+        { x: infoButtonSize + Utils.half(nodeContentPadding), y: Utils.half(nodeContentPadding) + headerYOffset },
+        { x: size.x - nodeContentPadding - infoButtonSize - nameButtonSize, y: nodeHeaderHeight - nodeContentPadding },
         newIndex => {
             const newNodeType = typeOptions[newIndex];
             const newNode = TreeScheme.Instantiator.changeNodeType(typeLookup.scheme, node, newNodeType);
             changed(newNode);
         });
 
-    let yOffset = nodeHeaderHeight;
+    // Add name toggle button.
+    if (allowName) {
+        const nodeNameButtonSize: Vector.IVector2 = {
+            x: size.x - Utils.half(nodeContentPadding) - Utils.half(nameButtonSize),
+            y: halfNodeHeaderHeight + headerYOffset,
+        };
+        nodeElement.addGraphics("node-name-button", "name", nodeNameButtonSize, () => {
+            changed(Tree.Modifications.nodeWithName(node, node.name === undefined ? "Unnamed" : undefined));
+        });
+    }
+
+    yOffset += nodeHeaderHeight;
+
+    // Add fields.
     node.fieldNames.forEach(fieldName => {
         yOffset += createField(node, definition, fieldName, nodeElement, positionLookup, yOffset, newField => {
             changed(Tree.Modifications.nodeWithField(node, newField));
         });
     });
 
+    // Add tooltip.
     if (definition !== undefined && definition.comment !== undefined) {
         const infoElement = nodeElement.addElement("node-info", Vector.zeroVector);
-        infoElement.addGraphics("node-info-button", "info",
-            { x: Utils.half(nodeContentPadding) + Utils.half(infoButtonSize), y: halfNodeHeaderHeight });
+        infoElement.addGraphics("node-info-button", "info", {
+            x: Utils.half(nodeContentPadding) + Utils.half(infoButtonSize),
+            y: halfNodeHeaderHeight + headerYOffset
+        });
 
         const toolTipElement = infoElement.addElement("node-tooltip", { x: 25, y: -25 });
         toolTipElement.addRect("node-tooltip-background", nodeTooltipSize, Vector.zeroVector);

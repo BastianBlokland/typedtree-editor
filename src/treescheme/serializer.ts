@@ -26,6 +26,7 @@ export function createObject(scheme: TreeScheme.IScheme): object {
     obj.aliases = scheme.aliases.map(createAliasObject);
     obj.enums = scheme.enums.map(createEnumObject);
     obj.nodes = scheme.nodes.map(createNodeObject);
+    obj.featureNodeNames = TreeScheme.featureSupported(scheme, TreeScheme.Features.NodeNames);
     return obj;
 }
 

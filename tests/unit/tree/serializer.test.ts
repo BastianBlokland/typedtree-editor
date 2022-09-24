@@ -8,6 +8,7 @@ import * as Utils from "../../../src/utils";
 test("savedJsonIsIdenticalToReadJson", () => {
     const json = Utils.formatJson(`{
         "$type": "root",
+        "$name": "My Root Node",
         "str": "string",
         "num": 42,
         "bool": true,
@@ -79,4 +80,23 @@ test("noneNodesAreFilteredOutOfNodeArrayFields", () => {
 test("noneRootNodeLeadsToEmptyJson", () => {
     const composedJson = Tree.Serializer.composeJson(Tree.createNoneNode());
     expect(composedJson).toEqual("");
+});
+
+test("nodeNamesAreSerialized", () => {
+    const node = Tree.createNode("root", b => b.pushName("My Root Node"));
+
+    const composedJson = Tree.Serializer.composeJson(node);
+    expect(composedJson).toEqual(Utils.formatJson(`{
+        "$type": "root",
+        "$name": "My Root Node"
+    }`));
+});
+
+test("emptyNodeNamesAreNotSerialized", () => {
+    const node = Tree.createNode("root", b => b.pushName(""));
+
+    const composedJson = Tree.Serializer.composeJson(node);
+    expect(composedJson).toEqual(Utils.formatJson(`{
+        "$type": "root"
+    }`));
 });

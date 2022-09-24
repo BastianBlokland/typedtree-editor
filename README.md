@@ -78,7 +78,8 @@ Tiny electron wrapper to ease in saving until
         }
       ]
     }
-  ]
+  ],
+  "featureNodeNames": true
 }
 ```
 Elements in the scheme:
@@ -103,6 +104,7 @@ and show it as a dropdown in the ui.
 ```json
 {
   "$type": "AI.Items.Selector",
+  "$name": "My selector",
   "children": [
     {
       "$type": "AI.Conditions.OutOfHealth",
@@ -111,8 +113,9 @@ and show it as a dropdown in the ui.
   ]
 }
 ```
-Format is plain json with the exception of the `$type` property which indicates from which type in
-the scheme this node was created from.
+Format is plain json with some well-known fields:
+- `$type`: Indicates the node-type in the scheme this node was created from.
+- `$name`: Optional name for the node.
 
 ### Example of the tree-pack format
 ```json
@@ -125,7 +128,7 @@ TreePack is a single file containing both a scheme and a tree, can be useful for
 
 ## Project setup
 This project is written in [TypeScript](https://github.com/Microsoft/TypeScript) and is transpiled
-into es5 JavaScript. Tree is rendered with a combination of plain html and svg.
+into es6 JavaScript. Tree is rendered with a combination of plain html and svg.
 
 For dependency management [Npm](https://github.com/npm/cli) is used.
 [Rollup](https://github.com/rollup/rollup) is used for creating the output bundle, and deployments

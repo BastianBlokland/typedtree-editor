@@ -235,3 +235,19 @@ test("aliasDefaultReturnsAsExpected", () => {
     });
     expect(TreeScheme.getDefaultDefinition(scheme, scheme.rootAlias).nodeType).toBe("Node1");
 });
+
+test("checkFeatureSupport", () => {
+    const schemeWithoutNaming = TreeScheme.createScheme("Alias1", b => {
+        b.pushAlias("Alias1", ["Node1"]);
+        b.pushNodeDefinition("Node1");
+    });
+    expect(TreeScheme.featureSupported(schemeWithoutNaming, TreeScheme.Features.NodeNames)).toBe(false);
+
+    const schemeWithNaming = TreeScheme.createScheme("Alias1", b => {
+        b.allowFeatures(TreeScheme.Features.NodeNames);
+        b.pushAlias("Alias1", ["Node1"]);
+        b.pushNodeDefinition("Node1");
+    });
+    expect(TreeScheme.featureSupported(schemeWithNaming, TreeScheme.Features.NodeNames)).toBe(true);
+});
+

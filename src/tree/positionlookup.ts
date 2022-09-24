@@ -9,6 +9,9 @@ import * as Utils from "../utils";
 import { Vector } from "../utils";
 import * as Tree from "./tree";
 
+/** Height of the name area of a node. */
+export const nodeNameHeight = 25;
+
 /** Height for the header (the part that contains the type) of a node. */
 export const nodeHeaderHeight = 25;
 
@@ -78,7 +81,11 @@ export function createPositionLookup(root: Tree.INode): IPositionLookup {
  * @returns Number representing the height of the given node.
  */
 export function getNodeHeight(node: Tree.INode): number {
-    return nodeHeaderHeight + node.fields.map(getFieldHeight).reduce(Utils.add, 0);
+    let height = 0;
+    height += node.name !== undefined ? nodeNameHeight : 0;
+    height += nodeHeaderHeight;
+    height += node.fields.map(getFieldHeight).reduce(Utils.add, 0);
+    return height;
 }
 
 /**

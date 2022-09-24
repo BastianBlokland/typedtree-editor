@@ -19,7 +19,8 @@
     "no-shadowed-variable": false,
     "prefer-for-of": false,
     "max-classes-per-file": false,
-    "object-literal-sort-keys": false
+    "object-literal-sort-keys": false,
+    "no-bitwise": false
   },
   "rulesDirectory": []
 }

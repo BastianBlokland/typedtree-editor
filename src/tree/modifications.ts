@@ -34,7 +34,8 @@ export function fieldWithElement<T extends Tree.Field>(
     }
 
     // If the field is not an array then treat it as a value.
-    // Needs ugly cast to 'unknown' as the typescript compiler cannot figure out that these types    // have overlap.
+    // Needs ugly cast to 'unknown' as the typescript compiler cannot figure out that these types
+    // have overlap.
     return fieldWithValue(field, element as unknown as Tree.FieldValueType<T>);
 }
 
@@ -57,6 +58,9 @@ export function fieldWithValue<T extends Tree.Field>(field: T, value: Tree.Field
  */
 export function nodeWithField(node: Tree.INode, field: Tree.Field): Tree.INode {
     return Tree.createNode(node.type, b => {
+        if (node.name !== undefined) {
+            b.pushName(node.name);
+        }
         node.fields.forEach(orgField => {
             if (orgField.name === field.name) {
                 b.pushField(field);
@@ -64,6 +68,21 @@ export function nodeWithField(node: Tree.INode, field: Tree.Field): Tree.INode {
                 b.pushField(orgField);
             }
         });
+    });
+}
+
+/**
+ * Create a new node with a new name.
+ * @param node Original node.
+ * @param name New name.
+ * @returns New node with updated name.
+ */
+export function nodeWithName(node: Tree.INode, name: string | undefined): Tree.INode {
+    return Tree.createNode(node.type, b => {
+        if (name !== undefined) {
+            b.pushName(name);
+        }
+        node.fields.forEach(orgField => b.pushField(orgField));
     });
 }
 
@@ -98,6 +117,9 @@ function fieldWithNewNode(origin: Tree.INode, output: Tree.IFieldElementIdentifi
  */
 export function cloneNode(node: Tree.INode): Tree.INode {
     return Tree.createNode(node.type, b => {
+        if (node.name !== undefined) {
+            b.pushName(node.name);
+        }
         node.fields.forEach(orgField => b.pushField(cloneField(orgField)));
     });
 }
