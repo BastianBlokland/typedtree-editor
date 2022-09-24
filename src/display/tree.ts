@@ -101,9 +101,11 @@ function createNode(
         yOffset += nodeNameHeight;
     }
 
+    const headerYOffset = yOffset;
+
     // Add type dropdown.
     nodeElement.addDropdown("node-type", typeOptionsIndex, typeOptions,
-        { x: infoButtonSize + Utils.half(nodeContentPadding), y: Utils.half(nodeContentPadding) + yOffset },
+        { x: infoButtonSize + Utils.half(nodeContentPadding), y: Utils.half(nodeContentPadding) + headerYOffset },
         { x: size.x - nodeContentPadding - infoButtonSize - nameButtonSize, y: nodeHeaderHeight - nodeContentPadding },
         newIndex => {
             const newNodeType = typeOptions[newIndex];
@@ -111,24 +113,11 @@ function createNode(
             changed(newNode);
         });
 
-    // Add tooltip.
-    if (definition !== undefined && definition.comment !== undefined) {
-        const infoElement = nodeElement.addElement("node-info", Vector.zeroVector);
-        infoElement.addGraphics("node-info-button", "info", {
-            x: Utils.half(nodeContentPadding) + Utils.half(infoButtonSize),
-            y: halfNodeHeaderHeight + yOffset
-        });
-
-        const toolTipElement = infoElement.addElement("node-tooltip", { x: 25, y: -25 });
-        toolTipElement.addRect("node-tooltip-background", nodeTooltipSize, Vector.zeroVector);
-        toolTipElement.addText("node-tooltip-text", definition.comment, { x: 0, y: 0 }, nodeTooltipSize);
-    }
-
     // Add name toggle button.
     if (allowName) {
         const nodeNameButtonSize: Vector.IVector2 = {
             x: size.x - Utils.half(nodeContentPadding) - Utils.half(nameButtonSize),
-            y: halfNodeHeaderHeight + yOffset,
+            y: halfNodeHeaderHeight + headerYOffset,
         };
         nodeElement.addGraphics("node-name-button", "name", nodeNameButtonSize, () => {
             changed(Tree.Modifications.nodeWithName(node, node.name === undefined ? "Unnamed" : undefined));
@@ -143,6 +132,19 @@ function createNode(
             changed(Tree.Modifications.nodeWithField(node, newField));
         });
     });
+
+    // Add tooltip.
+    if (definition !== undefined && definition.comment !== undefined) {
+        const infoElement = nodeElement.addElement("node-info", Vector.zeroVector);
+        infoElement.addGraphics("node-info-button", "info", {
+            x: Utils.half(nodeContentPadding) + Utils.half(infoButtonSize),
+            y: halfNodeHeaderHeight + headerYOffset
+        });
+
+        const toolTipElement = infoElement.addElement("node-tooltip", { x: 25, y: -25 });
+        toolTipElement.addRect("node-tooltip-background", nodeTooltipSize, Vector.zeroVector);
+        toolTipElement.addText("node-tooltip-text", definition.comment, { x: 0, y: 0 }, nodeTooltipSize);
+    }
 }
 
 type fieldChangedCallback<T extends Tree.Field> = (newField: T) => void;
