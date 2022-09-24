@@ -114,8 +114,13 @@ function createNode(
         toolTipElement.addText("node-tooltip-text", definition.comment, { x: 0, y: 0 }, nodeTooltipSize);
     }
 
-    nodeElement.addGraphics("node-name-button", "name",
-        { x: size.x - Utils.half(nodeContentPadding) - Utils.half(nameButtonSize), y: halfNodeHeaderHeight });
+    const nodeNameButtonSize: Vector.IVector2 = {
+        x: size.x - Utils.half(nodeContentPadding) - Utils.half(nameButtonSize),
+        y: halfNodeHeaderHeight,
+    };
+    nodeElement.addGraphics("node-name-button", "name", nodeNameButtonSize, () => {
+        changed(Tree.Modifications.nodeWithName(node, node.name === undefined ? "Unnamed" : undefined));
+    });
 }
 
 type fieldChangedCallback<T extends Tree.Field> = (newField: T) => void;
