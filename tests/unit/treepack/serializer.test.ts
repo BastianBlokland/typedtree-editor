@@ -20,7 +20,8 @@ test("savedJsonIsIdenticalToReadJson", () => {
                         { "name": "field", "valueType": "boolean" }
                     ]
                 }
-            ]
+            ],
+            "featureNodeNames": true
         },
         "tree": {
             "$type": "NodeA",
