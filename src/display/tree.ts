@@ -84,6 +84,7 @@ function createNode(
     const size = positionLookup.getSize(node);
     const nodeElement = builder.addElement("node", positionLookup.getPosition(node));
     const backgroundClass = node.type === Tree.noneNodeType ? "nonenode-background" : "node-background";
+    const allowName = node.type !== Tree.noneNodeType;
 
     // Add background.
     nodeElement.addRect(backgroundClass, size, Vector.zeroVector);
@@ -123,13 +124,15 @@ function createNode(
     }
 
     // Add name toggle button.
-    const nodeNameButtonSize: Vector.IVector2 = {
-        x: size.x - Utils.half(nodeContentPadding) - Utils.half(nameButtonSize),
-        y: halfNodeHeaderHeight + yOffset,
-    };
-    nodeElement.addGraphics("node-name-button", "name", nodeNameButtonSize, () => {
-        changed(Tree.Modifications.nodeWithName(node, node.name === undefined ? "Unnamed" : undefined));
-    });
+    if (allowName) {
+        const nodeNameButtonSize: Vector.IVector2 = {
+            x: size.x - Utils.half(nodeContentPadding) - Utils.half(nameButtonSize),
+            y: halfNodeHeaderHeight + yOffset,
+        };
+        nodeElement.addGraphics("node-name-button", "name", nodeNameButtonSize, () => {
+            changed(Tree.Modifications.nodeWithName(node, node.name === undefined ? "Unnamed" : undefined));
+        });
+    }
 
     yOffset += nodeHeaderHeight;
 
