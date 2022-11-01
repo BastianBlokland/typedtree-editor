@@ -194,7 +194,7 @@ function createField(
         field: T,
         changed: fieldChangedCallback<T>): void {
 
-        createElementValue(field.value, 0, 0, newElement => {
+        createElementValue(field.value, -35, 0, newElement => {
             changed(Tree.Modifications.fieldWithValue(field, newElement as Tree.FieldValueType<T>));
         });
     }
