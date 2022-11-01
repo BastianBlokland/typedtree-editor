@@ -167,7 +167,7 @@ function createField(
         fieldDefinition = nodeDefinition.getField(fieldName);
     }
     const fieldSize = { x: positionLookup.getSize(node).x, y: Tree.PositionLookup.getFieldHeight(field) };
-    const nameWidth = Utils.half(fieldSize.x) + 20;
+    const nameWidth = Utils.half(fieldSize.x) - 10;
 
     parent.addRect(`${field.kind}-value-background`, fieldSize, { x: 0, y: baseYOffset });
     parent.addText(
