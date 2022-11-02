@@ -62,6 +62,7 @@ const nodeFieldHeight = Tree.PositionLookup.nodeFieldHeight;
 const nodeInputSlotOffset: Vector.IVector2 = { x: 0, y: 12.5 };
 const nodeTooltipSize: Vector.IVector2 = { x: 450, y: 75 };
 const nodeContentPadding = 8;
+const fieldNameWidth = 200;
 const infoButtonSize = 20;
 const nameButtonSize = 20;
 const nodeConnectionCurviness = .7;
@@ -167,7 +168,6 @@ function createField(
         fieldDefinition = nodeDefinition.getField(fieldName);
     }
     const fieldSize = { x: positionLookup.getSize(node).x, y: Tree.PositionLookup.getFieldHeight(field) };
-    const nameWidth = Utils.half(fieldSize.x);
 
     parent.addRect(`${field.kind}-value-background`, fieldSize, { x: 0, y: baseYOffset });
 
@@ -177,7 +177,7 @@ function createField(
             "fieldname",
             `${field.name}:`,
             { x: Utils.half(nodeContentPadding), y: baseYOffset },
-            { x: nameWidth - nodeContentPadding, y: nodeFieldHeight });
+            { x: fieldNameWidth, y: nodeFieldHeight });
     }
 
     // Value
@@ -213,7 +213,7 @@ function createField(
         we are doing here. */
 
         // Add element button.
-        parent.addGraphics("fieldvalue-button", "arrayAdd", { x: nameWidth - 30, y: baseYOffset + Utils.half(nodeFieldHeight) }, () => {
+        parent.addGraphics("fieldvalue-button", "arrayAdd", { x: fieldNameWidth - 30, y: baseYOffset + Utils.half(nodeFieldHeight) }, () => {
             if (fieldDefinition === undefined) {
                 throw new Error("Unable to create a new element without a FieldDefinition");
             }
@@ -228,27 +228,27 @@ function createField(
             const yPos = baseYOffset + yOffset + Utils.half(nodeFieldHeight);
 
             // Element deletion button.
-            parent.addGraphics("fieldvalue-button", "arrayDelete", { x: nameWidth - 15, y: yPos }, () => {
+            parent.addGraphics("fieldvalue-button", "arrayDelete", { x: fieldNameWidth - 15, y: yPos }, () => {
                 const newArray = Utils.withoutElement(array, i)
                 changed(Tree.Modifications.fieldWithValue(field, newArray as unknown as Tree.FieldValueType<T>));
             });
 
             // Element duplicate button.
-            parent.addGraphics("fieldvalue-button", "arrayDuplicate", { x: nameWidth, y: yPos }, () => {
+            parent.addGraphics("fieldvalue-button", "arrayDuplicate", { x: fieldNameWidth, y: yPos }, () => {
                 const newArray = Utils.withExtraElement(array, i,
                     field.kind === "nodeArray" ? Tree.Modifications.cloneNode(element as Tree.INode) : element);
                 changed(Tree.Modifications.fieldWithValue(field, newArray as unknown as Tree.FieldValueType<T>));
             });
 
             // Reorder buttons.
-            parent.addGraphics("fieldvalue-button", "arrayOrderUp", { x: nameWidth + 13, y: yPos - 5 }, () => {
+            parent.addGraphics("fieldvalue-button", "arrayOrderUp", { x: fieldNameWidth + 13, y: yPos - 5 }, () => {
                 // If item is the first then move it to the end, otherwise move it one toward the front.
                 const newArray = i === 0 ?
                     Utils.withExtraElement(Utils.withoutElement(array, i), array.length - 1, array[0]) :
                     Utils.withSwappedElements(array, i, i - 1);
                 changed(Tree.Modifications.fieldWithValue(field, newArray as unknown as Tree.FieldValueType<T>));
             });
-            parent.addGraphics("fieldvalue-button", "arrayOrderDown", { x: nameWidth + 13, y: yPos + 5 }, () => {
+            parent.addGraphics("fieldvalue-button", "arrayOrderDown", { x: fieldNameWidth + 13, y: yPos + 5 }, () => {
                 // If the item is the last then move it to the front, otherwise move it one toward to end.
                 const newArray = i === array.length - 1 ?
                     Utils.withExtraElement(Utils.withoutElement(array, i), 0, array[array.length - 1]) :
@@ -272,7 +272,7 @@ function createField(
         changed: elementChangedCallback<T>): void {
 
         if ((options & TreeScheme.FieldOptions.HideName) === 0) {
-            xOffset += nameWidth;
+            xOffset += fieldNameWidth;
         }
 
         const pos: Vector.Position = { x: xOffset, y: baseYOffset + yOffset + Utils.half(nodeContentPadding) };
