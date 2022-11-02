@@ -105,7 +105,10 @@
     font-weight: bold;
     white-space: pre;
     pointer-events: none;
-    vertical-align: sub;
+    margin: 0px;
+    padding: 2px;
+    border: 0px;
+    box-sizing: border-box;
 }
 
 /* Field values */
