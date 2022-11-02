@@ -37,6 +37,7 @@ export enum Features {
 export enum FieldOptions {
     None = 0,
     IsArray = 1 << 0,
+    HideName = 1 << 1,
 }
 
 /**

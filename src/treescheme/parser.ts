@@ -170,6 +170,9 @@ function parseNodes(schemeBuilder: TreeScheme.ISchemeBuilder, obj: any): void {
                 if (Utils.Parser.isBoolean(fieldObj.isArray) && fieldObj.isArray as boolean) {
                     options |= TreeScheme.FieldOptions.IsArray;
                 }
+                if (Utils.Parser.isBoolean(fieldObj.hideName) && fieldObj.hideName as boolean) {
+                    options |= TreeScheme.FieldOptions.HideName;
+                }
 
                 if (!nodeBuilder.pushField(name, valueType, options)) {
                     throw new Error(`Unable to push field '${name}' on node '${nodeType}', is it a duplicate?`);

@@ -61,6 +61,9 @@ function createFieldObject(field: TreeScheme.IFieldDefinition): object {
     if ((field.options & TreeScheme.FieldOptions.IsArray) !== 0) {
         obj.isArray = true;
     }
+    if ((field.options & TreeScheme.FieldOptions.HideName) !== 0) {
+        obj.hideName = true;
+    }
     return obj;
 }
 

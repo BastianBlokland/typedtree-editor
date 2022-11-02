@@ -170,11 +170,15 @@ function createField(
     const nameWidth = Utils.half(fieldSize.x) + 20;
 
     parent.addRect(`${field.kind}-value-background`, fieldSize, { x: 0, y: baseYOffset });
-    parent.addText(
-        "fieldname",
-        `${field.name}:`,
-        { x: 10, y: baseYOffset },
-        { x: nameWidth - 45, y: nodeFieldHeight });
+
+    const options = fieldDefinition === undefined ? TreeScheme.FieldOptions.None : fieldDefinition.options;
+    if ((options & TreeScheme.FieldOptions.HideName) === 0) {
+        parent.addText(
+            "fieldname",
+            `${field.name}:`,
+            { x: 10, y: baseYOffset },
+            { x: nameWidth - 45, y: nodeFieldHeight });
+    }
 
     // Value
     switch (field.kind) {
@@ -194,7 +198,7 @@ function createField(
         field: T,
         changed: fieldChangedCallback<T>): void {
 
-        createElementValue(field.value, 0, 0, newElement => {
+        createElementValue(field.value, Utils.half(nodeContentPadding), 0, newElement => {
             changed(Tree.Modifications.fieldWithValue(field, newElement as Tree.FieldValueType<T>));
         });
     }
@@ -267,7 +271,11 @@ function createField(
         yOffset: number,
         changed: elementChangedCallback<T>): void {
 
-        const pos: Vector.Position = { x: nameWidth + xOffset, y: baseYOffset + yOffset + Utils.half(nodeContentPadding) };
+        if ((options & TreeScheme.FieldOptions.HideName) === 0) {
+            xOffset += nameWidth;
+        }
+
+        const pos: Vector.Position = { x: xOffset, y: baseYOffset + yOffset + Utils.half(nodeContentPadding) };
         const size: Vector.Size = { x: fieldSize.x - pos.x - Utils.half(nodeContentPadding), y: nodeFieldHeight - nodeContentPadding };
         switch (typeof element) {
             case "string": createStringValue(element, pos, size, changed as elementChangedCallback<string>); break;
