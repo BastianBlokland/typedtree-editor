@@ -198,7 +198,12 @@ function createField(
         field: T,
         changed: fieldChangedCallback<T>): void {
 
-        createElementValue(field.value, Utils.half(nodeContentPadding), 0, newElement => {
+        let xOffset = Utils.half(nodeContentPadding);
+        if ((options & TreeScheme.FieldOptions.HideName) === 0) {
+            xOffset += fieldNameWidth;
+        }
+
+        createElementValue(field.value, xOffset, 0, newElement => {
             changed(Tree.Modifications.fieldWithValue(field, newElement as Tree.FieldValueType<T>));
         });
     }
@@ -207,13 +212,16 @@ function createField(
         field: T,
         changed: fieldChangedCallback<T>): void {
 
-        const array = field.value as ReadonlyArray<Tree.FieldElementType<T>>;
-
         /* NOTE: There are some ugly casts here because the type-system cannot quite follow what
         we are doing here. */
 
+        const array = field.value as ReadonlyArray<Tree.FieldElementType<T>>;
+
+        // TODO: Pretty strange that we are overlapping the name field.
+        const xOffset = Utils.half(nodeContentPadding) + fieldNameWidth - 30;
+
         // Add element button.
-        parent.addGraphics("fieldvalue-button", "arrayAdd", { x: fieldNameWidth - 30, y: baseYOffset + Utils.half(nodeFieldHeight) }, () => {
+        parent.addGraphics("fieldvalue-button", "arrayAdd", { x: xOffset, y: baseYOffset + Utils.half(nodeFieldHeight) }, () => {
             if (fieldDefinition === undefined) {
                 throw new Error("Unable to create a new element without a FieldDefinition");
             }
@@ -228,27 +236,27 @@ function createField(
             const yPos = baseYOffset + yOffset + Utils.half(nodeFieldHeight);
 
             // Element deletion button.
-            parent.addGraphics("fieldvalue-button", "arrayDelete", { x: fieldNameWidth - 15, y: yPos }, () => {
+            parent.addGraphics("fieldvalue-button", "arrayDelete", { x: xOffset + 15, y: yPos }, () => {
                 const newArray = Utils.withoutElement(array, i)
                 changed(Tree.Modifications.fieldWithValue(field, newArray as unknown as Tree.FieldValueType<T>));
             });
 
             // Element duplicate button.
-            parent.addGraphics("fieldvalue-button", "arrayDuplicate", { x: fieldNameWidth, y: yPos }, () => {
+            parent.addGraphics("fieldvalue-button", "arrayDuplicate", { x: xOffset + 30, y: yPos }, () => {
                 const newArray = Utils.withExtraElement(array, i,
                     field.kind === "nodeArray" ? Tree.Modifications.cloneNode(element as Tree.INode) : element);
                 changed(Tree.Modifications.fieldWithValue(field, newArray as unknown as Tree.FieldValueType<T>));
             });
 
             // Reorder buttons.
-            parent.addGraphics("fieldvalue-button", "arrayOrderUp", { x: fieldNameWidth + 13, y: yPos - 5 }, () => {
+            parent.addGraphics("fieldvalue-button", "arrayOrderUp", { x: xOffset + 43, y: yPos - 5 }, () => {
                 // If item is the first then move it to the end, otherwise move it one toward the front.
                 const newArray = i === 0 ?
                     Utils.withExtraElement(Utils.withoutElement(array, i), array.length - 1, array[0]) :
                     Utils.withSwappedElements(array, i, i - 1);
                 changed(Tree.Modifications.fieldWithValue(field, newArray as unknown as Tree.FieldValueType<T>));
             });
-            parent.addGraphics("fieldvalue-button", "arrayOrderDown", { x: fieldNameWidth + 13, y: yPos + 5 }, () => {
+            parent.addGraphics("fieldvalue-button", "arrayOrderDown", { x: xOffset + 43, y: yPos + 5 }, () => {
                 // If the item is the last then move it to the front, otherwise move it one toward to end.
                 const newArray = i === array.length - 1 ?
                     Utils.withExtraElement(Utils.withoutElement(array, i), 0, array[array.length - 1]) :
@@ -257,7 +265,7 @@ function createField(
             });
 
             // Element value.
-            createElementValue(element, 20, yOffset, newElement => {
+            createElementValue(element, xOffset + 50, yOffset, newElement => {
                 changed(Tree.Modifications.fieldWithElement(field, newElement, i));
             });
         }
@@ -270,10 +278,6 @@ function createField(
         xOffset: number,
         yOffset: number,
         changed: elementChangedCallback<T>): void {
-
-        if ((options & TreeScheme.FieldOptions.HideName) === 0) {
-            xOffset += fieldNameWidth;
-        }
 
         const pos: Vector.Position = { x: xOffset, y: baseYOffset + yOffset + Utils.half(nodeContentPadding) };
         const size: Vector.Size = { x: fieldSize.x - pos.x - Utils.half(nodeContentPadding), y: nodeFieldHeight - nodeContentPadding };
