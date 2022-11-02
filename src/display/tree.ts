@@ -176,7 +176,7 @@ function createField(
         parent.addText(
             "fieldname",
             `${field.name}:`,
-            { x: 10, y: baseYOffset },
+            { x: Utils.half(nodeContentPadding), y: baseYOffset },
             { x: nameWidth - 45, y: nodeFieldHeight });
     }
 
