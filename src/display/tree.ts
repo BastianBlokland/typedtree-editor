@@ -62,7 +62,7 @@ const nodeFieldHeight = Tree.PositionLookup.nodeFieldHeight;
 const nodeInputSlotOffset: Vector.IVector2 = { x: 0, y: 12.5 };
 const nodeTooltipSize: Vector.IVector2 = { x: 450, y: 75 };
 const nodeContentPadding = 8;
-const fieldNameWidth = 200;
+const fieldNameWidth = 210;
 const infoButtonSize = 20;
 const nameButtonSize = 20;
 const nodeConnectionCurviness = .7;
@@ -217,8 +217,13 @@ function createField(
 
         const array = field.value as ReadonlyArray<Tree.FieldElementType<T>>;
 
-        // TODO: Pretty strange that we are overlapping the name field.
-        const xOffset = Utils.half(nodeContentPadding) + fieldNameWidth - 30;
+        let xOffset;
+        if (field.kind === "nodeArray") {
+            xOffset = fieldSize.x - 75;
+        } else {
+            // TODO: Pretty strange that we are overlapping the name field.
+            xOffset = Utils.half(nodeContentPadding) + fieldNameWidth - 50;
+        }
 
         // Add element button.
         parent.addGraphics("fieldvalue-button", "arrayAdd", { x: xOffset, y: baseYOffset + Utils.half(nodeFieldHeight) }, () => {
