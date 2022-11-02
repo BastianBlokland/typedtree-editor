@@ -105,6 +105,7 @@
     font-weight: bold;
     white-space: pre;
     pointer-events: none;
+    vertical-align: bottom;
     margin: 0px;
     padding: 0px;
     border: 0px;
