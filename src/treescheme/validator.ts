@@ -97,7 +97,7 @@ export function validateField(
             switch (fieldDefinition.valueType.type) {
                 case "alias":
                     const alias = fieldDefinition.valueType;
-                    if (fieldDefinition.isArray) {
+                    if ((fieldDefinition.options & TreeScheme.FieldOptions.IsArray) !== 0) {
                         const result = (field.value as ReadonlyArray<Tree.INode>).map(node =>
                             validateNode(scheme, alias, node)).
                             find(r => r !== true);
@@ -107,7 +107,7 @@ export function validateField(
                     }
                 case "enum":
                     const enumeration = fieldDefinition.valueType;
-                    if (fieldDefinition.isArray) {
+                    if ((fieldDefinition.options & TreeScheme.FieldOptions.IsArray) !== 0) {
                         const result = (field.value as ReadonlyArray<number>).map(value =>
                             validateEnum(enumeration, value)).
                             find(r => r !== true);
@@ -130,13 +130,11 @@ function validateEnum(enumeration: TreeScheme.IEnum, value: number): Result {
 }
 
 function createInvalidNodeTypeFailure(expectedAlias: TreeScheme.IAlias, givenType: Tree.NodeType): IFailure {
-    return createFailure(`Invalid node type: '${givenType}'. Valid options: [${
-        expectedAlias.values.join(", ")}]`);
+    return createFailure(`Invalid node type: '${givenType}'. Valid options: [${expectedAlias.values.join(", ")}]`);
 }
 
 function createInvalidFieldFailure(nodeDefinition: TreeScheme.INodeDefinition, givenField: Tree.Field): IFailure {
-    return createFailure(`Unexpected field: '${givenField.name}'. Valid options: [${
-        nodeDefinition.fields.map(f => f.name).join(", ")}]`);
+    return createFailure(`Unexpected field: '${givenField.name}'. Valid options: [${nodeDefinition.fields.map(f => f.name).join(", ")}]`);
 }
 
 function createInvalidFieldTypeFailure(expectedKind: Tree.FieldKind, field: Tree.Field): IFailure {
@@ -144,8 +142,7 @@ function createInvalidFieldTypeFailure(expectedKind: Tree.FieldKind, field: Tree
 }
 
 function createInvalidEnumValueFailure(expectedEnum: TreeScheme.IEnum, givenValue: number): IFailure {
-    return createFailure(`Invalid enum value '${givenValue}', Valid options: [${
-        expectedEnum.values.map(e => `${e.value}: ${e.name}`).join(", ")}]`);
+    return createFailure(`Invalid enum value '${givenValue}', Valid options: [${expectedEnum.values.map(e => `${e.value}: ${e.name}`).join(", ")}]`);
 }
 
 function createFailure(message: string): IFailure {

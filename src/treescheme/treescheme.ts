@@ -33,6 +33,12 @@ export enum Features {
     NodeNames = 1 << 0,
 }
 
+/** Per-field options. */
+export enum FieldOptions {
+    None = 0,
+    IsArray = 1 << 0,
+}
+
 /**
  * Tree scheme.
  * Consists out of aliases, enums and nodes.
@@ -89,7 +95,7 @@ export interface INodeDefinition {
 export interface IFieldDefinition {
     readonly name: string;
     readonly valueType: FieldValueType;
-    readonly isArray: boolean;
+    readonly options: FieldOptions;
 }
 
 /** Builder that can be used to create a scheme */
@@ -110,7 +116,7 @@ export interface ISchemeBuilder {
 export interface INodeDefinitionBuilder {
     comment: string | undefined;
 
-    pushField(name: string, valueType: FieldValueType, isArray?: boolean): boolean;
+    pushField(name: string, valueType: FieldValueType, options?: FieldOptions): boolean;
 }
 
 /**
@@ -148,7 +154,8 @@ export function getDefaultDefinition(scheme: IScheme, alias: IAlias): INodeDefin
  * @param isArray Is this field an array.
  * @returns string to represent the field type.
  */
-export function getPrettyFieldValueType(valueType: FieldValueType, isArray: boolean = false): string {
+export function getPrettyFieldValueType(valueType: FieldValueType, options: FieldOptions): string {
+    const isArray = (options & FieldOptions.IsArray) !== 0;
     switch (valueType) {
         case "string":
         case "number":
@@ -203,17 +210,18 @@ export function validateEnumType(fieldValueType: FieldValueType): IEnum | undefi
  * @returns FieldKind that corresponds for the given field-definition.
  */
 export function getFieldKind(field: IFieldDefinition): Tree.FieldKind {
+    const isArray = (field.options & FieldOptions.IsArray) !== 0;
     switch (field.valueType) {
-        case "string": return field.isArray ? "stringArray" : "string";
-        case "number": return field.isArray ? "numberArray" : "number";
-        case "boolean": return field.isArray ? "booleanArray" : "boolean";
+        case "string": return isArray ? "stringArray" : "string";
+        case "number": return isArray ? "numberArray" : "number";
+        case "boolean": return isArray ? "booleanArray" : "boolean";
         default:
             switch (field.valueType.type) {
                 case "alias":
-                    return field.isArray ? "nodeArray" : "node";
+                    return isArray ? "nodeArray" : "node";
                 case "enum":
                     // Enums are actually represented by numbers (as they are just named numbers)
-                    return field.isArray ? "numberArray" : "number";
+                    return isArray ? "numberArray" : "number";
                 default:
                     Utils.assertNever(field.valueType);
             }
@@ -273,7 +281,7 @@ export function printScheme(
     scheme.nodes.forEach(n => {
         printLine(`-${n.nodeType} (${n.fields.length})`, indent + 1);
         n.fields.forEach(f => {
-            printLine(`${f.name} (${getPrettyFieldValueType(f.valueType, f.isArray)})`, indent + 2);
+            printLine(`${f.name} (${getPrettyFieldValueType(f.valueType, f.options)})`, indent + 2);
         });
     });
 
@@ -616,7 +624,7 @@ class NodeDefinitionBuilderImpl implements INodeDefinitionBuilder {
         this._comment = value;
     }
 
-    public pushField(name: string, valueType: FieldValueType, isArray?: boolean): boolean {
+    public pushField(name: string, valueType: FieldValueType, options?: FieldOptions): boolean {
         // New content cannot be pushed after building the definition
         if (this._build) {
             return false;
@@ -630,7 +638,7 @@ class NodeDefinitionBuilderImpl implements INodeDefinitionBuilder {
         this._fields.push({
             name,
             valueType,
-            isArray: isArray === undefined ? false : isArray,
+            options: options === undefined ? FieldOptions.None : options,
         });
         return true;
     }

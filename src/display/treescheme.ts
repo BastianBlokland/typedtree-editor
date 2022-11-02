@@ -81,7 +81,7 @@ function createNodeElement(nodeDefinition: TreeScheme.INodeDefinition): HTMLElem
                 Utils.Dom.createWithText("span",
                     f.name, "identifier"),
                 Utils.Dom.createWithText("span",
-                    TreeScheme.getPrettyFieldValueType(f.valueType, f.isArray), "field-type")))));
+                    TreeScheme.getPrettyFieldValueType(f.valueType, f.options), "field-type")))));
 }
 
 function assertInitialized(): void {

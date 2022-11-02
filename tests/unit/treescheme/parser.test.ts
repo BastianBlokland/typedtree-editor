@@ -42,9 +42,9 @@ test("basicSchemeIsParsedSuccessfully", () => {
                 b.comment = "This is a very useful node";
                 b.pushField("field1", "boolean");
                 b.pushField("field2", "string");
-                b.pushField("field3", "number", true);
-                b.pushField("field4", alias!, true);
-                b.pushField("field5", enumeration!, true);
+                b.pushField("field3", "number", TreeScheme.FieldOptions.IsArray);
+                b.pushField("field4", alias!, TreeScheme.FieldOptions.IsArray);
+                b.pushField("field5", enumeration!, TreeScheme.FieldOptions.IsArray);
             });
         }));
     }

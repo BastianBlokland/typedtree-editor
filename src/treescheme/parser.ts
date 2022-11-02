@@ -165,9 +165,13 @@ function parseNodes(schemeBuilder: TreeScheme.ISchemeBuilder, obj: any): void {
                 }
 
                 const valueType = parseValueType(schemeBuilder, fieldObj.valueType);
-                const isArray = Utils.Parser.isBoolean(fieldObj.isArray) ? fieldObj.isArray as boolean : false;
 
-                if (!nodeBuilder.pushField(name, valueType, isArray)) {
+                let options = TreeScheme.FieldOptions.None;
+                if (Utils.Parser.isBoolean(fieldObj.isArray) && fieldObj.isArray as boolean) {
+                    options |= TreeScheme.FieldOptions.IsArray;
+                }
+
+                if (!nodeBuilder.pushField(name, valueType, options)) {
                     throw new Error(`Unable to push field '${name}' on node '${nodeType}', is it a duplicate?`);
                 }
             });
