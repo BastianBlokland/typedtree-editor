@@ -143,11 +143,11 @@ function createTestScheme(): TreeScheme.IScheme {
             b.pushField("field3", "boolean");
             b.pushField("field4", alias!);
             b.pushField("field5", enumeration!);
-            b.pushField("field6", "string", true);
-            b.pushField("field7", "number", true);
-            b.pushField("field8", "boolean", true);
-            b.pushField("field9", alias!, true);
-            b.pushField("field10", enumeration!, true);
+            b.pushField("field6", "string", TreeScheme.FieldOptions.IsArray);
+            b.pushField("field7", "number", TreeScheme.FieldOptions.IsArray);
+            b.pushField("field8", "boolean", TreeScheme.FieldOptions.IsArray);
+            b.pushField("field9", alias!, TreeScheme.FieldOptions.IsArray);
+            b.pushField("field10", enumeration!, TreeScheme.FieldOptions.IsArray);
         });
     });
 }

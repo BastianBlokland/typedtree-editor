@@ -126,7 +126,7 @@ test("fieldCanReferenceAnAlias", () => {
         alias = b.pushAlias("Alias1", ["Node1", "Node2"]);
         b.pushNodeDefinition("Node1");
         b.pushNodeDefinition("Node2", b => {
-            b.pushField("children", alias!, true);
+            b.pushField("children", alias!, TreeScheme.FieldOptions.IsArray);
         });
     });
 
@@ -152,19 +152,19 @@ test("fieldsCanBeFound", () => {
         b.pushAlias("Alias1", ["Node1"]);
         b.pushNodeDefinition("Node1", b => {
             b.pushField("field1", "boolean");
-            b.pushField("field2", "string", true);
+            b.pushField("field2", "string", TreeScheme.FieldOptions.IsArray);
         });
     });
 
     expect(scheme.getNode("Node1")!.getField("field1")).toEqual({
         name: "field1",
         valueType: "boolean",
-        isArray: false,
+        options: TreeScheme.FieldOptions.None,
     });
     expect(scheme.getNode("Node1")!.getField("field2")).toEqual({
         name: "field2",
         valueType: "string",
-        isArray: true,
+        options: TreeScheme.FieldOptions.IsArray,
     });
 });
 
@@ -174,15 +174,15 @@ test("fieldKindMatchesExpectedOutput", () => {
         const enumeration = b.pushEnum("Enum1", [{ value: 0, name: "A" }, { value: 1, name: "B" }]);
         b.pushNodeDefinition("Node1", b => {
             b.pushField("field1", "string");
-            b.pushField("field2", "string", true);
+            b.pushField("field2", "string", TreeScheme.FieldOptions.IsArray);
             b.pushField("field3", "boolean");
-            b.pushField("field4", "boolean", true);
+            b.pushField("field4", "boolean", TreeScheme.FieldOptions.IsArray);
             b.pushField("field5", "number");
-            b.pushField("field6", "number", true);
+            b.pushField("field6", "number", TreeScheme.FieldOptions.IsArray);
             b.pushField("field7", alias!);
-            b.pushField("field8", alias!, true);
+            b.pushField("field8", alias!, TreeScheme.FieldOptions.IsArray);
             b.pushField("field9", enumeration!);
-            b.pushField("field10", enumeration!, true);
+            b.pushField("field10", enumeration!, TreeScheme.FieldOptions.IsArray);
         });
     });
     const node = scheme.getNode("Node1");

@@ -58,8 +58,11 @@ function createFieldObject(field: TreeScheme.IFieldDefinition): object {
     const obj: any = {};
     obj.name = field.name;
     obj.valueType = createValueTypeString(field.valueType);
-    if (field.isArray) {
+    if ((field.options & TreeScheme.FieldOptions.IsArray) !== 0) {
         obj.isArray = true;
+    }
+    if ((field.options & TreeScheme.FieldOptions.HideName) !== 0) {
+        obj.hideName = true;
     }
     return obj;
 }

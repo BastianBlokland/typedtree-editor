@@ -61,7 +61,8 @@ const nodeNameHeight = Tree.PositionLookup.nodeNameHeight;
 const nodeFieldHeight = Tree.PositionLookup.nodeFieldHeight;
 const nodeInputSlotOffset: Vector.IVector2 = { x: 0, y: 12.5 };
 const nodeTooltipSize: Vector.IVector2 = { x: 450, y: 75 };
-const nodeContentPadding = 6;
+const nodeContentPadding = 8;
+const fieldNameWidth = 210;
 const infoButtonSize = 20;
 const nameButtonSize = 20;
 const nodeConnectionCurviness = .7;
@@ -167,14 +168,17 @@ function createField(
         fieldDefinition = nodeDefinition.getField(fieldName);
     }
     const fieldSize = { x: positionLookup.getSize(node).x, y: Tree.PositionLookup.getFieldHeight(field) };
-    const nameWidth = Utils.half(fieldSize.x) - 10;
 
     parent.addRect(`${field.kind}-value-background`, fieldSize, { x: 0, y: baseYOffset });
-    parent.addText(
-        "fieldname",
-        `${field.name}:`,
-        { x: 10, y: baseYOffset },
-        { x: nameWidth - 45, y: nodeFieldHeight });
+
+    const options = fieldDefinition === undefined ? TreeScheme.FieldOptions.None : fieldDefinition.options;
+    if ((options & TreeScheme.FieldOptions.HideName) === 0) {
+        parent.addText(
+            "fieldname",
+            `${field.name}:`,
+            { x: Utils.half(nodeContentPadding), y: baseYOffset },
+            { x: fieldNameWidth, y: nodeFieldHeight });
+    }
 
     // Value
     switch (field.kind) {
@@ -194,7 +198,12 @@ function createField(
         field: T,
         changed: fieldChangedCallback<T>): void {
 
-        createElementValue(field.value, -35, 0, newElement => {
+        let xOffset = Utils.half(nodeContentPadding);
+        if ((options & TreeScheme.FieldOptions.HideName) === 0) {
+            xOffset += fieldNameWidth;
+        }
+
+        createElementValue(field.value, xOffset, 0, newElement => {
             changed(Tree.Modifications.fieldWithValue(field, newElement as Tree.FieldValueType<T>));
         });
     }
@@ -203,13 +212,21 @@ function createField(
         field: T,
         changed: fieldChangedCallback<T>): void {
 
-        const array = field.value as ReadonlyArray<Tree.FieldElementType<T>>;
-
         /* NOTE: There are some ugly casts here because the type-system cannot quite follow what
         we are doing here. */
 
+        const array = field.value as ReadonlyArray<Tree.FieldElementType<T>>;
+
+        let xOffset;
+        if (field.kind === "nodeArray") {
+            xOffset = fieldSize.x - 75;
+        } else {
+            // TODO: Pretty strange that we are overlapping the name field.
+            xOffset = Utils.half(nodeContentPadding) + fieldNameWidth - 50;
+        }
+
         // Add element button.
-        parent.addGraphics("fieldvalue-button", "arrayAdd", { x: nameWidth - 30, y: baseYOffset + Utils.half(nodeFieldHeight) }, () => {
+        parent.addGraphics("fieldvalue-button", "arrayAdd", { x: xOffset, y: baseYOffset + Utils.half(nodeFieldHeight) }, () => {
             if (fieldDefinition === undefined) {
                 throw new Error("Unable to create a new element without a FieldDefinition");
             }
@@ -224,27 +241,27 @@ function createField(
             const yPos = baseYOffset + yOffset + Utils.half(nodeFieldHeight);
 
             // Element deletion button.
-            parent.addGraphics("fieldvalue-button", "arrayDelete", { x: nameWidth - 15, y: yPos }, () => {
+            parent.addGraphics("fieldvalue-button", "arrayDelete", { x: xOffset + 15, y: yPos }, () => {
                 const newArray = Utils.withoutElement(array, i)
                 changed(Tree.Modifications.fieldWithValue(field, newArray as unknown as Tree.FieldValueType<T>));
             });
 
             // Element duplicate button.
-            parent.addGraphics("fieldvalue-button", "arrayDuplicate", { x: nameWidth, y: yPos }, () => {
+            parent.addGraphics("fieldvalue-button", "arrayDuplicate", { x: xOffset + 30, y: yPos }, () => {
                 const newArray = Utils.withExtraElement(array, i,
                     field.kind === "nodeArray" ? Tree.Modifications.cloneNode(element as Tree.INode) : element);
                 changed(Tree.Modifications.fieldWithValue(field, newArray as unknown as Tree.FieldValueType<T>));
             });
 
             // Reorder buttons.
-            parent.addGraphics("fieldvalue-button", "arrayOrderUp", { x: nameWidth + 13, y: yPos - 5 }, () => {
+            parent.addGraphics("fieldvalue-button", "arrayOrderUp", { x: xOffset + 43, y: yPos - 5 }, () => {
                 // If item is the first then move it to the end, otherwise move it one toward the front.
                 const newArray = i === 0 ?
                     Utils.withExtraElement(Utils.withoutElement(array, i), array.length - 1, array[0]) :
                     Utils.withSwappedElements(array, i, i - 1);
                 changed(Tree.Modifications.fieldWithValue(field, newArray as unknown as Tree.FieldValueType<T>));
             });
-            parent.addGraphics("fieldvalue-button", "arrayOrderDown", { x: nameWidth + 13, y: yPos + 5 }, () => {
+            parent.addGraphics("fieldvalue-button", "arrayOrderDown", { x: xOffset + 43, y: yPos + 5 }, () => {
                 // If the item is the last then move it to the front, otherwise move it one toward to end.
                 const newArray = i === array.length - 1 ?
                     Utils.withExtraElement(Utils.withoutElement(array, i), 0, array[array.length - 1]) :
@@ -253,7 +270,7 @@ function createField(
             });
 
             // Element value.
-            createElementValue(element, 20, yOffset, newElement => {
+            createElementValue(element, xOffset + 50, yOffset, newElement => {
                 changed(Tree.Modifications.fieldWithElement(field, newElement, i));
             });
         }
@@ -267,7 +284,7 @@ function createField(
         yOffset: number,
         changed: elementChangedCallback<T>): void {
 
-        const pos: Vector.Position = { x: nameWidth + xOffset, y: baseYOffset + yOffset + Utils.half(nodeContentPadding) };
+        const pos: Vector.Position = { x: xOffset, y: baseYOffset + yOffset + Utils.half(nodeContentPadding) };
         const size: Vector.Size = { x: fieldSize.x - pos.x - Utils.half(nodeContentPadding), y: nodeFieldHeight - nodeContentPadding };
         switch (typeof element) {
             case "string": createStringValue(element, pos, size, changed as elementChangedCallback<string>); break;

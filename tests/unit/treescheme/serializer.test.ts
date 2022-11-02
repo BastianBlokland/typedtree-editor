@@ -27,7 +27,7 @@ test("savedJsonIsIdenticalToReadJson", () => {
                 "fields": [
                     { "name": "field1", "valueType": "boolean" },
                     { "name": "field2", "valueType": "string" },
-                    { "name": "field3", "valueType": "number", "isArray": true },
+                    { "name": "field3", "valueType": "number", "isArray": true, "hideName": true },
                     { "name": "field4", "valueType": "Alias", "isArray": true },
                     { "name": "field5", "valueType": "Enum", "isArray": true }
                 ]

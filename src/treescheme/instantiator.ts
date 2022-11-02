@@ -136,27 +136,28 @@ export function instantiateDefaultNode(nodeDefinition: TreeScheme.INodeDefinitio
  * @returns Newly instantiated (immutable) default field.
  */
 export function instantiateDefaultField(fieldDefinition: TreeScheme.IFieldDefinition): Tree.Field {
+    const isArray = (fieldDefinition.options & TreeScheme.FieldOptions.IsArray) !== 0;
     switch (fieldDefinition.valueType) {
         case "string":
-            return fieldDefinition.isArray ?
+            return isArray ?
                 { kind: "stringArray", name: fieldDefinition.name, value: [] } :
                 { kind: "string", name: fieldDefinition.name, value: "" };
         case "number":
-            return fieldDefinition.isArray ?
+            return isArray ?
                 { kind: "numberArray", name: fieldDefinition.name, value: [] } :
                 { kind: "number", name: fieldDefinition.name, value: 0 };
         case "boolean":
-            return fieldDefinition.isArray ?
+            return isArray ?
                 { kind: "booleanArray", name: fieldDefinition.name, value: [] } :
                 { kind: "boolean", name: fieldDefinition.name, value: false };
         default:
             switch (fieldDefinition.valueType.type) {
                 case "alias":
-                    return fieldDefinition.isArray ?
+                    return isArray ?
                         { kind: "nodeArray", name: fieldDefinition.name, value: [] } :
                         { kind: "node", name: fieldDefinition.name, value: Tree.createNoneNode() };
                 case "enum":
-                    return fieldDefinition.isArray ?
+                    return isArray ?
                         { kind: "numberArray", name: fieldDefinition.name, value: [] } :
                         {
                             kind: "number",
