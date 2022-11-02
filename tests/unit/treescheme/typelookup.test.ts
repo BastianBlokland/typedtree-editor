@@ -87,8 +87,8 @@ function createTestScheme(): TreeScheme.IScheme {
             b.pushField("str", "string");
         });
         b.pushNodeDefinition("GroupAction", b => {
-            b.pushField("conditions", condition!, true);
-            b.pushField("actions", action!, true);
+            b.pushField("conditions", condition!, TreeScheme.FieldOptions.IsArray);
+            b.pushField("actions", action!, TreeScheme.FieldOptions.IsArray);
         });
         b.pushNodeDefinition("BoolCondition", b => {
             b.pushField("val", "boolean");

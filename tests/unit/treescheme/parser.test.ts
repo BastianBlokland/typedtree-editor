@@ -23,7 +23,7 @@ test("basicSchemeIsParsedSuccessfully", () => {
                 "fields": [
                     { "name": "field1", "valueType": "boolean" },
                     { "name": "field2", "valueType": "string" },
-                    { "name": "field3", "valueType": "number", "isArray": true },
+                    { "name": "field3", "valueType": "number", "isArray": true, "hideName": true },
                     { "name": "field4", "valueType": "Alias", "isArray": true },
                     { "name": "field5", "valueType": "Enum", "isArray": true }
                 ]
@@ -42,9 +42,9 @@ test("basicSchemeIsParsedSuccessfully", () => {
                 b.comment = "This is a very useful node";
                 b.pushField("field1", "boolean");
                 b.pushField("field2", "string");
-                b.pushField("field3", "number", true);
-                b.pushField("field4", alias!, true);
-                b.pushField("field5", enumeration!, true);
+                b.pushField("field3", "number", TreeScheme.FieldOptions.IsArray | TreeScheme.FieldOptions.HideName);
+                b.pushField("field4", alias!, TreeScheme.FieldOptions.IsArray);
+                b.pushField("field5", enumeration!, TreeScheme.FieldOptions.IsArray);
             });
         }));
     }

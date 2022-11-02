@@ -13,7 +13,7 @@ test("validTreeDoesValidate", () => {
 
         b.pushNodeDefinition("Node1", b => {
             b.pushField("field1", alias2!);
-            b.pushField("field2", enumeration!, true);
+            b.pushField("field2", enumeration!, TreeScheme.FieldOptions.IsArray);
         });
         b.pushNodeDefinition("Node2", b => {
             b.pushField("field1", "string");

@@ -16,7 +16,7 @@ export const nodeNameHeight = 25;
 export const nodeHeaderHeight = 25;
 
 /** Width of a node. */
-export const nodeWidth = 425;
+export const nodeWidth = 400;
 
 /** Horizontal spaces between nodes. */
 export const nodeHorizontalSpacing = 150;
