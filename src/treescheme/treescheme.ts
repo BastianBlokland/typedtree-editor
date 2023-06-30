@@ -520,8 +520,7 @@ class SchemeBuilderImpl implements ISchemeBuilder {
             const alias = new AliasImpl(identifier, values);
             this._aliases.push(alias);
             return alias;
-        }
-        catch (e) {
+        } catch (e) {
             if (e instanceof Error) {
                 throw Error(`Invalid alias '${identifier}': ${e.message}`);
             } else {
@@ -546,8 +545,7 @@ class SchemeBuilderImpl implements ISchemeBuilder {
             const enumEntry = new EnumImpl(identifier, values);
             this._enums.push(enumEntry);
             return enumEntry;
-        }
-        catch (e) {
+        } catch (e) {
             if (e instanceof Error) {
                 throw Error(`Invalid enum '${identifier}': ${e.message}`);
             } else {
