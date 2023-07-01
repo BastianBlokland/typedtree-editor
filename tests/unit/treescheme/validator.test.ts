@@ -127,7 +127,6 @@ test("validateAllowsNodeNamesIfSupportedByScheme", () => {
     expect(TreeScheme.Validator.validate(scheme, tree)).toBe(true);
 });
 
-
 test("validateDisallowsNodeNamesIfNotSupportedByScheme", () => {
     const scheme = TreeScheme.createScheme("Alias1", b => {
         b.pushAlias("Alias1", ["Node1"]);

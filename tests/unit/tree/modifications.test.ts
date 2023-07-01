@@ -70,7 +70,6 @@ test("nodeWithField", () => {
         }));
 });
 
-
 test("nodeWithName", () => {
     const node = Tree.createNode("testNode", b => {
         b.pushStringField("f1", "v1");

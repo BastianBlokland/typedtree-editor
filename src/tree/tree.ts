@@ -273,7 +273,7 @@ export function printNode(node: INode, indent: number = 0, printLine: (line: str
     printLine(`Type: ${node.type}`, indent);
 
     // Print name
-    if(node.name !== undefined) {
+    if (node.name !== undefined) {
         printLine(`Name: ${node.name}`, indent);
     }
 

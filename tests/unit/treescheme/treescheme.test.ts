@@ -250,4 +250,3 @@ test("checkFeatureSupport", () => {
     });
     expect(TreeScheme.featureSupported(schemeWithNaming, TreeScheme.Features.NodeNames)).toBe(true);
 });
-
