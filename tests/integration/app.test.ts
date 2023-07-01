@@ -225,7 +225,7 @@ async function uploadText(selector: string, text: string): Promise<void> {
     const tmpPath = "tmp/to_upload.json";
 
     FileSystem.writeFileSync(tmpPath, text);
-    const elem : any = await page.$(selector);
+    const elem: any = await page.$(selector);
     if (elem === null) {
         throw new Error("No element found with given selector");
     }
@@ -234,7 +234,7 @@ async function uploadText(selector: string, text: string): Promise<void> {
 
     // Manually dispatch the 'change' event, latest puppeteer / chromo doesn't dispatch it
     // automatically anymore with 'uploadFile'.
-    await elem.evaluate((e : any) => e.dispatchEvent(new Event("change")));
+    await elem.evaluate((e: any) => e.dispatchEvent(new Event("change")));
 }
 
 async function getCurrentScheme(): Promise<TreeScheme.IScheme> {

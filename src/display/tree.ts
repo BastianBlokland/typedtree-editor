@@ -139,7 +139,7 @@ function createNode(
         const infoElement = nodeElement.addElement("node-info", Vector.zeroVector);
         infoElement.addGraphics("node-info-button", "info", {
             x: Utils.half(nodeContentPadding) + Utils.half(infoButtonSize),
-            y: halfNodeHeaderHeight + headerYOffset
+            y: halfNodeHeaderHeight + headerYOffset,
         });
 
         const toolTipElement = infoElement.addElement("node-tooltip", { x: 25, y: -25 });
@@ -242,7 +242,7 @@ function createField(
 
             // Element deletion button.
             parent.addGraphics("fieldvalue-button", "arrayDelete", { x: xOffset + 15, y: yPos }, () => {
-                const newArray = Utils.withoutElement(array, i)
+                const newArray = Utils.withoutElement(array, i);
                 changed(Tree.Modifications.fieldWithValue(field, newArray as unknown as Tree.FieldValueType<T>));
             });
 

@@ -20,7 +20,9 @@
     "prefer-for-of": false,
     "max-classes-per-file": false,
     "object-literal-sort-keys": false,
-    "no-bitwise": false
+    "no-bitwise": false,
+    "switch-default": false,
+    "max-line-length": false
   },
   "rulesDirectory": []
 }

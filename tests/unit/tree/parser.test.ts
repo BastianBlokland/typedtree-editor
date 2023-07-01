@@ -241,4 +241,3 @@ test("nullNameIsIgnored", () => {
         expect(parseResult.value).toEqual(Tree.createNode("test"));
     }
 });
-

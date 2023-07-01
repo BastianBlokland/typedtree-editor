@@ -76,7 +76,6 @@ export async function run(searchParams: URLSearchParams): Promise<void> {
             break;
     }
 
-
     function getSchemeFromParam(): TreeScheme.IScheme | null {
         const paramValue = searchParams.get("scheme");
         if (paramValue !== null) {
