@@ -3,7 +3,7 @@
  * by serving files from the cache.
  */
 
-const version = 31;
+const version = 32;
 const cacheName = `${version}-offline`;
 const preCachedFiles = [
     "index.html",
