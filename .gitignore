@@ -16,3 +16,6 @@
 /coverage/
 /*.junit.xml
 /junit.xml
+
+# Dev environment
+/.direnv/
