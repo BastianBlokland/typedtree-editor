@@ -2,7 +2,7 @@
   description = "TypedTree-Editor Nix Dev Environment";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-25.05";
+    nixpkgs.url = "nixpkgs/nixos-26.05";
   };
 
   outputs = { nixpkgs, ... }:
@@ -16,11 +16,13 @@
         pkgs.gnumake
         pkgs.nodejs_24
         pkgs.lsof
+        pkgs.rsync
         pkgs.google-chrome
       ];
 
       PUPPETEER_SKIP_DOWNLOAD = true;
       PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = true;
+      PUPPETEER_EXECUTABLE_PATH = "${pkgs.google-chrome}/bin/google-chrome-stable";
     };
 
   };
